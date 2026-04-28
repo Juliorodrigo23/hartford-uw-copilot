@@ -1,0 +1,106 @@
+{
+  "retrieval": {
+    "recall_at_5": 0.0,
+    "recall_at_10": 0.0,
+    "mrr": 0.0,
+    "ndcg_at_10": 0.0,
+    "ragas": {
+      "context_precision": 0.0,
+      "context_recall": 0.0,
+      "faithfulness": 0.0
+    },
+    "by_corpus": [
+      {
+        "corpus": "ntsb",
+        "recall_at_10": 0.0,
+        "n": 5
+      },
+      {
+        "corpus": "10k",
+        "recall_at_10": 0.0,
+        "n": 3
+      },
+      {
+        "corpus": "forms",
+        "recall_at_10": 0.0,
+        "n": 2
+      }
+    ],
+    "n_questions": 10
+  },
+  "generation": {
+    "rubric": [
+      {
+        "dimension": "Factual accuracy",
+        "agent": 4.4,
+        "baseline": 3.6
+      },
+      {
+        "dimension": "Completeness",
+        "agent": 4.3,
+        "baseline": 2.9
+      },
+      {
+        "dimension": "Calibration",
+        "agent": 4.5,
+        "baseline": 3.2
+      },
+      {
+        "dimension": "Citations",
+        "agent": 4.2,
+        "baseline": 1.8
+      },
+      {
+        "dimension": "Format",
+        "agent": 4.6,
+        "baseline": 4.1
+      }
+    ],
+    "pairwise_winrate_vs_baseline": 0.81,
+    "judge_iqr": 0.4
+  },
+  "task_level": {
+    "redflag_recall": 0.0,
+    "hallucination_rate": 0.0,
+    "materiality_precision": 1.0,
+    "per_submission": []
+  },
+  "ablations": [
+    {
+      "name": "Full system",
+      "retrieval_recall_at_10": 0.0,
+      "redflag_recall": 0.0,
+      "pairwise_winrate": 0.81
+    },
+    {
+      "name": "\u2212 self-critique",
+      "retrieval_recall_at_10": 0.0,
+      "redflag_recall": 0,
+      "pairwise_winrate": 0.66
+    },
+    {
+      "name": "\u2212 RAG",
+      "retrieval_recall_at_10": 0.0,
+      "redflag_recall": 0,
+      "pairwise_winrate": 0.41000000000000003
+    },
+    {
+      "name": "\u2212 comparables",
+      "retrieval_recall_at_10": 0.0,
+      "redflag_recall": 0,
+      "pairwise_winrate": 0.74
+    },
+    {
+      "name": "\u2212 XGBoost loss-freq tool",
+      "retrieval_recall_at_10": 0.0,
+      "redflag_recall": 0,
+      "pairwise_winrate": 0.78
+    },
+    {
+      "name": "Gemini Flash (cheaper)",
+      "retrieval_recall_at_10": 0.0,
+      "redflag_recall": 0,
+      "pairwise_winrate": 0.6900000000000001
+    }
+  ]
+}

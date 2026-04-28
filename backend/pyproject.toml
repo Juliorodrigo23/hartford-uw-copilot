@@ -1,0 +1,73 @@
+[project]
+name = "hartford-uw-copilot-backend"
+version = "0.1.0"
+description = "Commercial auto underwriting copilot — LangGraph + Vertex AI on Cloud Run"
+requires-python = ">=3.12"
+readme = "../README.md"
+authors = [{ name = "Julio Rodriguez", email = "23juliorod@gmail.com" }]
+
+dependencies = [
+  # Web stack
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.32",
+  "sse-starlette>=2.1",
+  "pydantic>=2.9",
+  "pydantic-settings>=2.6",
+  "python-dotenv>=1.0",
+  "httpx>=0.27",
+  # LLM / orchestration
+  "langgraph>=0.2.50",
+  "langgraph-checkpoint-sqlite>=2.0.1",
+  "aiosqlite>=0.20.0",
+  "langchain>=0.3.7",
+  "langchain-core>=0.3.20",
+  "langchain-google-vertexai>=2.0.7",
+  "langchain-community>=0.3.5",
+  # GCP
+  "google-cloud-aiplatform>=1.71",
+  "google-cloud-secret-manager>=2.21",
+  # OpenAI (LLM-as-judge)
+  "openai>=1.55",
+  # RAG
+  "chromadb>=0.5.18",
+  "sentence-transformers>=3.3",
+  "rank-bm25>=0.2.2",
+  # Eval
+  "ragas>=0.2.6",
+  "datasets>=3.1.0",
+  # ML
+  "xgboost>=2.1.2",
+  "scikit-learn>=1.5.2",
+  "shap>=0.46",
+  "umap-learn>=0.5.7",
+  # Data
+  "pandas>=2.2.3",
+  "pyarrow>=18.0.0",
+  "numpy>=1.26,<2.2",
+  "beautifulsoup4>=4.12.3",
+  "lxml>=5.3.0",
+  "tenacity>=9.0",
+]
+
+[dependency-groups]
+dev = [
+  "pytest>=8.3",
+  "pytest-asyncio>=0.24",
+  "ruff>=0.7",
+  "mypy>=1.13",
+]
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "RUF"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

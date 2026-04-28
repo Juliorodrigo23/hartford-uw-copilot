@@ -1,0 +1,79 @@
+import Link from "next/link";
+import { Github, Linkedin, ExternalLink } from "lucide-react";
+
+export function Header() {
+  return (
+    <header className="sticky top-0 z-40 border-b border-border bg-bg/85 backdrop-blur-md">
+      <div className="mx-auto flex h-14 w-full max-w-7xl items-center justify-between gap-6 px-6">
+        <Link href="/" className="group flex items-center gap-3">
+          <div className="relative flex h-7 w-7 items-center justify-center rounded-md border border-brand-700/60 bg-brand-700/15">
+            <span className="absolute inset-0 rounded-md bg-brand-600/15 blur-md transition-opacity group-hover:opacity-100" />
+            <span className="relative font-mono text-[11px] font-semibold tracking-tight text-brand-400">
+              UW
+            </span>
+          </div>
+          <div className="flex flex-col leading-tight">
+            <span className="text-sm font-semibold tracking-tight">
+              UW Copilot
+            </span>
+            <span className="font-mono text-2xs text-ink-dim">
+              Julio Rodriguez · for The Hartford
+            </span>
+          </div>
+        </Link>
+
+        <nav className="flex items-center gap-1 text-sm">
+          <NavLink href="/">Overview</NavLink>
+          <NavLink href="/pipeline">Pipeline</NavLink>
+          <NavLink href="/chat">Live demo</NavLink>
+        </nav>
+
+        <div className="flex items-center gap-3 text-ink-muted">
+          <a
+            className="hover:text-ink"
+            href="https://github.com/23juliorod"
+            target="_blank"
+            rel="noreferrer noopener"
+            aria-label="GitHub"
+          >
+            <Github size={16} />
+          </a>
+          <a
+            className="hover:text-ink"
+            href="https://www.linkedin.com/in/juliorodriguez"
+            target="_blank"
+            rel="noreferrer noopener"
+            aria-label="LinkedIn"
+          >
+            <Linkedin size={16} />
+          </a>
+          <a
+            className="ml-2 hidden items-center gap-1 text-2xs font-mono text-ink-dim hover:text-ink-muted md:flex"
+            href="https://juliooo.com"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            juliooo.com <ExternalLink size={11} />
+          </a>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function NavLink({
+  href,
+  children,
+}: {
+  href: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <Link
+      href={href}
+      className="rounded px-3 py-1.5 text-ink-muted transition-colors hover:bg-bg-subtle hover:text-ink"
+    >
+      {children}
+    </Link>
+  );
+}

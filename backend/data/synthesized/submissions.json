@@ -1,0 +1,1699 @@
+{
+  "submissions": [
+    {
+      "id": "SUB-001",
+      "carrier_name": "ABC Transport Inc",
+      "dot_number": "1184729",
+      "fleet_size": 86,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "WA",
+        "OR",
+        "ID",
+        "MT"
+      ],
+      "effective_date": "2026-05-29",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 3,
+          "incurred_usd": "257503"
+        },
+        {
+          "year": 2022,
+          "claims": 3,
+          "incurred_usd": "238352"
+        },
+        {
+          "year": 2023,
+          "claims": 3,
+          "incurred_usd": "259013"
+        },
+        {
+          "year": 2024,
+          "claims": 3,
+          "incurred_usd": "282368"
+        },
+        {
+          "year": 2025,
+          "claims": 3,
+          "incurred_usd": "290201"
+        }
+      ],
+      "broker_email": "Team \u2014\n\nLooking for a Hartford quote on ABC Transport Inc (DOT 1184729). They run 86 power units, mostly out of WA/MT corridors. 5-yr loss run attached, MVRs are clean for the most part. Renewal effective in 30 days. Producer is Mike at Lockton.\n\n\u2014J.",
+      "commodity": "general_freight",
+      "_safer_snapshot": null
+    },
+    {
+      "id": "SUB-002",
+      "carrier_name": "Cascadia Freight Inc",
+      "dot_number": "2839412",
+      "fleet_size": 292,
+      "vehicle_mix": {
+        "tractor": 0.74,
+        "straight_truck": 0.06,
+        "trailer": 0.18,
+        "other": 0.02
+      },
+      "states_of_operation": [
+        "MS",
+        "AL",
+        "GA",
+        "FL"
+      ],
+      "effective_date": "2026-05-26",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 18,
+          "incurred_usd": "1699539"
+        },
+        {
+          "year": 2022,
+          "claims": 19,
+          "incurred_usd": "1975234"
+        },
+        {
+          "year": 2023,
+          "claims": 19,
+          "incurred_usd": "2095809"
+        },
+        {
+          "year": 2024,
+          "claims": 20,
+          "incurred_usd": "2171821"
+        },
+        {
+          "year": 2025,
+          "claims": 21,
+          "incurred_usd": "2977287"
+        }
+      ],
+      "broker_email": "Hi \u2014 please see attached for Cascadia Freight Inc, USDOT 2839412. 292 units, 4 states (MS, AL, GA, FL). They came off ABC Insurance after a tough year on freq. Loss runs and MVRs in the packet. Need terms by Friday.\n\nThanks,\nProducer",
+      "commodity": "tank",
+      "_safer_snapshot": null
+    },
+    {
+      "id": "SUB-003",
+      "carrier_name": "Magnolia Tank Lines Inc",
+      "dot_number": "3092714",
+      "fleet_size": 256,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "MN",
+        "WI",
+        "ND"
+      ],
+      "effective_date": "2026-05-23",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 8,
+          "incurred_usd": "749178"
+        },
+        {
+          "year": 2022,
+          "claims": 8,
+          "incurred_usd": "665922"
+        },
+        {
+          "year": 2023,
+          "claims": 8,
+          "incurred_usd": "648127"
+        },
+        {
+          "year": 2024,
+          "claims": 9,
+          "incurred_usd": "888527"
+        },
+        {
+          "year": 2025,
+          "claims": 9,
+          "incurred_usd": "873299"
+        }
+      ],
+      "broker_email": "New submission \u2014 Magnolia Tank Lines Inc (3092714). Solid mid-market account in the MN corridor. Fleet 256 PUs, general freight, no hazmat. Loss runs decent. Ready for your quote at the earliest.",
+      "commodity": "general_freight",
+      "_safer_snapshot": {
+        "legal_name": "DAL TRUCKING INC",
+        "operating_status": "UNKNOWN",
+        "power_units": 1,
+        "drivers": 1,
+        "crashes_24mo_total": 0,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 0,
+        "crashes_24mo_towaway": 0,
+        "oos_rate_vehicle": 0.0,
+        "oos_rate_driver": 0.0,
+        "oos_rate_hazmat": 0.0,
+        "basic_violations": {},
+        "raw_dot": "3092714"
+      }
+    },
+    {
+      "id": "SUB-004",
+      "carrier_name": "Heartland LTL Inc",
+      "dot_number": "2455910",
+      "fleet_size": 191,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "IA",
+        "NE",
+        "MO",
+        "KS",
+        "IL",
+        "IN"
+      ],
+      "effective_date": "2026-05-30",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 6,
+          "incurred_usd": "493668"
+        },
+        {
+          "year": 2022,
+          "claims": 6,
+          "incurred_usd": "559986"
+        },
+        {
+          "year": 2023,
+          "claims": 6,
+          "incurred_usd": "481795"
+        },
+        {
+          "year": 2024,
+          "claims": 6,
+          "incurred_usd": "612772"
+        },
+        {
+          "year": 2025,
+          "claims": 7,
+          "incurred_usd": "694646"
+        }
+      ],
+      "broker_email": "Hi \u2014 please see attached for Heartland LTL Inc, USDOT 2455910. 191 units, 6 states (IA, NE, MO, KS, IL, IN). They came off ABC Insurance after a tough year on freq. Loss runs and MVRs in the packet. Need terms by Friday.\n\nThanks,\nProducer",
+      "commodity": "general_freight",
+      "_safer_snapshot": {
+        "legal_name": "LUIS A GONZALEZ FLORES",
+        "operating_status": "UNKNOWN",
+        "power_units": 1,
+        "drivers": 1,
+        "crashes_24mo_total": 0,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 0,
+        "crashes_24mo_towaway": 0,
+        "oos_rate_vehicle": 0.0,
+        "oos_rate_driver": 0.0,
+        "oos_rate_hazmat": 0.0,
+        "basic_violations": {},
+        "raw_dot": "2455910"
+      }
+    },
+    {
+      "id": "SUB-005",
+      "carrier_name": "Liberty Auto Transport Inc",
+      "dot_number": "1873456",
+      "fleet_size": 189,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "NC",
+        "SC",
+        "VA",
+        "WV"
+      ],
+      "effective_date": "2026-05-29",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 12,
+          "incurred_usd": "1357591"
+        },
+        {
+          "year": 2022,
+          "claims": 12,
+          "incurred_usd": "1276297"
+        },
+        {
+          "year": 2023,
+          "claims": 13,
+          "incurred_usd": "1459161"
+        },
+        {
+          "year": 2024,
+          "claims": 13,
+          "incurred_usd": "1441589"
+        },
+        {
+          "year": 2025,
+          "claims": 14,
+          "incurred_usd": "1836858"
+        }
+      ],
+      "broker_email": "Hi \u2014 please see attached for Liberty Auto Transport Inc, USDOT 1873456. 189 units, 4 states (NC, SC, VA, WV). They came off ABC Insurance after a tough year on freq. Loss runs and MVRs in the packet. Need terms by Friday.\n\nThanks,\nProducer",
+      "commodity": "general_freight",
+      "_safer_snapshot": null
+    },
+    {
+      "id": "SUB-006",
+      "carrier_name": "Hill Country Logistics Inc",
+      "dot_number": "991122",
+      "fleet_size": 317,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "MI",
+        "OH",
+        "PA"
+      ],
+      "effective_date": "2026-06-07",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 20,
+          "incurred_usd": "2388860"
+        },
+        {
+          "year": 2022,
+          "claims": 21,
+          "incurred_usd": "2506672"
+        },
+        {
+          "year": 2023,
+          "claims": 21,
+          "incurred_usd": "2354312"
+        },
+        {
+          "year": 2024,
+          "claims": 22,
+          "incurred_usd": "2206853"
+        },
+        {
+          "year": 2025,
+          "claims": 23,
+          "incurred_usd": "3356710"
+        }
+      ],
+      "broker_email": "Team \u2014\n\nLooking for a Hartford quote on Hill Country Logistics Inc (DOT 991122). They run 317 power units, mostly out of MI/PA corridors. 5-yr loss run attached, MVRs are clean for the most part. Renewal effective in 30 days. Producer is Mike at Lockton.\n\n\u2014J.",
+      "commodity": "hazmat",
+      "_safer_snapshot": {
+        "legal_name": "COMCAST CABLE COMMUNICATIONS MANAGEMENT LLC",
+        "operating_status": "UNKNOWN",
+        "power_units": 393,
+        "drivers": 341,
+        "crashes_24mo_total": 11,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 1,
+        "crashes_24mo_towaway": 10,
+        "oos_rate_vehicle": 0.0,
+        "oos_rate_driver": 0.0,
+        "oos_rate_hazmat": null,
+        "basic_violations": {},
+        "raw_dot": "991122"
+      }
+    },
+    {
+      "id": "SUB-007",
+      "carrier_name": "Bayou Drayage Inc",
+      "dot_number": "880013",
+      "fleet_size": 85,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "TN",
+        "KY",
+        "VA"
+      ],
+      "effective_date": "2026-05-31",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 3,
+          "incurred_usd": "218455"
+        },
+        {
+          "year": 2022,
+          "claims": 3,
+          "incurred_usd": "278902"
+        },
+        {
+          "year": 2023,
+          "claims": 3,
+          "incurred_usd": "280109"
+        },
+        {
+          "year": 2024,
+          "claims": 3,
+          "incurred_usd": "257508"
+        },
+        {
+          "year": 2025,
+          "claims": 3,
+          "incurred_usd": "270918"
+        }
+      ],
+      "broker_email": "Team \u2014\n\nLooking for a Hartford quote on Bayou Drayage Inc (DOT 880013). They run 85 power units, mostly out of TN/VA corridors. 5-yr loss run attached, MVRs are clean for the most part. Renewal effective in 30 days. Producer is Mike at Lockton.\n\n\u2014J.",
+      "commodity": "general_freight",
+      "_safer_snapshot": null
+    },
+    {
+      "id": "SUB-008",
+      "carrier_name": "Sunbelt Carriers Inc",
+      "dot_number": "1402991",
+      "fleet_size": 269,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "MN",
+        "WI",
+        "ND"
+      ],
+      "effective_date": "2026-06-06",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 17,
+          "incurred_usd": "1871440"
+        },
+        {
+          "year": 2022,
+          "claims": 17,
+          "incurred_usd": "2151372"
+        },
+        {
+          "year": 2023,
+          "claims": 18,
+          "incurred_usd": "2149800"
+        },
+        {
+          "year": 2024,
+          "claims": 19,
+          "incurred_usd": "2543639"
+        },
+        {
+          "year": 2025,
+          "claims": 19,
+          "incurred_usd": "2354413"
+        }
+      ],
+      "broker_email": "New submission \u2014 Sunbelt Carriers Inc (1402991). Solid mid-market account in the MN corridor. Fleet 269 PUs, general freight, no hazmat. Loss runs decent. Ready for your quote at the earliest.",
+      "commodity": "general_freight",
+      "_safer_snapshot": null
+    },
+    {
+      "id": "SUB-009",
+      "carrier_name": "Iron Range Freight Inc",
+      "dot_number": "2017304",
+      "fleet_size": 120,
+      "vehicle_mix": {
+        "tractor": 0.74,
+        "straight_truck": 0.06,
+        "trailer": 0.18,
+        "other": 0.02
+      },
+      "states_of_operation": [
+        "CA",
+        "NV",
+        "AZ"
+      ],
+      "effective_date": "2026-06-05",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 4,
+          "incurred_usd": "297750"
+        },
+        {
+          "year": 2022,
+          "claims": 4,
+          "incurred_usd": "301468"
+        },
+        {
+          "year": 2023,
+          "claims": 4,
+          "incurred_usd": "326459"
+        },
+        {
+          "year": 2024,
+          "claims": 4,
+          "incurred_usd": "328644"
+        },
+        {
+          "year": 2025,
+          "claims": 4,
+          "incurred_usd": "355035"
+        }
+      ],
+      "broker_email": "Team \u2014\n\nLooking for a Hartford quote on Iron Range Freight Inc (DOT 2017304). They run 120 power units, mostly out of CA/AZ corridors. 5-yr loss run attached, MVRs are clean for the most part. Renewal effective in 30 days. Producer is Mike at Lockton.\n\n\u2014J.",
+      "commodity": "tank",
+      "_safer_snapshot": {
+        "legal_name": "SWIFT'S LANDSCAPING LLC",
+        "operating_status": "UNKNOWN",
+        "power_units": 4,
+        "drivers": 2,
+        "crashes_24mo_total": 0,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 0,
+        "crashes_24mo_towaway": 0,
+        "oos_rate_vehicle": 0.0,
+        "oos_rate_driver": 0.0,
+        "oos_rate_hazmat": 0.0,
+        "basic_violations": {},
+        "raw_dot": "2017304"
+      }
+    },
+    {
+      "id": "SUB-010",
+      "carrier_name": "Great Plains Express Inc",
+      "dot_number": "2204882",
+      "fleet_size": 88,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "MN",
+        "WI",
+        "ND"
+      ],
+      "effective_date": "2026-06-16",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 5,
+          "incurred_usd": "457677"
+        },
+        {
+          "year": 2022,
+          "claims": 6,
+          "incurred_usd": "636710"
+        },
+        {
+          "year": 2023,
+          "claims": 6,
+          "incurred_usd": "701399"
+        },
+        {
+          "year": 2024,
+          "claims": 6,
+          "incurred_usd": "750440"
+        },
+        {
+          "year": 2025,
+          "claims": 6,
+          "incurred_usd": "668181"
+        }
+      ],
+      "broker_email": "New submission \u2014 Great Plains Express Inc (2204882). Solid mid-market account in the MN corridor. Fleet 88 PUs, general freight, no hazmat. Loss runs decent. Ready for your quote at the earliest.",
+      "commodity": "hazmat",
+      "_safer_snapshot": {
+        "legal_name": "THIEN HAI NGUYEN DINH",
+        "operating_status": "UNKNOWN",
+        "power_units": 1,
+        "drivers": 1,
+        "crashes_24mo_total": 0,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 0,
+        "crashes_24mo_towaway": 0,
+        "oos_rate_vehicle": 0.0,
+        "oos_rate_driver": 0.0,
+        "oos_rate_hazmat": null,
+        "basic_violations": {},
+        "raw_dot": "2204882"
+      }
+    },
+    {
+      "id": "SUB-011",
+      "carrier_name": "Apex Refrigerated Inc",
+      "dot_number": "2563791",
+      "fleet_size": 217,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "NC",
+        "SC",
+        "VA",
+        "WV"
+      ],
+      "effective_date": "2026-05-30",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 7,
+          "incurred_usd": "503304"
+        },
+        {
+          "year": 2022,
+          "claims": 7,
+          "incurred_usd": "531094"
+        },
+        {
+          "year": 2023,
+          "claims": 7,
+          "incurred_usd": "527880"
+        },
+        {
+          "year": 2024,
+          "claims": 7,
+          "incurred_usd": "603529"
+        },
+        {
+          "year": 2025,
+          "claims": 8,
+          "incurred_usd": "850956"
+        }
+      ],
+      "broker_email": "Team \u2014\n\nLooking for a Hartford quote on Apex Refrigerated Inc (DOT 2563791). They run 217 power units, mostly out of NC/WV corridors. 5-yr loss run attached, MVRs are clean for the most part. Renewal effective in 30 days. Producer is Mike at Lockton.\n\n\u2014J.",
+      "commodity": "general_freight",
+      "_safer_snapshot": null
+    },
+    {
+      "id": "SUB-012",
+      "carrier_name": "Lone Star Tankers Inc",
+      "dot_number": "1129835",
+      "fleet_size": 352,
+      "vehicle_mix": {
+        "tractor": 0.74,
+        "straight_truck": 0.06,
+        "trailer": 0.18,
+        "other": 0.02
+      },
+      "states_of_operation": [
+        "MS",
+        "AL",
+        "GA",
+        "FL"
+      ],
+      "effective_date": "2026-06-03",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 22,
+          "incurred_usd": "2330608"
+        },
+        {
+          "year": 2022,
+          "claims": 23,
+          "incurred_usd": "3014115"
+        },
+        {
+          "year": 2023,
+          "claims": 24,
+          "incurred_usd": "2524400"
+        },
+        {
+          "year": 2024,
+          "claims": 24,
+          "incurred_usd": "3063575"
+        },
+        {
+          "year": 2025,
+          "claims": 25,
+          "incurred_usd": "2776677"
+        }
+      ],
+      "broker_email": "New submission \u2014 Lone Star Tankers Inc (1129835). Solid mid-market account in the MS corridor. Fleet 352 PUs, general freight, no hazmat. Loss runs decent. Ready for your quote at the earliest.",
+      "commodity": "tank",
+      "_safer_snapshot": {
+        "legal_name": "RUSS PRINT SHOP THE HEBRON ADVERTISER INC",
+        "operating_status": "UNKNOWN",
+        "power_units": 1,
+        "drivers": 2,
+        "crashes_24mo_total": 0,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 0,
+        "crashes_24mo_towaway": 0,
+        "oos_rate_vehicle": 0.0,
+        "oos_rate_driver": 0.0,
+        "oos_rate_hazmat": 0.0,
+        "basic_violations": {},
+        "raw_dot": "1129835"
+      }
+    },
+    {
+      "id": "SUB-013",
+      "carrier_name": "Northwest Reefer Inc",
+      "dot_number": "1748902",
+      "fleet_size": 280,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "NC",
+        "SC",
+        "VA",
+        "WV"
+      ],
+      "effective_date": "2026-06-07",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 17,
+          "incurred_usd": "1617660"
+        },
+        {
+          "year": 2022,
+          "claims": 18,
+          "incurred_usd": "2103937"
+        },
+        {
+          "year": 2023,
+          "claims": 19,
+          "incurred_usd": "2383676"
+        },
+        {
+          "year": 2024,
+          "claims": 19,
+          "incurred_usd": "2392042"
+        },
+        {
+          "year": 2025,
+          "claims": 20,
+          "incurred_usd": "2551376"
+        }
+      ],
+      "broker_email": "Hi \u2014 please see attached for Northwest Reefer Inc, USDOT 1748902. 280 units, 4 states (NC, SC, VA, WV). They came off ABC Insurance after a tough year on freq. Loss runs and MVRs in the packet. Need terms by Friday.\n\nThanks,\nProducer",
+      "commodity": "hazmat",
+      "_safer_snapshot": {
+        "legal_name": "KENNY NIEVES",
+        "operating_status": "UNKNOWN",
+        "power_units": 1,
+        "drivers": 1,
+        "crashes_24mo_total": 0,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 0,
+        "crashes_24mo_towaway": 0,
+        "oos_rate_vehicle": 0.0,
+        "oos_rate_driver": 0.0,
+        "oos_rate_hazmat": 0.0,
+        "basic_violations": {},
+        "raw_dot": "1748902"
+      }
+    },
+    {
+      "id": "SUB-014",
+      "carrier_name": "Mid-Atlantic Hauling Inc",
+      "dot_number": "2811236",
+      "fleet_size": 288,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "IA",
+        "NE",
+        "MO",
+        "KS",
+        "IL",
+        "IN"
+      ],
+      "effective_date": "2026-06-03",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 18,
+          "incurred_usd": "1887463"
+        },
+        {
+          "year": 2022,
+          "claims": 19,
+          "incurred_usd": "1845697"
+        },
+        {
+          "year": 2023,
+          "claims": 19,
+          "incurred_usd": "1939994"
+        },
+        {
+          "year": 2024,
+          "claims": 20,
+          "incurred_usd": "2149594"
+        },
+        {
+          "year": 2025,
+          "claims": 21,
+          "incurred_usd": "2372783"
+        }
+      ],
+      "broker_email": "Hi \u2014 please see attached for Mid-Atlantic Hauling Inc, USDOT 2811236. 288 units, 6 states (IA, NE, MO, KS, IL, IN). They came off ABC Insurance after a tough year on freq. Loss runs and MVRs in the packet. Need terms by Friday.\n\nThanks,\nProducer",
+      "commodity": "general_freight",
+      "_safer_snapshot": {
+        "legal_name": "CENTRAL COAST PROPANE INC",
+        "operating_status": "UNKNOWN",
+        "power_units": 1,
+        "drivers": 1,
+        "crashes_24mo_total": 1,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 0,
+        "crashes_24mo_towaway": 1,
+        "oos_rate_vehicle": 0.0,
+        "oos_rate_driver": 0.0,
+        "oos_rate_hazmat": 0.0,
+        "basic_violations": {},
+        "raw_dot": "2811236"
+      }
+    },
+    {
+      "id": "SUB-015",
+      "carrier_name": "Coastal Cartage Inc",
+      "dot_number": "1633548",
+      "fleet_size": 275,
+      "vehicle_mix": {
+        "tractor": 0.74,
+        "straight_truck": 0.06,
+        "trailer": 0.18,
+        "other": 0.02
+      },
+      "states_of_operation": [
+        "MS",
+        "AL",
+        "GA",
+        "FL"
+      ],
+      "effective_date": "2026-06-13",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 8,
+          "incurred_usd": "726018"
+        },
+        {
+          "year": 2022,
+          "claims": 9,
+          "incurred_usd": "778211"
+        },
+        {
+          "year": 2023,
+          "claims": 9,
+          "incurred_usd": "856419"
+        },
+        {
+          "year": 2024,
+          "claims": 9,
+          "incurred_usd": "912296"
+        },
+        {
+          "year": 2025,
+          "claims": 10,
+          "incurred_usd": "863906"
+        }
+      ],
+      "broker_email": "Hi \u2014 please see attached for Coastal Cartage Inc, USDOT 1633548. 275 units, 4 states (MS, AL, GA, FL). They came off ABC Insurance after a tough year on freq. Loss runs and MVRs in the packet. Need terms by Friday.\n\nThanks,\nProducer",
+      "commodity": "tank",
+      "_safer_snapshot": null
+    },
+    {
+      "id": "SUB-016",
+      "carrier_name": "Frontier Distribution Inc",
+      "dot_number": "927814",
+      "fleet_size": 295,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "IA",
+        "NE",
+        "MO",
+        "KS",
+        "IL",
+        "IN"
+      ],
+      "effective_date": "2026-05-30",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 9,
+          "incurred_usd": "649433"
+        },
+        {
+          "year": 2022,
+          "claims": 9,
+          "incurred_usd": "632456"
+        },
+        {
+          "year": 2023,
+          "claims": 10,
+          "incurred_usd": "825304"
+        },
+        {
+          "year": 2024,
+          "claims": 10,
+          "incurred_usd": "903277"
+        },
+        {
+          "year": 2025,
+          "claims": 10,
+          "incurred_usd": "1040025"
+        }
+      ],
+      "broker_email": "Team \u2014\n\nLooking for a Hartford quote on Frontier Distribution Inc (DOT 927814). They run 295 power units, mostly out of IA/IN corridors. 5-yr loss run attached, MVRs are clean for the most part. Renewal effective in 30 days. Producer is Mike at Lockton.\n\n\u2014J.",
+      "commodity": "general_freight",
+      "_safer_snapshot": null
+    },
+    {
+      "id": "SUB-017",
+      "carrier_name": "Big Sky Trucking Inc",
+      "dot_number": "2980467",
+      "fleet_size": 213,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "TN",
+        "KY",
+        "VA"
+      ],
+      "effective_date": "2026-06-09",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 6,
+          "incurred_usd": "411697"
+        },
+        {
+          "year": 2022,
+          "claims": 7,
+          "incurred_usd": "693446"
+        },
+        {
+          "year": 2023,
+          "claims": 7,
+          "incurred_usd": "642927"
+        },
+        {
+          "year": 2024,
+          "claims": 7,
+          "incurred_usd": "648896"
+        },
+        {
+          "year": 2025,
+          "claims": 7,
+          "incurred_usd": "745111"
+        }
+      ],
+      "broker_email": "Team \u2014\n\nLooking for a Hartford quote on Big Sky Trucking Inc (DOT 2980467). They run 213 power units, mostly out of TN/VA corridors. 5-yr loss run attached, MVRs are clean for the most part. Renewal effective in 30 days. Producer is Mike at Lockton.\n\n\u2014J.",
+      "commodity": "general_freight",
+      "_safer_snapshot": {
+        "legal_name": "VILLALOBOS CONSTRUCTION LLC",
+        "operating_status": "UNKNOWN",
+        "power_units": 11,
+        "drivers": 4,
+        "crashes_24mo_total": 0,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 0,
+        "crashes_24mo_towaway": 0,
+        "oos_rate_vehicle": 0.0,
+        "oos_rate_driver": 0.0,
+        "oos_rate_hazmat": null,
+        "basic_violations": {},
+        "raw_dot": "2980467"
+      }
+    },
+    {
+      "id": "SUB-018",
+      "carrier_name": "Peach State Freight Inc",
+      "dot_number": "1245778",
+      "fleet_size": 98,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "MS",
+        "AL",
+        "GA",
+        "FL"
+      ],
+      "effective_date": "2026-05-22",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 3,
+          "incurred_usd": "269172"
+        },
+        {
+          "year": 2022,
+          "claims": 3,
+          "incurred_usd": "273262"
+        },
+        {
+          "year": 2023,
+          "claims": 3,
+          "incurred_usd": "273002"
+        },
+        {
+          "year": 2024,
+          "claims": 3,
+          "incurred_usd": "264794"
+        },
+        {
+          "year": 2025,
+          "claims": 3,
+          "incurred_usd": "282682"
+        }
+      ],
+      "broker_email": "Team \u2014\n\nLooking for a Hartford quote on Peach State Freight Inc (DOT 1245778). They run 98 power units, mostly out of MS/FL corridors. 5-yr loss run attached, MVRs are clean for the most part. Renewal effective in 30 days. Producer is Mike at Lockton.\n\n\u2014J.",
+      "commodity": "general_freight",
+      "_safer_snapshot": {
+        "legal_name": "LAFFERTY TRUCKING LLC",
+        "operating_status": "UNKNOWN",
+        "power_units": 2,
+        "drivers": 1,
+        "crashes_24mo_total": 0,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 0,
+        "crashes_24mo_towaway": 0,
+        "oos_rate_vehicle": 0.0,
+        "oos_rate_driver": 0.0,
+        "oos_rate_hazmat": null,
+        "basic_violations": {},
+        "raw_dot": "1245778"
+      }
+    },
+    {
+      "id": "SUB-019",
+      "carrier_name": "Old North Freightways Inc",
+      "dot_number": "770341",
+      "fleet_size": 311,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "IA",
+        "NE",
+        "MO",
+        "KS",
+        "IL",
+        "IN"
+      ],
+      "effective_date": "2026-06-03",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 9,
+          "incurred_usd": "844774"
+        },
+        {
+          "year": 2022,
+          "claims": 10,
+          "incurred_usd": "823501"
+        },
+        {
+          "year": 2023,
+          "claims": 10,
+          "incurred_usd": "998581"
+        },
+        {
+          "year": 2024,
+          "claims": 10,
+          "incurred_usd": "858487"
+        },
+        {
+          "year": 2025,
+          "claims": 11,
+          "incurred_usd": "917370"
+        }
+      ],
+      "broker_email": "Hi \u2014 please see attached for Old North Freightways Inc, USDOT 770341. 311 units, 6 states (IA, NE, MO, KS, IL, IN). They came off ABC Insurance after a tough year on freq. Loss runs and MVRs in the packet. Need terms by Friday.\n\nThanks,\nProducer",
+      "commodity": "general_freight",
+      "_safer_snapshot": {
+        "legal_name": "B & S LIVESTOCK LLC",
+        "operating_status": "UNKNOWN",
+        "power_units": 1,
+        "drivers": 1,
+        "crashes_24mo_total": 0,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 0,
+        "crashes_24mo_towaway": 0,
+        "oos_rate_vehicle": 0.0,
+        "oos_rate_driver": 0.0,
+        "oos_rate_hazmat": null,
+        "basic_violations": {},
+        "raw_dot": "770341"
+      }
+    },
+    {
+      "id": "SUB-020",
+      "carrier_name": "Granite Mountain Logistics Inc",
+      "dot_number": "1854207",
+      "fleet_size": 195,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "CA",
+        "NV",
+        "AZ"
+      ],
+      "effective_date": "2026-06-07",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 6,
+          "incurred_usd": "449285"
+        },
+        {
+          "year": 2022,
+          "claims": 6,
+          "incurred_usd": "504541"
+        },
+        {
+          "year": 2023,
+          "claims": 6,
+          "incurred_usd": "605860"
+        },
+        {
+          "year": 2024,
+          "claims": 7,
+          "incurred_usd": "617433"
+        },
+        {
+          "year": 2025,
+          "claims": 7,
+          "incurred_usd": "716375"
+        }
+      ],
+      "broker_email": "New submission \u2014 Granite Mountain Logistics Inc (1854207). Solid mid-market account in the CA corridor. Fleet 195 PUs, general freight, no hazmat. Loss runs decent. Ready for your quote at the earliest.",
+      "commodity": "general_freight",
+      "_safer_snapshot": null
+    },
+    {
+      "id": "SUB-021",
+      "carrier_name": "Ozark Express Inc",
+      "dot_number": "2716893",
+      "fleet_size": 210,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "WA",
+        "OR",
+        "ID",
+        "MT"
+      ],
+      "effective_date": "2026-06-12",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 6,
+          "incurred_usd": "447056"
+        },
+        {
+          "year": 2022,
+          "claims": 7,
+          "incurred_usd": "661645"
+        },
+        {
+          "year": 2023,
+          "claims": 7,
+          "incurred_usd": "656018"
+        },
+        {
+          "year": 2024,
+          "claims": 7,
+          "incurred_usd": "549304"
+        },
+        {
+          "year": 2025,
+          "claims": 7,
+          "incurred_usd": "684908"
+        }
+      ],
+      "broker_email": "New submission \u2014 Ozark Express Inc (2716893). Solid mid-market account in the WA corridor. Fleet 210 PUs, general freight, no hazmat. Loss runs decent. Ready for your quote at the earliest.",
+      "commodity": "general_freight",
+      "_safer_snapshot": {
+        "legal_name": "JEFFREY G SILVA",
+        "operating_status": "UNKNOWN",
+        "power_units": 0,
+        "drivers": 1,
+        "crashes_24mo_total": 0,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 0,
+        "crashes_24mo_towaway": 0,
+        "oos_rate_vehicle": 0.0,
+        "oos_rate_driver": 0.0,
+        "oos_rate_hazmat": 0.0,
+        "basic_violations": {},
+        "raw_dot": "2716893"
+      }
+    },
+    {
+      "id": "SUB-022",
+      "carrier_name": "River Valley Cartage Inc",
+      "dot_number": "1184729",
+      "fleet_size": 171,
+      "vehicle_mix": {
+        "tractor": 0.74,
+        "straight_truck": 0.06,
+        "trailer": 0.18,
+        "other": 0.02
+      },
+      "states_of_operation": [
+        "CA",
+        "NV",
+        "AZ"
+      ],
+      "effective_date": "2026-06-12",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 5,
+          "incurred_usd": "447180"
+        },
+        {
+          "year": 2022,
+          "claims": 5,
+          "incurred_usd": "358430"
+        },
+        {
+          "year": 2023,
+          "claims": 6,
+          "incurred_usd": "506746"
+        },
+        {
+          "year": 2024,
+          "claims": 6,
+          "incurred_usd": "590758"
+        },
+        {
+          "year": 2025,
+          "claims": 6,
+          "incurred_usd": "483915"
+        }
+      ],
+      "broker_email": "Team \u2014\n\nLooking for a Hartford quote on River Valley Cartage Inc (DOT 1184729). They run 171 power units, mostly out of CA/AZ corridors. 5-yr loss run attached, MVRs are clean for the most part. Renewal effective in 30 days. Producer is Mike at Lockton.\n\n\u2014J.",
+      "commodity": "tank",
+      "_safer_snapshot": null
+    },
+    {
+      "id": "SUB-023",
+      "carrier_name": "Twin Ports Trucking Inc",
+      "dot_number": "2839412",
+      "fleet_size": 114,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "NC",
+        "SC",
+        "VA",
+        "WV"
+      ],
+      "effective_date": "2026-05-24",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 7,
+          "incurred_usd": "774905"
+        },
+        {
+          "year": 2022,
+          "claims": 7,
+          "incurred_usd": "741900"
+        },
+        {
+          "year": 2023,
+          "claims": 8,
+          "incurred_usd": "1046938"
+        },
+        {
+          "year": 2024,
+          "claims": 8,
+          "incurred_usd": "1074753"
+        },
+        {
+          "year": 2025,
+          "claims": 8,
+          "incurred_usd": "1088881"
+        }
+      ],
+      "broker_email": "Hi \u2014 please see attached for Twin Ports Trucking Inc, USDOT 2839412. 114 units, 4 states (NC, SC, VA, WV). They came off ABC Insurance after a tough year on freq. Loss runs and MVRs in the packet. Need terms by Friday.\n\nThanks,\nProducer",
+      "commodity": "hazmat",
+      "_safer_snapshot": null
+    },
+    {
+      "id": "SUB-024",
+      "carrier_name": "Southwest Stage Lines Inc",
+      "dot_number": "3092714",
+      "fleet_size": 338,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "TX",
+        "OK",
+        "AR",
+        "LA"
+      ],
+      "effective_date": "2026-05-25",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 21,
+          "incurred_usd": "2371695"
+        },
+        {
+          "year": 2022,
+          "claims": 22,
+          "incurred_usd": "2772992"
+        },
+        {
+          "year": 2023,
+          "claims": 23,
+          "incurred_usd": "2854446"
+        },
+        {
+          "year": 2024,
+          "claims": 23,
+          "incurred_usd": "2881918"
+        },
+        {
+          "year": 2025,
+          "claims": 24,
+          "incurred_usd": "3049772"
+        }
+      ],
+      "broker_email": "Hi \u2014 please see attached for Southwest Stage Lines Inc, USDOT 3092714. 338 units, 4 states (TX, OK, AR, LA). They came off ABC Insurance after a tough year on freq. Loss runs and MVRs in the packet. Need terms by Friday.\n\nThanks,\nProducer",
+      "commodity": "hazmat",
+      "_safer_snapshot": {
+        "legal_name": "DAL TRUCKING INC",
+        "operating_status": "UNKNOWN",
+        "power_units": 1,
+        "drivers": 1,
+        "crashes_24mo_total": 0,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 0,
+        "crashes_24mo_towaway": 0,
+        "oos_rate_vehicle": 0.0,
+        "oos_rate_driver": 0.0,
+        "oos_rate_hazmat": 0.0,
+        "basic_violations": {},
+        "raw_dot": "3092714"
+      }
+    },
+    {
+      "id": "SUB-025",
+      "carrier_name": "Buckeye Express Inc",
+      "dot_number": "2455910",
+      "fleet_size": 294,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "IA",
+        "NE",
+        "MO",
+        "KS",
+        "IL",
+        "IN"
+      ],
+      "effective_date": "2026-06-07",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 9,
+          "incurred_usd": "692263"
+        },
+        {
+          "year": 2022,
+          "claims": 9,
+          "incurred_usd": "704230"
+        },
+        {
+          "year": 2023,
+          "claims": 10,
+          "incurred_usd": "763788"
+        },
+        {
+          "year": 2024,
+          "claims": 10,
+          "incurred_usd": "820737"
+        },
+        {
+          "year": 2025,
+          "claims": 10,
+          "incurred_usd": "939473"
+        }
+      ],
+      "broker_email": "Team \u2014\n\nLooking for a Hartford quote on Buckeye Express Inc (DOT 2455910). They run 294 power units, mostly out of IA/IN corridors. 5-yr loss run attached, MVRs are clean for the most part. Renewal effective in 30 days. Producer is Mike at Lockton.\n\n\u2014J.",
+      "commodity": "general_freight",
+      "_safer_snapshot": {
+        "legal_name": "LUIS A GONZALEZ FLORES",
+        "operating_status": "UNKNOWN",
+        "power_units": 1,
+        "drivers": 1,
+        "crashes_24mo_total": 0,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 0,
+        "crashes_24mo_towaway": 0,
+        "oos_rate_vehicle": 0.0,
+        "oos_rate_driver": 0.0,
+        "oos_rate_hazmat": 0.0,
+        "basic_violations": {},
+        "raw_dot": "2455910"
+      }
+    },
+    {
+      "id": "SUB-026",
+      "carrier_name": "Pinelands Carriers Inc",
+      "dot_number": "1873456",
+      "fleet_size": 253,
+      "vehicle_mix": {
+        "tractor": 0.74,
+        "straight_truck": 0.06,
+        "trailer": 0.18,
+        "other": 0.02
+      },
+      "states_of_operation": [
+        "IA",
+        "NE",
+        "MO",
+        "KS",
+        "IL",
+        "IN"
+      ],
+      "effective_date": "2026-06-15",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 16,
+          "incurred_usd": "1888883"
+        },
+        {
+          "year": 2022,
+          "claims": 16,
+          "incurred_usd": "1488826"
+        },
+        {
+          "year": 2023,
+          "claims": 17,
+          "incurred_usd": "2211732"
+        },
+        {
+          "year": 2024,
+          "claims": 18,
+          "incurred_usd": "2321739"
+        },
+        {
+          "year": 2025,
+          "claims": 18,
+          "incurred_usd": "2092157"
+        }
+      ],
+      "broker_email": "Team \u2014\n\nLooking for a Hartford quote on Pinelands Carriers Inc (DOT 1873456). They run 253 power units, mostly out of IA/IN corridors. 5-yr loss run attached, MVRs are clean for the most part. Renewal effective in 30 days. Producer is Mike at Lockton.\n\n\u2014J.",
+      "commodity": "tank",
+      "_safer_snapshot": null
+    },
+    {
+      "id": "SUB-027",
+      "carrier_name": "High Desert Hauling Inc",
+      "dot_number": "991122",
+      "fleet_size": 180,
+      "vehicle_mix": {
+        "tractor": 0.74,
+        "straight_truck": 0.06,
+        "trailer": 0.18,
+        "other": 0.02
+      },
+      "states_of_operation": [
+        "NJ",
+        "PA",
+        "NY",
+        "CT"
+      ],
+      "effective_date": "2026-06-03",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 5,
+          "incurred_usd": "394085"
+        },
+        {
+          "year": 2022,
+          "claims": 6,
+          "incurred_usd": "446584"
+        },
+        {
+          "year": 2023,
+          "claims": 6,
+          "incurred_usd": "493625"
+        },
+        {
+          "year": 2024,
+          "claims": 6,
+          "incurred_usd": "556702"
+        },
+        {
+          "year": 2025,
+          "claims": 6,
+          "incurred_usd": "497016"
+        }
+      ],
+      "broker_email": "Hi \u2014 please see attached for High Desert Hauling Inc, USDOT 991122. 180 units, 4 states (NJ, PA, NY, CT). They came off ABC Insurance after a tough year on freq. Loss runs and MVRs in the packet. Need terms by Friday.\n\nThanks,\nProducer",
+      "commodity": "tank",
+      "_safer_snapshot": {
+        "legal_name": "COMCAST CABLE COMMUNICATIONS MANAGEMENT LLC",
+        "operating_status": "UNKNOWN",
+        "power_units": 393,
+        "drivers": 341,
+        "crashes_24mo_total": 11,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 1,
+        "crashes_24mo_towaway": 10,
+        "oos_rate_vehicle": 0.0,
+        "oos_rate_driver": 0.0,
+        "oos_rate_hazmat": null,
+        "basic_violations": {},
+        "raw_dot": "991122"
+      }
+    },
+    {
+      "id": "SUB-028",
+      "carrier_name": "Tidewater Trucking Inc",
+      "dot_number": "880013",
+      "fleet_size": 306,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "CA",
+        "NV",
+        "AZ"
+      ],
+      "effective_date": "2026-06-01",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 9,
+          "incurred_usd": "766945"
+        },
+        {
+          "year": 2022,
+          "claims": 10,
+          "incurred_usd": "720774"
+        },
+        {
+          "year": 2023,
+          "claims": 10,
+          "incurred_usd": "1014876"
+        },
+        {
+          "year": 2024,
+          "claims": 10,
+          "incurred_usd": "1008040"
+        },
+        {
+          "year": 2025,
+          "claims": 11,
+          "incurred_usd": "1218749"
+        }
+      ],
+      "broker_email": "Team \u2014\n\nLooking for a Hartford quote on Tidewater Trucking Inc (DOT 880013). They run 306 power units, mostly out of CA/AZ corridors. 5-yr loss run attached, MVRs are clean for the most part. Renewal effective in 30 days. Producer is Mike at Lockton.\n\n\u2014J.",
+      "commodity": "general_freight",
+      "_safer_snapshot": null
+    },
+    {
+      "id": "SUB-029",
+      "carrier_name": "Mojave Freight Inc",
+      "dot_number": "1402991",
+      "fleet_size": 223,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "TX",
+        "OK",
+        "AR",
+        "LA"
+      ],
+      "effective_date": "2026-05-26",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 14,
+          "incurred_usd": "1616021"
+        },
+        {
+          "year": 2022,
+          "claims": 14,
+          "incurred_usd": "1455253"
+        },
+        {
+          "year": 2023,
+          "claims": 15,
+          "incurred_usd": "1908249"
+        },
+        {
+          "year": 2024,
+          "claims": 16,
+          "incurred_usd": "1779850"
+        },
+        {
+          "year": 2025,
+          "claims": 16,
+          "incurred_usd": "2120795"
+        }
+      ],
+      "broker_email": "Hi \u2014 please see attached for Mojave Freight Inc, USDOT 1402991. 223 units, 4 states (TX, OK, AR, LA). They came off ABC Insurance after a tough year on freq. Loss runs and MVRs in the packet. Need terms by Friday.\n\nThanks,\nProducer",
+      "commodity": "hazmat",
+      "_safer_snapshot": null
+    },
+    {
+      "id": "SUB-030",
+      "carrier_name": "Cumberland Transport Inc",
+      "dot_number": "2017304",
+      "fleet_size": 193,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "MI",
+        "OH",
+        "PA"
+      ],
+      "effective_date": "2026-06-13",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 12,
+          "incurred_usd": "1307084"
+        },
+        {
+          "year": 2022,
+          "claims": 12,
+          "incurred_usd": "1464539"
+        },
+        {
+          "year": 2023,
+          "claims": 13,
+          "incurred_usd": "1300983"
+        },
+        {
+          "year": 2024,
+          "claims": 13,
+          "incurred_usd": "1382118"
+        },
+        {
+          "year": 2025,
+          "claims": 14,
+          "incurred_usd": "1665757"
+        }
+      ],
+      "broker_email": "Hi \u2014 please see attached for Cumberland Transport Inc, USDOT 2017304. 193 units, 3 states (MI, OH, PA). They came off ABC Insurance after a tough year on freq. Loss runs and MVRs in the packet. Need terms by Friday.\n\nThanks,\nProducer",
+      "commodity": "general_freight",
+      "_safer_snapshot": {
+        "legal_name": "SWIFT'S LANDSCAPING LLC",
+        "operating_status": "UNKNOWN",
+        "power_units": 4,
+        "drivers": 2,
+        "crashes_24mo_total": 0,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 0,
+        "crashes_24mo_towaway": 0,
+        "oos_rate_vehicle": 0.0,
+        "oos_rate_driver": 0.0,
+        "oos_rate_hazmat": 0.0,
+        "basic_violations": {},
+        "raw_dot": "2017304"
+      }
+    }
+  ]
+}

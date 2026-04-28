@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "description": "Hand-curated retrieval gold set. relevant_doc_ids point at chunks in the indexed corpora. Until the corpora are indexed, this acts as a structural placeholder; once script 04 builds the index the doc_ids will resolve to real chunks.",
+  "questions": [
+    {
+      "id": "RQ-001",
+      "query": "long-haul fatigue claims for fleets > 200 power units, particularly overnight runs",
+      "corpus": "ntsb",
+      "relevant_doc_ids": ["ntsb-2019-04#chunk-0", "ntsb-2020-08#chunk-0", "ntsb-2020-08#chunk-1"]
+    },
+    {
+      "id": "RQ-002",
+      "query": "brake adjustment failure on grade, jackknife of tractor-trailer",
+      "corpus": "ntsb",
+      "relevant_doc_ids": ["ntsb-2022-12#chunk-0", "ntsb-2022-12#chunk-1"]
+    },
+    {
+      "id": "RQ-003",
+      "query": "Knight-Swift risk-factor disclosures driver shortage and accident frequency",
+      "corpus": "10k",
+      "relevant_doc_ids": ["10k-knx-2023-rf#chunk-0", "10k-knx-2023-rf#chunk-1"]
+    },
+    {
+      "id": "RQ-004",
+      "query": "ISO commercial auto coverage form business auto exclusions",
+      "corpus": "forms",
+      "relevant_doc_ids": ["forms-iso-ca-0001#chunk-0", "forms-iso-ca-0001#chunk-2"]
+    },
+    {
+      "id": "RQ-005",
+      "query": "hazmat carrier bridge strike, hazmat release",
+      "corpus": "ntsb",
+      "relevant_doc_ids": ["ntsb-2024-01#chunk-0"]
+    },
+    {
+      "id": "RQ-006",
+      "query": "Werner accident frequency reserve adequacy disclosures",
+      "corpus": "10k",
+      "relevant_doc_ids": ["10k-wern-2022-rf#chunk-0", "10k-wern-2022-rf#chunk-2"]
+    },
+    {
+      "id": "RQ-007",
+      "query": "fog pileup visibility commercial truck multiple vehicle",
+      "corpus": "ntsb",
+      "relevant_doc_ids": ["ntsb-2023-03#chunk-0"]
+    },
+    {
+      "id": "RQ-008",
+      "query": "OOS rate vehicle maintenance impact on loss frequency",
+      "corpus": "10k",
+      "relevant_doc_ids": ["10k-jbht-2023-rf#chunk-1"]
+    },
+    {
+      "id": "RQ-009",
+      "query": "BASIC Hours-of-Service compliance threshold federal intervention",
+      "corpus": "ntsb",
+      "relevant_doc_ids": ["ntsb-2020-08#chunk-1"]
+    },
+    {
+      "id": "RQ-010",
+      "query": "tank carrier hazmat endorsement requirements liability limits",
+      "corpus": "forms",
+      "relevant_doc_ids": ["forms-iso-ca-0021#chunk-0"]
+    }
+  ]
+}
