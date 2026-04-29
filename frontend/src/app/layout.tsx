@@ -4,7 +4,7 @@ import { Header } from "@/components/nav/Header";
 import { Footer } from "@/components/nav/Footer";
 
 export const metadata: Metadata = {
-  title: "Commercial Auto Underwriting Copilot — Julio Rodriguez × The Hartford",
+  title: "Commercial Auto Underwriting Copilot — Julio Contreras × The Hartford",
   description:
     "An end-to-end GenAI underwriting system: LangGraph on Vertex AI, hybrid RAG over real public carrier data, classical ML loss models, and a 3-track evaluation harness. Built as a portfolio piece for The Hartford's Applied AI team.",
   metadataBase: new URL("https://juliooo.com"),

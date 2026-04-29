@@ -1,21 +1,21 @@
 """LangGraph compile.
 
-We expose two compiled graphs:
-  - `get_graph()` — sync sqlite checkpointer, used by sync paths (tests, scripts).
-  - `get_async_graph()` — async sqlite checkpointer, used by the FastAPI `/chat`
+We expose two compiled graphs sharing identical wiring:
+  - `get_graph()`       — sync MemorySaver, used by tests + scripts.
+  - `get_async_graph()` — async MemorySaver, used by the FastAPI `/chat`
     endpoint which streams events via `astream`.
 
-Both share the same node / edge wiring; only the checkpointer differs.
+We use the in-memory checkpointer instead of the SQLite one. Each chat
+request runs the graph end-to-end in a single process, so cross-process
+durability isn't needed; SQLite's async path also requires a running event
+loop at construction time, which we don't have at module import.
 """
 
 from __future__ import annotations
 
-import sqlite3
 from functools import lru_cache
 
-import aiosqlite
-from langgraph.checkpoint.sqlite import SqliteSaver
-from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
+from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, StateGraph
 
 from app.config import settings
@@ -73,16 +73,11 @@ def _build_graph() -> StateGraph:
 @lru_cache(maxsize=1)
 def get_graph():
     """Sync compile — used by tests and scripts."""
-    g = _build_graph()
-    sqlite_path = settings.data_dir / "checkpoints.sqlite"
-    conn = sqlite3.connect(str(sqlite_path), check_same_thread=False)
-    return g.compile(checkpointer=SqliteSaver(conn))
+    return _build_graph().compile(checkpointer=MemorySaver())
 
 
 @lru_cache(maxsize=1)
 def get_async_graph():
-    """Async compile — used by `/chat`."""
-    g = _build_graph()
-    sqlite_path = settings.data_dir / "checkpoints.sqlite"
-    aconn = aiosqlite.connect(str(sqlite_path), check_same_thread=False)
-    return g.compile(checkpointer=AsyncSqliteSaver(aconn))
+    """Async compile — used by `/chat`. Same checkpointer; LangGraph routes
+    sync vs async based on which method (invoke vs ainvoke) is called."""
+    return _build_graph().compile(checkpointer=MemorySaver())

@@ -23,11 +23,16 @@ class Settings(BaseSettings):
     # GCP / Vertex
     gcp_project_id: str = Field(default="", alias="GCP_PROJECT_ID")
     gcp_location: str = Field(default="us-central1", alias="GCP_LOCATION")
-    vertex_model: str = Field(default="gemini-2.0-pro-exp-02-05", alias="VERTEX_MODEL")
-    vertex_fast_model: str = Field(default="gemini-2.0-flash", alias="VERTEX_FAST_MODEL")
+    vertex_model: str = Field(default="gemini-2.5-pro", alias="VERTEX_MODEL")
+    vertex_fast_model: str = Field(default="gemini-2.5-flash", alias="VERTEX_FAST_MODEL")
 
     # Judge
     openai_api_key: str = Field(default="", alias="OPENAI_API_KEY")
+
+    # Runtime critique provider. "openai" → GPT-4o (cross-family, costs more,
+    # avoids Gemini self-judging bias). "gemini" → Gemini 2.5 Flash (cheap,
+    # default). "auto" → openai when a key is present, otherwise gemini.
+    critique_provider: str = Field(default="auto", alias="CRITIQUE_PROVIDER")
 
     # Auth
     hmac_secret: str = Field(default="dev-only-replace-in-prod", alias="HMAC_SECRET")
@@ -40,7 +45,7 @@ class Settings(BaseSettings):
 
     # SEC EDGAR requires a contact User-Agent
     sec_edgar_user_agent: str = Field(
-        default="Julio Rodriguez 23juliorod@gmail.com",
+        default="Julio Contreras 23juliorod@gmail.com",
         alias="SEC_EDGAR_USER_AGENT",
     )
 

@@ -125,8 +125,8 @@ export function RagRetrievalRays() {
         <motion.circle
           cx={center.x}
           cy={center.y}
-          r={6}
           fill="#fecaca"
+          initial={{ r: 6, opacity: 1 }}
           animate={{ r: [6, 9, 6], opacity: [1, 0.7, 1] }}
           transition={{ duration: 2, repeat: Infinity }}
         />

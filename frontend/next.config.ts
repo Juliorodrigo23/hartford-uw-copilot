@@ -1,10 +1,11 @@
 import type { NextConfig } from "next";
 
-const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "/hartford";
+// Set NEXT_PUBLIC_BASE_PATH to "/hartford" to nest under a subpath (juliooo.com/hartford),
+// or leave it empty / unset to serve at root (e.g. hartford.juliooo.com).
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 const config: NextConfig = {
-  basePath,
-  assetPrefix: basePath,
+  ...(basePath ? { basePath, assetPrefix: basePath } : {}),
   reactStrictMode: true,
   experimental: {
     optimizePackageImports: ["lucide-react", "framer-motion", "d3", "three"],

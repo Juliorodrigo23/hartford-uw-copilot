@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
-import { Send, RotateCcw, Wand2 } from "lucide-react";
+import { Send, RotateCcw, Wand2, Scale } from "lucide-react";
 import { SubmissionPicker, type ChatSubmission } from "@/components/chat/SubmissionPicker";
 import { MessageStream, type Message } from "@/components/chat/MessageStream";
 import { AgentTracePanel, type TraceEvent } from "@/components/chat/AgentTracePanel";
@@ -18,6 +18,7 @@ export default function ChatPage() {
   const [active, setActive] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [citations, setCitations] = useState<{ ref: string; doc_id: string; snippet: string }[]>([]);
+  const [critique, setCritique] = useState<"auto" | "openai" | "gemini">("auto");
   const abortRef = useRef<AbortController | null>(null);
 
   const send = useCallback(
@@ -43,6 +44,7 @@ export default function ChatPage() {
             submission_id: submission?.id,
             message: text,
             history: [],
+            critique_provider: critique === "auto" ? null : critique,
           }),
           signal: ac.signal,
         });
@@ -66,6 +68,8 @@ export default function ChatPage() {
           } else if (ev.type === "citation") {
             setCitations((c) => [...c, { ref: ev.ref, doc_id: ev.docId, snippet: ev.snippet }]);
             setTrace((t) => [...t, { kind: "citation", ref: ev.ref, doc_id: ev.docId, snippet: ev.snippet }]);
+          } else if (ev.type === "critique_judge") {
+            setTrace((t) => [...t, { kind: "critique_judge", judge: ev.judge, iter: ev.iter }]);
           } else if (ev.type === "token") {
             updateLastByAppend(ev.text);
           } else if (ev.type === "final") {
@@ -151,6 +155,25 @@ export default function ChatPage() {
         <div className="flex h-[640px] flex-col gap-3">
           <MessageStream messages={messages} citations={citations} />
           <SuggestedPrompts onPick={(p) => setInput(p)} />
+
+          <div className="flex items-center gap-2 rounded-md border border-border bg-bg-card/60 px-2 py-1.5 text-2xs text-ink-muted">
+            <Scale size={11} className="text-brand-400" />
+            <span className="font-mono uppercase tracking-[0.16em] text-ink-dim">critique judge</span>
+            <div className="ml-auto flex gap-1 rounded-md border border-border bg-bg-panel/60 p-0.5">
+              {(["auto", "openai", "gemini"] as const).map((v) => (
+                <button
+                  key={v}
+                  onClick={() => setCritique(v)}
+                  className={`rounded px-2 py-0.5 font-mono ${
+                    critique === v ? "bg-bg-subtle text-ink" : "text-ink-muted hover:text-ink"
+                  }`}
+                >
+                  {v === "openai" ? "GPT-4o (cross-family)" : v === "gemini" ? "Gemini Flash" : "auto"}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="card flex items-center gap-2 p-2">
             {submission && (
               <button

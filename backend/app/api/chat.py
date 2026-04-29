@@ -1,14 +1,15 @@
 """Chat / triage SSE endpoint.
 
 Event types emitted:
-  - node_enter   : enter a LangGraph node
-  - node_exit    : leave a LangGraph node
-  - tool_call    : tool invocation start
-  - tool_result  : tool invocation finish
-  - citation     : source-document chunk attached to the working answer
-  - token        : streaming memo text
-  - final        : end-of-run with the full memo + run_id
-  - error        : terminal error
+  - node_enter      : enter a LangGraph node
+  - node_exit       : leave a LangGraph node
+  - tool_call       : tool invocation start
+  - tool_result     : tool invocation finish
+  - citation        : source-document chunk attached to the working answer
+  - token           : streaming memo text
+  - critique_judge  : which model judged this iteration ("gpt-4o" / "gemini-2.5-flash")
+  - final           : end-of-run with the full memo + run_id
+  - error           : terminal error
 """
 
 from __future__ import annotations
@@ -62,6 +63,7 @@ async def chat(request: Request):
                     "retrieved": [],
                     "citations": [],
                     "critique_iters": 0,
+                    "critique_provider_override": req.critique_provider,
                 },
                 config={"configurable": {"thread_id": run_id}},
                 stream_mode="updates",
@@ -115,6 +117,16 @@ async def chat(request: Request):
                             "event": "citation",
                             "data": json.dumps(
                                 {"ref": cit.ref, "doc_id": cit.doc_id, "snippet": cit.snippet}
+                            ),
+                        }
+
+                    # Critique judge identification — emit once per iteration
+                    judge = delta.get("critique_judge")
+                    if judge and judge != "skipped":
+                        yield {
+                            "event": "critique_judge",
+                            "data": json.dumps(
+                                {"judge": judge, "iter": delta.get("critique_iters", 0)}
                             ),
                         }
 

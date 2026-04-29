@@ -4,14 +4,15 @@
  * EmbeddingCloud3D — rotating 3D UMAP scatter of all RAG documents.
  * Reads /data/embeddings_umap.json (precomputed by backend script 08).
  *
- * Visual contract:
- *  - Each point is a chunk; color = source corpus.
- *  - Camera auto-rotates; mouse drag overrides for inspection.
- *  - Hover a point → snippet preview floats in a side panel.
- *  - Source filter chips toggle visibility (animated dim).
- *
- * Data shape (frontend ships a sample fallback if backend hasn't generated yet):
- *   { points: [{x:number, y:number, z:number, src:string, doc_id:string, snippet:string}, ...] }
+ * Implementation notes:
+ *  - Uses the proven <points> + BufferGeometry + vertexColors pattern (same as
+ *    Hero). InstancedMesh + setColorAt was unreliable in r3f v9 / our build.
+ *  - Per-source toggling via separate <points> objects, each with `visible`
+ *    bound to the source's chip state.
+ *  - Hover is via the Canvas-level raycaster with a Points threshold; the
+ *    intersection's `index` maps back to the chunk in the source's array.
+ *  - OrbitControls is locked passive (auto-rotate) until the user clicks.
+ *    Keeps page scroll free of canvas wheel-capture in the long-scroll page.
  */
 
 import { Canvas, ThreeEvent, useFrame } from "@react-three/fiber";
@@ -46,70 +47,82 @@ function useEmbeddings(): Cloud {
   return cloud;
 }
 
-function Points({
+type SourceGroup = { src: string; pts: Pt[]; geom: THREE.BufferGeometry };
+
+function buildGroup(src: string, pts: Pt[]): SourceGroup {
+  const positions = new Float32Array(pts.length * 3);
+  const colors = new Float32Array(pts.length * 3);
+  const c = new THREE.Color(SRC_COLORS[src] ?? DEFAULT_SRC);
+  pts.forEach((p, i) => {
+    positions[i * 3 + 0] = p.x;
+    positions[i * 3 + 1] = p.y;
+    positions[i * 3 + 2] = p.z;
+    colors[i * 3 + 0] = c.r;
+    colors[i * 3 + 1] = c.g;
+    colors[i * 3 + 2] = c.b;
+  });
+  const geom = new THREE.BufferGeometry();
+  geom.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+  geom.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+  return { src, pts, geom };
+}
+
+function PointsCloud({
   cloud,
   visible,
   onHover,
 }: {
   cloud: Cloud;
   visible: Set<string>;
-  onHover: (i: number | null) => void;
+  onHover: (p: Pt | null) => void;
 }) {
-  const meshRef = useRef<THREE.InstancedMesh>(null!);
-  const N = cloud.points.length;
+  const groupRef = useRef<THREE.Group>(null!);
 
-  // Build per-instance attributes
-  const colorArr = useMemo(() => {
-    const arr = new Float32Array(N * 3);
-    cloud.points.forEach((p, i) => {
-      const c = new THREE.Color(SRC_COLORS[p.src] ?? DEFAULT_SRC);
-      arr[i * 3 + 0] = c.r;
-      arr[i * 3 + 1] = c.g;
-      arr[i * 3 + 2] = c.b;
-    });
-    return arr;
-  }, [cloud, N]);
+  const groups = useMemo(() => {
+    const bySrc = new Map<string, Pt[]>();
+    for (const p of cloud.points) {
+      const arr = bySrc.get(p.src) ?? [];
+      arr.push(p);
+      bySrc.set(p.src, arr);
+    }
+    return Array.from(bySrc.entries()).map(([src, pts]) => buildGroup(src, pts));
+  }, [cloud]);
 
+  // Cleanup geometries on unmount / cloud change
   useEffect(() => {
-    const m = meshRef.current;
-    if (!m) return;
-    const dummy = new THREE.Object3D();
-    cloud.points.forEach((p, i) => {
-      const show = visible.has(p.src);
-      dummy.position.set(p.x, p.y, p.z);
-      dummy.scale.setScalar(show ? 1 : 0.001);
-      dummy.updateMatrix();
-      m.setMatrixAt(i, dummy.matrix);
-    });
-    m.instanceMatrix.needsUpdate = true;
-  }, [cloud, visible]);
+    return () => {
+      groups.forEach((g) => g.geom.dispose());
+    };
+  }, [groups]);
 
   useFrame(({ clock }) => {
-    const m = meshRef.current;
-    if (!m) return;
-    m.rotation.y = clock.elapsedTime * 0.04;
+    if (groupRef.current) groupRef.current.rotation.y = clock.elapsedTime * 0.04;
   });
 
-  const handleMove = (e: ThreeEvent<PointerEvent>) => {
-    if (e.instanceId == null) return;
-    onHover(e.instanceId);
-  };
-  const handleOut = () => onHover(null);
-
   return (
-    <instancedMesh
-      ref={meshRef}
-      args={[undefined, undefined, N]}
-      onPointerMove={handleMove}
-      onPointerOut={handleOut}
-    >
-      <sphereGeometry args={[0.06, 8, 8]} />
-      <meshStandardMaterial vertexColors emissiveIntensity={0.7} />
-      <instancedBufferAttribute
-        attach="instanceColor"
-        args={[colorArr, 3]}
-      />
-    </instancedMesh>
+    <group ref={groupRef}>
+      {groups.map((g) => (
+        <points
+          key={g.src}
+          geometry={g.geom}
+          visible={visible.has(g.src)}
+          onPointerMove={(e: ThreeEvent<PointerEvent>) => {
+            if (e.index != null) onHover(g.pts[e.index] ?? null);
+          }}
+          onPointerOut={() => onHover(null)}
+        >
+          <pointsMaterial
+            vertexColors
+            size={0.12}
+            sizeAttenuation
+            transparent
+            opacity={0.92}
+            depthWrite={false}
+            toneMapped={false}
+          />
+        </points>
+      ))}
+    </group>
   );
 }
 
@@ -120,19 +133,19 @@ export function EmbeddingCloud3D() {
     return Array.from(s);
   }, [cloud]);
   const [visible, setVisible] = useState<Set<string>>(new Set());
-  const [hoverIdx, setHoverIdx] = useState<number | null>(null);
+  const [hovered, setHovered] = useState<Pt | null>(null);
+  const [interactive, setInteractive] = useState(false);
 
   useEffect(() => setVisible(new Set(sources)), [sources]);
 
   function toggle(src: string) {
     setVisible((prev) => {
       const next = new Set(prev);
-      next.has(src) ? next.delete(src) : next.add(src);
+      if (next.has(src)) next.delete(src);
+      else next.add(src);
       return next;
     });
   }
-
-  const hovered = hoverIdx != null ? cloud.points[hoverIdx] : null;
 
   return (
     <div className="card overflow-hidden">
@@ -167,21 +180,44 @@ export function EmbeddingCloud3D() {
             camera={{ position: [4, 3, 4], fov: 50 }}
             dpr={[1, 2]}
             gl={{ antialias: true, alpha: true }}
+            raycaster={{ params: { Points: { threshold: 0.15 } } as never }}
           >
             <color attach="background" args={["#0a0d12"]} />
-            <ambientLight intensity={0.6} />
-            <pointLight position={[6, 6, 6]} intensity={1.2} />
-            <Points cloud={cloud} visible={visible} onHover={setHoverIdx} />
+            <PointsCloud cloud={cloud} visible={visible} onHover={setHovered} />
             <OrbitControls
               enablePan={false}
+              enableZoom={interactive}
+              enableRotate={interactive}
               enableDamping
               dampingFactor={0.08}
+              autoRotate={!interactive}
+              autoRotateSpeed={0.4}
               minDistance={2}
               maxDistance={12}
             />
           </Canvas>
+
+          {!interactive && (
+            <button
+              onClick={() => setInteractive(true)}
+              className="absolute inset-0 flex items-end justify-center pb-3 font-mono text-2xs text-ink-dim transition-colors hover:text-ink"
+              aria-label="Engage 3D controls"
+            >
+              <span className="rounded-full border border-border bg-bg/70 px-3 py-1 backdrop-blur">
+                click to interact · scroll the page freely
+              </span>
+            </button>
+          )}
+          {interactive && (
+            <button
+              onClick={() => setInteractive(false)}
+              className="absolute right-3 top-3 rounded-full border border-border bg-bg/80 px-3 py-1 font-mono text-2xs text-ink-muted backdrop-blur hover:text-ink"
+            >
+              release
+            </button>
+          )}
           <div className="pointer-events-none absolute bottom-2 right-2 font-mono text-2xs text-ink-dim">
-            drag to rotate · scroll to zoom
+            {interactive ? "drag · scroll to zoom" : "auto-rotating"}
           </div>
         </div>
 
@@ -201,7 +237,7 @@ export function EmbeddingCloud3D() {
                 Hover a point to inspect the underlying chunk. Clusters that
                 form by source corpus indicate the embedding is
                 source-discriminative; clusters that mix sources around a topic
-                (e.g. "fatigue" or "lane departure") are the ones we want to
+                (e.g. &ldquo;fatigue&rdquo; or &ldquo;lane departure&rdquo;) are the ones we want to
                 surface during retrieval.
               </span>
             )}
@@ -220,8 +256,6 @@ const SRC_LABEL: Record<string, string> = {
   industry: "Industry",
 };
 
-// Fallback so the visualization isn't blank before the backend exports
-// the real UMAP. A torus-cluster mock; replaced once real data is fetched.
 function makeFallback(): Pt[] {
   const out: Pt[] = [];
   const srcs = Object.keys(SRC_COLORS);

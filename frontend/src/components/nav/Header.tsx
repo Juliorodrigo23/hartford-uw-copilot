@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Github, Linkedin, ExternalLink } from "lucide-react";
+import { Github, Linkedin, ExternalLink, GraduationCap } from "lucide-react";
 
 export function Header() {
   return (
@@ -17,7 +17,7 @@ export function Header() {
               UW Copilot
             </span>
             <span className="font-mono text-2xs text-ink-dim">
-              Julio Rodriguez · for The Hartford
+              Julio Contreras · for The Hartford
             </span>
           </div>
         </Link>
@@ -31,7 +31,7 @@ export function Header() {
         <div className="flex items-center gap-3 text-ink-muted">
           <a
             className="hover:text-ink"
-            href="https://github.com/23juliorod"
+            href="https://github.com/Juliorodrigo23"
             target="_blank"
             rel="noreferrer noopener"
             aria-label="GitHub"
@@ -40,12 +40,22 @@ export function Header() {
           </a>
           <a
             className="hover:text-ink"
-            href="https://www.linkedin.com/in/juliorodriguez"
+            href="https://www.linkedin.com/in/juliooocon/"
             target="_blank"
             rel="noreferrer noopener"
             aria-label="LinkedIn"
           >
             <Linkedin size={16} />
+          </a>
+          <a
+            className="hover:text-ink"
+            href="https://scholar.google.com/citations?user=UvH6Ua4AAAAJ"
+            target="_blank"
+            rel="noreferrer noopener"
+            aria-label="Google Scholar"
+            title="Google Scholar"
+          >
+            <GraduationCap size={16} />
           </a>
           <a
             className="ml-2 hidden items-center gap-1 text-2xs font-mono text-ink-dim hover:text-ink-muted md:flex"

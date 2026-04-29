@@ -41,6 +41,39 @@ export function Note({ children, kind = "info" }: { children: ReactNode; kind?: 
   );
 }
 
+/** PlainEnglish — friendly explainer that introduces a section before any
+ *  technical detail. Reads as a primer for non-domain-experts. */
+export function PlainEnglish({
+  title = "In plain English",
+  children,
+}: {
+  title?: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="mb-6 rounded-xl border border-accent-500/30 bg-gradient-to-br from-accent-500/8 via-info-500/5 to-transparent p-5">
+      <div className="mb-2 flex items-center gap-2 font-mono text-2xs uppercase tracking-[0.2em] text-accent-400">
+        <span aria-hidden>🎓</span> {title}
+      </div>
+      <div className="space-y-2 text-[15px] leading-relaxed text-ink">{children}</div>
+    </div>
+  );
+}
+
+/** Glossary — tight inline definitions, rendered as a 2-column grid. */
+export function Glossary({ items }: { items: { term: string; def: ReactNode }[] }) {
+  return (
+    <div className="mt-3 grid grid-cols-1 gap-2 rounded-md border border-border bg-bg-subtle/40 p-3 sm:grid-cols-2">
+      {items.map((it, i) => (
+        <div key={i} className="text-xs">
+          <span className="font-mono text-ink">{it.term}</span>{" "}
+          <span className="text-ink-muted">— {it.def}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function ProseRow({
   children,
   side,

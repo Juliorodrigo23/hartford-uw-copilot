@@ -132,6 +132,8 @@ class ChatRequest(StrictBase):
     message: str
     submission_id: str | None = None
     history: list[dict[str, str]] = Field(default_factory=list)
+    # "openai" / "gemini" / None — overrides the env-default critique judge
+    critique_provider: str | None = None
 
 
 class CorpusKind(StrEnum):

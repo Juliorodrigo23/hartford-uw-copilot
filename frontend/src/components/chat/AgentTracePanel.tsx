@@ -7,7 +7,7 @@
  */
 
 import { motion } from "framer-motion";
-import { Cpu, ChevronRight } from "lucide-react";
+import { Cpu, ChevronRight, Scale } from "lucide-react";
 
 const NODES = [
   "parse_submission",
@@ -25,7 +25,8 @@ export type TraceEvent =
   | { kind: "node_exit"; node: string; t_ms: number }
   | { kind: "tool_call"; id: string; name: string; input: unknown }
   | { kind: "tool_result"; id: string; name: string; output: unknown; ms: number }
-  | { kind: "citation"; ref: string; doc_id: string; snippet: string };
+  | { kind: "citation"; ref: string; doc_id: string; snippet: string }
+  | { kind: "critique_judge"; judge: string; iter: number };
 
 export function AgentTracePanel({
   events,
@@ -43,12 +44,31 @@ export function AgentTracePanel({
 
   const tools = events.filter((e): e is Extract<TraceEvent, { kind: "tool_call" | "tool_result" }> => e.kind === "tool_call" || e.kind === "tool_result");
   const citations = events.filter((e): e is Extract<TraceEvent, { kind: "citation" }> => e.kind === "citation");
+  const judges = events.filter((e): e is Extract<TraceEvent, { kind: "critique_judge" }> => e.kind === "critique_judge");
+  const lastJudge = judges[judges.length - 1];
 
   return (
     <div className="card flex h-full flex-col p-3">
       <div className="mb-2 flex items-center gap-2 font-mono text-2xs uppercase tracking-[0.18em] text-ink-dim">
         <Cpu size={12} /> live agent trace
       </div>
+
+      {lastJudge && (
+        <div
+          className={`mb-2 flex items-center gap-2 rounded-md border px-2 py-1.5 text-2xs ${
+            lastJudge.judge.startsWith("gpt")
+              ? "border-info-500/40 bg-info-500/10 text-info-400"
+              : "border-accent-500/40 bg-accent-500/10 text-accent-400"
+          }`}
+        >
+          <Scale size={11} />
+          <span className="font-mono">
+            critique: {lastJudge.judge}
+            {judges.length > 1 ? ` · iter ${lastJudge.iter}` : ""}
+            {lastJudge.judge.startsWith("gpt") && " · cross-family"}
+          </span>
+        </div>
+      )}
 
       <ol className="space-y-1.5">
         {NODES.map((n) => {

@@ -1,18 +1,25 @@
-"""GPT-4o judge for the LLM-as-judge eval track.
+"""GPT-4o judge — used both by the eval track and (optionally) at runtime.
 
 Cross-family judging (Gemini generates, GPT-4o judges) avoids the
 self-judging bias well-documented in the eval literature.
+
+Two surfaces:
+  - judge_memo / pairwise_compare → eval pipeline (sync, n-of-k median)
+  - openai_runtime_critique       → runtime critique node, async, single-shot
 """
 
 from __future__ import annotations
 
 import json
+import logging
 import statistics
 from typing import Any
 
-from openai import OpenAI
+from openai import AsyncOpenAI, OpenAI
 
 from app.config import settings
+
+log = logging.getLogger(__name__)
 
 
 JUDGE_SYSTEM = "You are a strict JSON-only response evaluator."
@@ -102,3 +109,70 @@ MEMO B:
         return out.get("winner", "tie")
     except json.JSONDecodeError:
         return "tie"
+
+
+# ---------------------------------------------------------------------------
+# Runtime critique — invoked by the LangGraph self_critique node when
+# CRITIQUE_PROVIDER=openai (or =auto and a key is present).
+# ---------------------------------------------------------------------------
+
+RUNTIME_CRITIQUE_SYSTEM = (
+    "You are a senior commercial-auto underwriter doing a strict QA pass on a "
+    "freshly-drafted underwriting memo. Return JSON only."
+)
+
+RUNTIME_CRITIQUE_PROMPT = """Score this memo on a 1-5 rubric and decide whether it should pass.
+
+Output strict JSON:
+{{
+  "pass": true | false,
+  "rubric_scores": {{
+    "factual_accuracy": 1-5,
+    "completeness": 1-5,
+    "calibration": 1-5,
+    "citations": 1-5,
+    "format": 1-5
+  }},
+  "gaps": ["short, retrieval-actionable gap descriptions"]
+}}
+
+Pass criteria: pass=true iff every rubric score >= 4 AND no critical gap.
+Critical gaps include: a material risk driver that's missing, an unsupported [n]-cited claim,
+or soft language used where the data clearly supports a stronger statement.
+
+MEMO:
+{memo}
+
+EVIDENCE THE MEMO SHOULD ADDRESS:
+{evidence}
+"""
+
+
+async def openai_runtime_critique(memo: str, evidence: str) -> dict[str, Any] | None:
+    """Cross-family critique at runtime. Returns None if OpenAI is not configured.
+
+    The caller (self_critique node) gets None back and falls through to the
+    Gemini-Flash critique, so this is safe to call unconditionally.
+    """
+    if not settings.openai_api_key:
+        return None
+    try:
+        client = AsyncOpenAI(api_key=settings.openai_api_key)
+        r = await client.chat.completions.create(
+            model="gpt-4o",
+            response_format={"type": "json_object"},
+            temperature=0.0,
+            messages=[
+                {"role": "system", "content": RUNTIME_CRITIQUE_SYSTEM},
+                {"role": "user", "content": RUNTIME_CRITIQUE_PROMPT.format(
+                    memo=memo[:8000], evidence=evidence[:6000]
+                )},
+            ],
+            max_tokens=400,
+            timeout=30,
+        )
+        text = r.choices[0].message.content or "{}"
+        return json.loads(text)
+    except Exception as e:
+        log.warning("openai runtime critique failed: %s", e)
+        return None

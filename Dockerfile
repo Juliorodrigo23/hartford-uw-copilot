@@ -1,11 +1,11 @@
-# syntax=docker/dockerfile:1.6
 # Multi-stage Cloud Run image. uv handles dependency resolution & install.
 
 FROM python:3.12-slim AS builder
 WORKDIR /app
 
-# uv (zero-config, fast)
-COPY --from=ghcr.io/astral-sh/uv:0.4.27 /uv /uvx /bin/
+# uv (zero-config, fast). Pin a recent release tag — older 0.4.x tags
+# get GC'd over time on GHCR.
+COPY --from=ghcr.io/astral-sh/uv:0.5.5 /uv /uvx /bin/
 
 ENV UV_LINK_MODE=copy \
     UV_COMPILE_BYTECODE=1 \
@@ -20,16 +20,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY backend/pyproject.toml /app/backend/
 COPY backend/uv.lock /app/backend/
 WORKDIR /app/backend
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-dev --no-install-project || uv sync --no-dev --no-install-project
+RUN uv sync --frozen --no-dev --no-install-project \
+ || uv sync --no-dev --no-install-project
 
 COPY backend/app /app/backend/app
 COPY backend/scripts /app/backend/scripts
 
-# Pre-load common libraries during build to avoid first-request slowness.
-# (Skipped if sentence-transformers download fails — Cloud Run will retry on first call.)
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-dev || true
+# Final sync with project source. Tolerate failure here (rare lockfile drift)
+# so a clean re-sync on Cloud Run still recovers.
+RUN uv sync --frozen --no-dev || true
 
 
 FROM python:3.12-slim AS runtime

@@ -44,4 +44,4 @@ See [DEPLOY.md](./DEPLOY.md).
 
 ## Why this exists
 
-The Hartford's Applied AI Middle & Large Business team is doing GenAI on commercial-risk underwriting. Most candidates show up with a generic RAG demo. This is a domain-fitted system — real FMCSA carrier data, real NTSB narratives, real public 10-K risk factors — with an evaluation harness that's the actual differentiator. Built by Julio Rodriguez for the GD08AE Data Scientist role.
+The Hartford's Applied AI Middle & Large Business team is doing GenAI on commercial-risk underwriting. Most candidates show up with a generic RAG demo. This is a domain-fitted system — real FMCSA carrier data, real NTSB narratives, real public 10-K risk factors — with an evaluation harness that's the actual differentiator. Built by Julio Contreras for the GD08AE Data Scientist role.

@@ -5,8 +5,8 @@ substitutions:
   _REGION: us-central1
   _REPO: uw-copilot
   _SERVICE: uw-copilot-backend
-  _VERTEX_MODEL: gemini-2.0-pro-exp-02-05
-  _VERTEX_FAST_MODEL: gemini-2.0-flash
+  _VERTEX_MODEL: gemini-2.5-pro
+  _VERTEX_FAST_MODEL: gemini-2.5-flash
 
 options:
   logging: CLOUD_LOGGING_ONLY
@@ -16,7 +16,7 @@ steps:
   - name: gcr.io/cloud-builders/docker
     args:
       - build
-      - --tag=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/backend:$SHORT_SHA
+      - --tag=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/backend:$BUILD_ID
       - --tag=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/backend:latest
       - --file=Dockerfile
       - .
@@ -34,7 +34,7 @@ steps:
       - deploy
       - ${_SERVICE}
       - --region=${_REGION}
-      - --image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/backend:$SHORT_SHA
+      - --image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/backend:$BUILD_ID
       - --platform=managed
       - --allow-unauthenticated
       - --memory=2Gi
@@ -44,9 +44,11 @@ steps:
       - --min-instances=0
       - --max-instances=3
       - --service-account=uw-copilot-runner@$PROJECT_ID.iam.gserviceaccount.com
-      - --set-env-vars=GCP_PROJECT_ID=$PROJECT_ID,GCP_LOCATION=${_REGION},VERTEX_MODEL=${_VERTEX_MODEL},VERTEX_FAST_MODEL=${_VERTEX_FAST_MODEL},ALLOW_UNSIGNED_DEV=false
+      - --set-env-vars=GCP_PROJECT_ID=$PROJECT_ID,GCP_LOCATION=${_REGION},VERTEX_MODEL=${_VERTEX_MODEL},VERTEX_FAST_MODEL=${_VERTEX_FAST_MODEL},ALLOW_UNSIGNED_DEV=false,CRITIQUE_PROVIDER=auto
+      # HMAC for proxy auth, OpenAI key for cross-family runtime critique (CRITIQUE_PROVIDER=auto
+      # uses GPT-4o when present, otherwise falls back to Gemini Flash).
       - --set-secrets=HMAC_SECRET=hmac-secret:latest,OPENAI_API_KEY=openai-api-key:latest
 
 images:
-  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/backend:$SHORT_SHA
+  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/backend:$BUILD_ID
   - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/backend:latest

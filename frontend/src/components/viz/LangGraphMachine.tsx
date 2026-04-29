@@ -126,7 +126,9 @@ export function LangGraphMachine() {
   const [traceIdx, setTraceIdx] = useState(0);
   const [step, setStep] = useState(0);
   const [playing, setPlaying] = useState(true);
-  const [speed, setSpeed] = useState(1.5); // 1x = real ms, higher = faster
+  // 1× = real wall-clock latency. Default 0.8× = a touch slower than real,
+  // which gives you time to read each node label as it lights up.
+  const [speed, setSpeed] = useState(0.8);
   const trace = TRACES[traceIdx];
   const total = trace.steps.length;
   const tickRef = useRef<number | null>(null);
@@ -136,13 +138,17 @@ export function LangGraphMachine() {
     if (!playing) return;
     const cur = trace.steps[step];
     if (!cur) {
-      // hold at end then loop after a beat
-      tickRef.current = window.setTimeout(() => setStep(0), 1400);
+      // Trace finished — linger on the completed state long enough to read
+      // before looping. 8 seconds feels like "this stayed loaded" without
+      // becoming static.
+      tickRef.current = window.setTimeout(() => setStep(0), 8000);
       return () => {
         if (tickRef.current) window.clearTimeout(tickRef.current);
       };
     }
-    const ms = Math.max(220, cur.ms / speed);
+    // Floor at 600ms so even fast nodes (e.g. xgb_loss_freq @ 28ms) hold long
+    // enough to be readable. Cap at 8s so draft_memo doesn't drag the whole run.
+    const ms = Math.min(8000, Math.max(600, cur.ms / speed));
     tickRef.current = window.setTimeout(() => setStep((s) => s + 1), ms);
     return () => {
       if (tickRef.current) window.clearTimeout(tickRef.current);

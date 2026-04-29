@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>UW Copilot — Deploy Guide</title>
+<style>
+  :root {
+    --bg: #0a0d12;
+    --panel: #10141b;
+    --card: #141923;
+    --subtle: #1a2030;
+    --border: #1f2733;
+    --border-strong: #2b3645;
+    --ink: #e6ebf2;
+    --muted: #9aa6b8;
+    --dim: #6c7689;
+    --brand-400: #f87171;
+    --brand-500: #ef4444;
+    --brand-600: #dc2626;
+    --brand-700: #b91c1c;
+    --accent-400: #34d399;
+    --accent-500: #10b981;
+    --warn-400: #fbbf24;
+    --info-400: #60a5fa;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.55;
+  }
+  body {
+    background-image:
+      radial-gradient(1200px 600px at 80% -10%, rgba(220, 38, 38, 0.08), transparent 60%),
+      radial-gradient(1000px 500px at 20% 0%, rgba(16, 185, 129, 0.05), transparent 60%);
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 32px 24px 96px; }
+
+  /* HEADER */
+  header.hero {
+    border: 1px solid var(--border);
+    background: linear-gradient(135deg, rgba(220,38,38,0.10) 0%, rgba(16,185,129,0.05) 100%);
+    border-radius: 20px;
+    padding: 36px 36px 28px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  header.hero::after {
+    content: "";
+    position: absolute;
+    top: -100px; right: -100px;
+    width: 280px; height: 280px;
+    background: radial-gradient(circle, rgba(220,38,38,0.20), transparent 60%);
+    border-radius: 50%;
+  }
+  .eyebrow {
+    font-family: "JetBrains Mono", ui-monospace, Menlo, monospace;
+    font-size: 11px;
+    color: var(--brand-400);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  h1 {
+    margin: 0 0 12px;
+    font-size: 32px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .lede {
+    color: var(--muted);
+    max-width: 720px;
+    font-size: 16px;
+    margin: 0 0 22px;
+  }
+
+  /* PROGRESS RAIL */
+  .progress-rail {
+    display: flex;
+    gap: 4px;
+    margin: 12px 0 4px;
+    height: 6px;
+  }
+  .progress-rail .seg {
+    flex: 1;
+    height: 100%;
+    background: var(--subtle);
+    border-radius: 999px;
+    transition: background 240ms ease;
+  }
+  .progress-rail .seg.done { background: linear-gradient(90deg, var(--accent-500), var(--accent-400)); }
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    font-family: "JetBrains Mono", ui-monospace, Menlo, monospace;
+    font-size: 11px;
+    color: var(--dim);
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    margin-bottom: 4px;
+  }
+
+  /* CARDS / STEPS */
+  .step {
+    border: 1px solid var(--border);
+    background: rgba(16, 20, 27, 0.7);
+    backdrop-filter: blur(8px);
+    border-radius: 14px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: border-color 200ms ease;
+  }
+  .step.done {
+    border-color: rgba(52, 211, 153, 0.35);
+  }
+  .step-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .step-head:hover { background: rgba(255,255,255,0.015); }
+  .step-num {
+    width: 32px; height: 32px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "JetBrains Mono", ui-monospace, Menlo, monospace;
+    font-size: 12px;
+    font-weight: 600;
+    background: rgba(220, 38, 38, 0.10);
+    border: 1px solid rgba(220, 38, 38, 0.40);
+    color: var(--brand-400);
+  }
+  .step.done .step-num {
+    background: rgba(52, 211, 153, 0.10);
+    border-color: rgba(52, 211, 153, 0.40);
+    color: var(--accent-400);
+  }
+  .step-title {
+    flex: 1;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .step-meta {
+    font-family: "JetBrains Mono", ui-monospace, Menlo, monospace;
+    font-size: 11px;
+    color: var(--dim);
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    margin-right: 12px;
+  }
+  .chevron {
+    width: 18px; height: 18px;
+    color: var(--dim);
+    transition: transform 200ms ease;
+  }
+  .step.open .chevron { transform: rotate(180deg); }
+  .step-body {
+    display: none;
+    padding: 4px 20px 20px;
+    border-top: 1px solid var(--border);
+  }
+  .step.open .step-body { display: block; }
+
+  p.prose { color: var(--muted); margin: 12px 0; }
+  p.prose code {
+    background: var(--subtle);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: "JetBrains Mono", ui-monospace, Menlo, monospace;
+    font-size: 0.88em;
+    color: var(--ink);
+  }
+  p.prose strong { color: var(--ink); font-weight: 600; }
+
+  /* CODE BLOCKS */
+  .code {
+    position: relative;
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin: 14px 0;
+    overflow: hidden;
+  }
+  .code-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,0.02);
+    font-family: "JetBrains Mono", ui-monospace, Menlo, monospace;
+    font-size: 11px;
+    color: var(--dim);
+  }
+  .code pre {
+    margin: 0;
+    padding: 14px 16px;
+    overflow-x: auto;
+    font-family: "JetBrains Mono", ui-monospace, Menlo, monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #c9d1d9;
+  }
+  .copy-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-family: "JetBrains Mono", ui-monospace, Menlo, monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 160ms ease;
+  }
+  .copy-btn:hover { color: var(--ink); border-color: var(--border-strong); background: var(--subtle); }
+  .copy-btn.copied { color: var(--accent-400); border-color: rgba(52,211,153,0.4); }
+
+  /* CALLOUTS */
+  .callout {
+    margin: 12px 0;
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1px solid;
+    font-size: 13px;
+  }
+  .callout strong { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.18em; margin-bottom: 6px; font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; }
+  .callout.info  { border-color: rgba(96,165,250,0.35);  background: rgba(96,165,250,0.06);  color: #bfdbfe; }
+  .callout.warn  { border-color: rgba(251,191,36,0.35);  background: rgba(251,191,36,0.06);  color: #fde68a; }
+  .callout.ok    { border-color: rgba(52,211,153,0.35);  background: rgba(52,211,153,0.06);  color: #a7f3d0; }
+  .callout.error { border-color: rgba(239,68,68,0.35);   background: rgba(239,68,68,0.06);   color: #fecaca; }
+
+  /* BUTTONS */
+  .btn-row { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--ink);
+    text-decoration: none;
+    transition: all 160ms ease;
+  }
+  .btn:hover { border-color: var(--border-strong); background: var(--subtle); }
+  .btn.primary {
+    background: var(--brand-600);
+    border-color: var(--brand-600);
+    color: white;
+  }
+  .btn.primary:hover { background: var(--brand-700); }
+  .btn.done-toggle {
+    background: var(--accent-500);
+    border-color: var(--accent-500);
+    color: white;
+  }
+  .btn.done-toggle:hover { background: var(--accent-400); }
+
+  /* DECISION TREE */
+  .decision {
+    background: rgba(20, 25, 35, 0.6);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    margin: 14px 0;
+  }
+  .decision-q {
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--ink);
+  }
+  .decision-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .decision-options button {
+    padding: 14px;
+    border-radius: 10px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--ink);
+    text-align: left;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 200ms ease;
+  }
+  .decision-options button:hover { border-color: var(--brand-500); }
+  .decision-options button.active {
+    border-color: var(--brand-500);
+    background: rgba(220,38,38,0.10);
+  }
+  .decision-options button .label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .decision-options button .hint {
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .decision-result {
+    margin-top: 12px;
+    display: none;
+  }
+  .decision-result.show { display: block; }
+
+  /* COST CALCULATOR */
+  .cost-card {
+    border: 1px solid var(--border);
+    background: rgba(16, 20, 27, 0.7);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .cost-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin: 14px 0;
+  }
+  .cost-input {
+    background: var(--subtle);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .cost-input label {
+    display: block;
+    font-family: "JetBrains Mono", ui-monospace, Menlo, monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--dim);
+    margin-bottom: 4px;
+  }
+  .cost-input input[type="number"] {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--ink);
+    font-size: 18px;
+    font-weight: 600;
+    font-family: "JetBrains Mono", ui-monospace, Menlo, monospace;
+    outline: none;
+    -webkit-appearance: none;
+  }
+  .cost-input input[type="number"]::-webkit-inner-spin-button { display: none; }
+  .cost-toggle {
+    display: flex;
+    gap: 4px;
+    background: var(--subtle);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 4px;
+  }
+  .cost-toggle button {
+    flex: 1;
+    padding: 8px;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+  }
+  .cost-toggle button.active {
+    background: var(--brand-700);
+    color: var(--ink);
+  }
+
+  .cost-output {
+    background: linear-gradient(135deg, rgba(220,38,38,0.10), rgba(251,191,36,0.05));
+    border: 1px solid rgba(220,38,38,0.30);
+    border-radius: 10px;
+    padding: 18px;
+    margin-top: 14px;
+  }
+  .cost-output .total {
+    font-family: "JetBrains Mono", ui-monospace, Menlo, monospace;
+    font-size: 38px;
+    font-weight: 700;
+    color: var(--brand-400);
+    line-height: 1;
+  }
+  .cost-output .month {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 6px;
+  }
+  .cost-breakdown {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  .cost-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    font-size: 13px;
+  }
+  .cost-line .label { color: var(--muted); }
+  .cost-line .val {
+    font-family: "JetBrains Mono", ui-monospace, Menlo, monospace;
+    color: var(--ink);
+    font-weight: 600;
+    tabular-nums: 1;
+  }
+
+  /* LISTS */
+  ul.checklist {
+    list-style: none;
+    padding: 0;
+    margin: 14px 0;
+  }
+  ul.checklist li {
+    padding: 6px 0 6px 26px;
+    color: var(--muted);
+    position: relative;
+    font-size: 14px;
+  }
+  ul.checklist li::before {
+    content: "✓";
+    position: absolute;
+    left: 0; top: 6px;
+    color: var(--accent-400);
+    font-weight: bold;
+  }
+
+  /* RESET CONTROLS */
+  .controls {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 18px;
+    align-items: center;
+  }
+  .controls .btn { padding: 6px 12px; font-size: 12px; }
+  .controls .stat {
+    margin-left: auto;
+    color: var(--dim);
+    font-size: 13px;
+    font-family: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    color: var(--dim);
+    font-size: 12px;
+    margin-top: 60px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--accent-400); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  /* misc */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 720px) {
+    .grid-2, .cost-grid, .decision-options { grid-template-columns: 1fr; }
+    h1 { font-size: 24px; }
+    .wrap { padding: 16px 12px 60px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="eyebrow">DEPLOY · juliooo.com/hartford</div>
+    <h1>Ship the UW Copilot in ~45 minutes</h1>
+    <p class="lede">
+      Walk through every command, copy with one click, tick boxes as you go.
+      Progress is saved in your browser. Hit reset whenever.
+    </p>
+    <div class="progress-meta">
+      <span id="progress-label">step 0 of 7</span>
+      <span id="progress-pct">0%</span>
+    </div>
+    <div class="progress-rail" id="progress-rail">
+      <div class="seg" data-i="0"></div>
+      <div class="seg" data-i="1"></div>
+      <div class="seg" data-i="2"></div>
+      <div class="seg" data-i="3"></div>
+      <div class="seg" data-i="4"></div>
+      <div class="seg" data-i="5"></div>
+      <div class="seg" data-i="6"></div>
+    </div>
+  </header>
+
+  <div class="controls">
+    <button class="btn" onclick="expandAll()">Expand all</button>
+    <button class="btn" onclick="collapseAll()">Collapse all</button>
+    <button class="btn" onclick="resetProgress()">Reset progress</button>
+    <span class="stat" id="stat-line"></span>
+  </div>
+
+  <!-- COST CALCULATOR -->
+  <div class="cost-card">
+    <div class="eyebrow">Cost calculator</div>
+    <h2 style="margin:6px 0 4px;font-size:20px;">What will this actually cost per day?</h2>
+    <p class="prose" style="margin-top:6px;">
+      Three knobs: how often you'll demo it, whether you keep an instance warm during the
+      interview window, and whether you run the LLM-as-judge eval against OpenAI.
+      Numbers below are realistic Apr-2026 prices (Vertex Gemini 2.0 Pro, Cloud Run, Vercel free tier).
+    </p>
+
+    <div class="cost-grid">
+      <div class="cost-input">
+        <label>Triages per day</label>
+        <input id="cost-triages" type="number" min="0" max="500" value="20" oninput="updateCost()" />
+      </div>
+      <div class="cost-input">
+        <label>Eval runs per week</label>
+        <input id="cost-evals" type="number" min="0" max="20" value="1" oninput="updateCost()" />
+      </div>
+    </div>
+
+    <div style="margin-bottom:8px;font-family:'JetBrains Mono',ui-monospace,Menlo,monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.16em;color:var(--dim);">Cloud Run min-instances</div>
+    <div class="cost-toggle">
+      <button id="min0" class="active" onclick="setMin(0)">0 — scale to zero ($0 idle, 3-5s cold start)</button>
+      <button id="min1" onclick="setMin(1)">1 — always warm (~$4-5/day idle, no cold start)</button>
+    </div>
+
+    <div class="cost-output">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+        <div>
+          <div class="total" id="cost-day">$0.00<span style="font-size:18px;color:var(--muted);font-weight:400">/day</span></div>
+          <div class="month" id="cost-month">~$0.00/month at this rate</div>
+        </div>
+        <div style="font-family:'JetBrains Mono',ui-monospace,Menlo,monospace;font-size:11px;color:var(--dim);text-align:right;">
+          one-time setup: $0<br/>
+          first-use SAFER cache: ~5 min, free
+        </div>
+      </div>
+      <div class="cost-breakdown">
+        <div class="cost-line"><span class="label">Cloud Run idle (memory)</span><span class="val" id="cost-cr-idle">—</span></div>
+        <div class="cost-line"><span class="label">Cloud Run per-request compute</span><span class="val" id="cost-cr-req">—</span></div>
+        <div class="cost-line"><span class="label">Vertex AI Gemini 2.0 Pro (memo gen)</span><span class="val" id="cost-vertex-pro">—</span></div>
+        <div class="cost-line"><span class="label">Vertex AI Gemini Flash (parse + critique)</span><span class="val" id="cost-vertex-flash">—</span></div>
+        <div class="cost-line"><span class="label">OpenAI GPT-4o (eval judge)</span><span class="val" id="cost-openai">—</span></div>
+        <div class="cost-line"><span class="label">Vercel hobby (frontend)</span><span class="val">$0.00</span></div>
+        <div class="cost-line" style="margin-top:6px;border-top:1px solid rgba(255,255,255,0.08);padding-top:10px;"><span class="label" style="color:var(--ink);font-weight:600;">Total / day</span><span class="val" id="cost-total" style="color:var(--brand-400);">—</span></div>
+      </div>
+    </div>
+
+    <div class="callout info" style="margin-top:14px;">
+      <strong>Quick read</strong>
+      Idle the system costs essentially nothing with min-instances=0. The Vertex AI bill is
+      the only meaningful variable cost — about <b>$0.04 per triage call</b>. For an interview
+      window I'd flip <code>min-instances=1</code> for a few hours to kill the cold-start hit,
+      then drop back to 0.
+    </div>
+  </div>
+
+  <!-- STEP 0: TOOLING -->
+  <div class="step" data-step="0">
+    <div class="step-head" onclick="toggle(0)">
+      <div class="step-num">00</div>
+      <div class="step-title">Local CLI tooling</div>
+      <div class="step-meta" id="meta-0">~5 min</div>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6,9 12,15 18,9"/></svg>
+    </div>
+    <div class="step-body">
+      <p class="prose">
+        Install the four CLIs you'll use. If you already have <code>gh</code>, <code>pnpm</code>, <code>uv</code>,
+        and <code>gcloud</code>, skip this step.
+      </p>
+      <div class="code">
+        <div class="code-head"><span># bash · macOS</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+        <pre>brew install gh pnpm uv google-cloud-sdk
+npm i -g vercel</pre>
+      </div>
+      <div class="callout info">
+        <strong>Verify</strong>
+        <code style="background:transparent;padding:0;">gh --version &amp;&amp; pnpm --version &amp;&amp; uv --version &amp;&amp; gcloud --version &amp;&amp; vercel --version</code>
+      </div>
+      <div class="btn-row">
+        <button class="btn done-toggle" onclick="markDone(0)" id="btn-0">Mark done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 1: GCP PROJECT -->
+  <div class="step" data-step="1">
+    <div class="step-head" onclick="toggle(1)">
+      <div class="step-num">01</div>
+      <div class="step-title">GCP project + APIs + auth</div>
+      <div class="step-meta" id="meta-1">~10 min</div>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6,9 12,15 18,9"/></svg>
+    </div>
+    <div class="step-body">
+      <p class="prose">
+        Create a project (or pick an existing one), link a billing account, enable the APIs we use,
+        and authenticate locally. <strong>Vertex AI requires billing to be enabled</strong> — the GCP
+        free tier doesn't cover Gemini calls.
+      </p>
+
+      <div class="code">
+        <div class="code-head"><span># 1. Auth + create project</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+<pre>gcloud auth login
+gcloud auth application-default login
+
+# Create or pick a project (choose a globally-unique ID)
+gcloud projects create juliooo-uw-copilot --set-as-default
+# OR if you already have one:
+# gcloud config set project YOUR_PROJECT_ID
+
+# Link billing (find your account ID with: gcloud beta billing accounts list)
+gcloud beta billing projects link juliooo-uw-copilot \
+  --billing-account=YOUR_BILLING_ACCT_ID</pre>
+      </div>
+
+      <div class="code">
+        <div class="code-head"><span># 2. Enable APIs</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+<pre>gcloud services enable \
+  aiplatform.googleapis.com \
+  run.googleapis.com \
+  cloudbuild.googleapis.com \
+  artifactregistry.googleapis.com \
+  secretmanager.googleapis.com</pre>
+      </div>
+
+      <div class="callout warn">
+        <strong>Heads up</strong>
+        First-time Vertex AI access in a new region can take a couple of minutes
+        to propagate. If your first call returns <code>403 PERMISSION_DENIED</code>,
+        wait 60s and retry.
+      </div>
+      <div class="btn-row">
+        <a class="btn" href="https://console.cloud.google.com/billing" target="_blank">Open billing console ↗</a>
+        <a class="btn" href="https://console.cloud.google.com/apis/dashboard" target="_blank">Open API dashboard ↗</a>
+        <button class="btn done-toggle" onclick="markDone(1)" id="btn-1">Mark done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2: SERVICE ACCOUNT + SECRETS -->
+  <div class="step" data-step="2">
+    <div class="step-head" onclick="toggle(2)">
+      <div class="step-num">02</div>
+      <div class="step-title">Service account, IAM roles, and secrets</div>
+      <div class="step-meta" id="meta-2">~5 min</div>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6,9 12,15 18,9"/></svg>
+    </div>
+    <div class="step-body">
+      <p class="prose">
+        Cloud Run runs as a dedicated service account. We grant it just two roles —
+        Vertex AI User (to call Gemini) and Secret Manager Secret Accessor (to read the
+        HMAC + OpenAI keys at boot).
+      </p>
+
+      <div class="code">
+        <div class="code-head"><span># Service account + IAM</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+<pre>PROJECT_ID=$(gcloud config get-value project)
+REGION=us-central1
+
+gcloud iam service-accounts create uw-copilot-runner \
+  --display-name="UW Copilot Cloud Run runtime"
+
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+  --member="serviceAccount:uw-copilot-runner@$PROJECT_ID.iam.gserviceaccount.com" \
+  --role="roles/aiplatform.user"
+
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+  --member="serviceAccount:uw-copilot-runner@$PROJECT_ID.iam.gserviceaccount.com" \
+  --role="roles/secretmanager.secretAccessor"</pre>
+      </div>
+
+      <div class="code">
+        <div class="code-head"><span># Secrets · keep $HMAC for the Vercel step</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+<pre>HMAC=$(openssl rand -hex 32)
+echo -n "$HMAC" | gcloud secrets create hmac-secret --data-file=- --replication-policy=automatic
+
+# Optional · used by the LLM-as-judge eval track only
+gcloud secrets create openai-api-key --replication-policy=automatic
+echo -n "sk-..." | gcloud secrets versions add openai-api-key --data-file=-
+
+# Artifact Registry repo for the backend image
+gcloud artifacts repositories create uw-copilot \
+  --repository-format=docker --location=$REGION
+
+echo "save this for the Vercel env step:"
+echo "HMAC=$HMAC"</pre>
+      </div>
+
+      <div class="callout ok">
+        <strong>Save this</strong>
+        Copy the <code>$HMAC</code> value to a password manager. You'll paste it
+        into Vercel as <code>HMAC_SECRET</code> in step 4.
+      </div>
+      <div class="btn-row">
+        <button class="btn done-toggle" onclick="markDone(2)" id="btn-2">Mark done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3: BUILD + DEPLOY BACKEND -->
+  <div class="step" data-step="3">
+    <div class="step-head" onclick="toggle(3)">
+      <div class="step-num">03</div>
+      <div class="step-title">Build &amp; deploy backend to Cloud Run</div>
+      <div class="step-meta" id="meta-3">~6 min build · 2 min deploy</div>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6,9 12,15 18,9"/></svg>
+    </div>
+    <div class="step-body">
+      <p class="prose">
+        From the repo root. <code>cloudbuild.yaml</code> builds the multi-stage Docker image,
+        pushes it to Artifact Registry, and deploys to Cloud Run with sane defaults
+        (<code>min-instances=0, max-instances=3, 2 GiB, 2 vCPU, concurrency 10</code>).
+      </p>
+
+      <div class="code">
+        <div class="code-head"><span># From the repo root</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+<pre>cd "/Users/JulioContreras/Desktop/Hatford Cla"
+gcloud builds submit --config cloudbuild.yaml</pre>
+      </div>
+
+      <p class="prose">
+        It finishes with a Cloud Run URL like <code>https://uw-copilot-backend-xxxxx-uc.a.run.app</code>.
+        Save it — you'll set it as <code>BACKEND_URL</code> in Vercel.
+      </p>
+
+      <div class="code">
+        <div class="code-head"><span># Smoke test</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+<pre>SERVICE_URL=$(gcloud run services describe uw-copilot-backend \
+  --region=us-central1 --format='value(status.url)')
+echo "$SERVICE_URL"
+curl "$SERVICE_URL/healthz"
+# expect: {"status":"ok","version":"0.1.0"}</pre>
+      </div>
+
+      <div class="callout warn">
+        <strong>If build fails</strong>
+        Most common cause: missing IAM role for the Cloud Build service account.
+        Run <code>gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$(gcloud projects describe $PROJECT_ID --format='value(projectNumber)')@cloudbuild.gserviceaccount.com" --role="roles/run.admin"</code>
+        and re-submit.
+      </div>
+
+      <div class="btn-row">
+        <a class="btn" href="https://console.cloud.google.com/run" target="_blank">Open Cloud Run console ↗</a>
+        <a class="btn" href="https://console.cloud.google.com/cloud-build/builds" target="_blank">Open Cloud Build logs ↗</a>
+        <button class="btn done-toggle" onclick="markDone(3)" id="btn-3">Mark done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4: DEPLOY FRONTEND -->
+  <div class="step" data-step="4">
+    <div class="step-head" onclick="toggle(4)">
+      <div class="step-num">04</div>
+      <div class="step-title">Deploy frontend to Vercel</div>
+      <div class="step-meta" id="meta-4">~3 min</div>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6,9 12,15 18,9"/></svg>
+    </div>
+    <div class="step-body">
+      <p class="prose">
+        From the <code>frontend/</code> directory. Link a new project, set three env vars,
+        and ship. The site builds in ~90 seconds.
+      </p>
+
+      <div class="code">
+        <div class="code-head"><span># From frontend/</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+<pre>cd "/Users/JulioContreras/Desktop/Hatford Cla/frontend"
+
+vercel link        # accept prompts; pick a project name like uw-copilot-hartford
+vercel env add BACKEND_URL production           # paste the Cloud Run URL from step 3
+vercel env add HMAC_SECRET production           # paste the $HMAC from step 2
+vercel env add NEXT_PUBLIC_BASE_PATH production # paste exactly: /hartford
+
+vercel --prod</pre>
+      </div>
+
+      <p class="prose">
+        Vercel prints a production URL like <code>uw-copilot-hartford.vercel.app</code>.
+        Open <code>https://uw-copilot-hartford.vercel.app/hartford</code> to confirm
+        the basePath is correct — the landing page should render with the particle hero.
+      </p>
+
+      <div class="callout info">
+        <strong>Why three env vars?</strong>
+        <code>BACKEND_URL</code> is where the API route proxies to,
+        <code>HMAC_SECRET</code> signs each request so randoms can't hammer your Cloud Run,
+        <code>NEXT_PUBLIC_BASE_PATH</code> matches <code>basePath</code> in <code>next.config.ts</code>
+        so client-side fetches resolve correctly.
+      </div>
+
+      <div class="btn-row">
+        <a class="btn" href="https://vercel.com/dashboard" target="_blank">Open Vercel dashboard ↗</a>
+        <button class="btn done-toggle" onclick="markDone(4)" id="btn-4">Mark done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 5: ROUTING -->
+  <div class="step" data-step="5">
+    <div class="step-head" onclick="toggle(5)">
+      <div class="step-num">05</div>
+      <div class="step-title">Surface it at juliooo.com</div>
+      <div class="step-meta" id="meta-5">depends on routing choice</div>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6,9 12,15 18,9"/></svg>
+    </div>
+    <div class="step-body">
+      <p class="prose">
+        Two paths. The right one depends on where <code>juliooo.com</code> is hosted today.
+      </p>
+
+      <div class="decision">
+        <div class="decision-q">Where does juliooo.com run?</div>
+        <div class="decision-options">
+          <button id="route-vercel" onclick="pickRoute('vercel')">
+            <span class="label">It's on Vercel</span>
+            <span class="hint">Subpath rewrite — keep the URL as <code>juliooo.com/hartford</code>.</span>
+          </button>
+          <button id="route-other" onclick="pickRoute('other')">
+            <span class="label">It's on something else</span>
+            <span class="hint">Cloudflare, Netlify, custom server, etc. → use a subdomain.</span>
+          </button>
+        </div>
+
+        <!-- VERCEL PATH -->
+        <div class="decision-result" id="route-result-vercel">
+          <p class="prose"><strong>Path A — Subpath rewrite at juliooo.com.</strong> Add this to your main site's <code>vercel.json</code>:</p>
+          <div class="code">
+            <div class="code-head"><span>juliooo.com/vercel.json</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+<pre>{
+  "rewrites": [
+    {
+      "source": "/hartford/:path*",
+      "destination": "https://uw-copilot-hartford.vercel.app/hartford/:path*"
+    }
+  ]
+}</pre>
+          </div>
+          <p class="prose">
+            Replace <code>uw-copilot-hartford.vercel.app</code> with the actual production URL Vercel
+            gave you in step 4. Redeploy juliooo.com. The Hartford project keeps
+            <code>basePath: '/hartford'</code> and the subpath just works.
+          </p>
+          <p class="prose">Test:</p>
+          <div class="code">
+            <div class="code-head"><span># bash</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+<pre>curl -I https://juliooo.com/hartford
+# expect: 200 with Content-Type: text/html</pre>
+          </div>
+        </div>
+
+        <!-- SUBDOMAIN PATH -->
+        <div class="decision-result" id="route-result-other">
+          <p class="prose"><strong>Path B — Subdomain.</strong> Easier than a cross-host rewrite. The site lives at
+            <code>hartford.juliooo.com</code> instead of <code>juliooo.com/hartford</code>. UX is identical.
+          </p>
+
+          <p class="prose"><strong>1. In the Vercel project</strong>: Settings → Domains → add
+            <code>hartford.juliooo.com</code>. Vercel shows a CNAME target.
+          </p>
+
+          <p class="prose"><strong>2. At your DNS host</strong>:</p>
+          <div class="code">
+            <div class="code-head"><span>DNS · CNAME record</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+<pre>hartford   CNAME   cname.vercel-dns.com.</pre>
+          </div>
+
+          <p class="prose"><strong>3. In <code>frontend/next.config.ts</code></strong>:
+            comment out the <code>basePath</code> and <code>assetPrefix</code> lines, and update <code>NEXT_PUBLIC_BASE_PATH</code> to empty string in Vercel env. Redeploy with <code>vercel --prod</code>.
+          </p>
+
+          <div class="code">
+            <div class="code-head"><span>frontend/next.config.ts</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+<pre>// const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "/hartford";
+// basePath,
+// assetPrefix: basePath,</pre>
+          </div>
+
+          <div class="callout ok">
+            <strong>Why this is easier</strong>
+            No cross-host rewrite means no risk of header mismatch, asset paths just work,
+            and DNS propagation is the only thing that can go wrong.
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-row" style="margin-top:18px;">
+        <button class="btn done-toggle" onclick="markDone(5)" id="btn-5">Mark done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 6: VERIFY -->
+  <div class="step" data-step="6">
+    <div class="step-head" onclick="toggle(6)">
+      <div class="step-num">06</div>
+      <div class="step-title">End-to-end verification</div>
+      <div class="step-meta" id="meta-6">~2 min</div>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6,9 12,15 18,9"/></svg>
+    </div>
+    <div class="step-body">
+      <p class="prose">Confirm the SSE chat path is fully wired through Vercel → Cloud Run → Vertex AI.</p>
+
+      <div class="code">
+        <div class="code-head"><span># streaming chat smoke test</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+<pre>curl -sN -X POST https://juliooo.com/hartford/api/chat \
+  -H 'content-type: application/json' \
+  -d '{"submission_id":"SUB-001","message":"Triage this submission"}'</pre>
+      </div>
+
+      <p class="prose">You should see a stream like:</p>
+      <div class="code">
+<pre style="color:#7ee787;">event: node_enter
+data: {"node": "parse_submission", "t_ms": 12}
+
+event: tool_call
+data: {"id": "...", "name": "safer_lookup", ...}
+
+event: token
+data: {"text": "## "}
+event: token
+data: {"text": "Underwriting "}
+... (many tokens) ...
+
+event: final
+data: {"memo": "...", "run_id": "..."}</pre>
+      </div>
+
+      <ul class="checklist">
+        <li>Open <code>juliooo.com/hartford</code> — landing renders, particle hero animates</li>
+        <li>Click <em>"Walk through the pipeline"</em> — every visualization renders without console errors</li>
+        <li>Click <em>"Try the live agent"</em> — pick SUB-001, send "Triage this submission", watch the trace panel populate</li>
+        <li>Click a citation chip — confirms the SSE stream parsed correctly</li>
+        <li>Refresh the chat page mid-conversation — the page rebuilds, no stale state</li>
+      </ul>
+
+      <div class="callout error">
+        <strong>If you see 502</strong>
+        Cloud Run logs are the answer. Most likely: missing
+        <code>roles/aiplatform.user</code> on the runtime service account, or the
+        <code>OPENAI_API_KEY</code> secret reference is failing (only used by evals — safe
+        to remove the <code>--set-secrets</code> entry for it from <code>cloudbuild.yaml</code> if you don't have a key).
+      </div>
+
+      <div class="btn-row">
+        <button class="btn done-toggle" onclick="markDone(6)" id="btn-6">Mark done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- POST-DEPLOY OPS -->
+  <div class="cost-card" style="margin-top:36px;">
+    <div class="eyebrow">Post-deploy ops</div>
+    <h2 style="margin:6px 0 12px;font-size:20px;">Useful day-to-day commands</h2>
+
+    <div class="grid-2">
+      <div>
+        <p class="prose"><strong>Tail Cloud Run logs</strong></p>
+        <div class="code">
+          <div class="code-head"><span>logs</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+<pre>gcloud logging tail \
+  "resource.type=cloud_run_revision \
+   AND resource.labels.service_name=uw-copilot-backend"</pre>
+        </div>
+      </div>
+      <div>
+        <p class="prose"><strong>Warm the instance for an interview</strong></p>
+        <div class="code">
+          <div class="code-head"><span>min-instances=1 (revert later)</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+<pre>gcloud run services update uw-copilot-backend \
+  --min-instances=1 --region=us-central1
+
+# After the interview, drop back:
+gcloud run services update uw-copilot-backend \
+  --min-instances=0 --region=us-central1</pre>
+        </div>
+      </div>
+      <div>
+        <p class="prose"><strong>Re-run evals against the deployed system</strong></p>
+        <div class="code">
+          <div class="code-head"><span>backend/</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+<pre>cd "/Users/JulioContreras/Desktop/Hatford Cla/backend"
+uv run python scripts/07_run_evals.py
+uv run python scripts/08_export_viz_data.py
+git add frontend/public/data/eval_results.json
+git commit -m "refresh eval numbers"
+vercel --prod  # from frontend/</pre>
+        </div>
+      </div>
+      <div>
+        <p class="prose"><strong>Build the RAG index (real NTSB / 10-K corpora)</strong></p>
+        <div class="code">
+          <div class="code-head"><span>backend/</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+<pre>cd "/Users/JulioContreras/Desktop/Hatford Cla/backend"
+uv run python scripts/02_download_ntsb.py
+uv run python scripts/03_download_10ks.py
+uv run python scripts/04_build_index.py
+uv run python scripts/08_export_viz_data.py</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TROUBLESHOOTING -->
+  <div class="cost-card">
+    <div class="eyebrow">Troubleshooting cheat-sheet</div>
+    <h2 style="margin:6px 0 12px;font-size:20px;">Common errors and what to do</h2>
+
+    <div class="callout error">
+      <strong>403 Permission denied on Vertex AI</strong>
+      Service account missing <code>roles/aiplatform.user</code>. Re-run the IAM binding from step 2.
+    </div>
+    <div class="callout error">
+      <strong>SSE stream returns instantly with no events</strong>
+      Cloud Run is buffering. Make sure <code>x-accel-buffering: no</code> is set
+      on the response (the API route already does this).
+    </div>
+    <div class="callout error">
+      <strong>Chat returns 401 unauthorized</strong>
+      HMAC signature mismatch. Confirm <code>HMAC_SECRET</code> in Vercel matches the
+      <code>hmac-secret</code> value in Secret Manager. To bypass during dev, set
+      <code>ALLOW_UNSIGNED_DEV=true</code> on Cloud Run (<em>do not leave this on in prod</em>).
+    </div>
+    <div class="callout error">
+      <strong>"basePath" 404s on /hartford/data/*.json</strong>
+      Either the static files weren't generated (run script 08) or
+      <code>NEXT_PUBLIC_BASE_PATH</code> doesn't match what's in <code>next.config.ts</code>.
+    </div>
+    <div class="callout error">
+      <strong>Cold starts feel painful</strong>
+      First request after idle takes 3–5s. For an interview window, set
+      <code>min-instances=1</code> (see ops section). Memory cost only, ~$0.43/day extra
+      with default CPU-on-request, ~$4.60/day with CPU-always-allocated.
+    </div>
+  </div>
+
+  <footer>
+    <p>Generated for <a href="https://juliooo.com" target="_blank">juliooo.com</a>. Source in this repo: <code>DEPLOY.md</code> and <code>cloudbuild.yaml</code>. Reset progress to start over.</p>
+  </footer>
+</div>
+
+<script>
+const STORAGE_KEY = "uw-deploy-progress-v1";
+const NUM_STEPS = 7;
+
+function loadState() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }
+  catch { return {}; }
+}
+function saveState(s) { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }
+let state = loadState();
+
+function toggle(i) {
+  const el = document.querySelector(`[data-step="${i}"]`);
+  el.classList.toggle("open");
+}
+function expandAll() {
+  document.querySelectorAll(".step").forEach((el) => el.classList.add("open"));
+}
+function collapseAll() {
+  document.querySelectorAll(".step").forEach((el) => el.classList.remove("open"));
+}
+
+function markDone(i) {
+  state[i] = !state[i];
+  saveState(state);
+  render();
+}
+
+function render() {
+  let done = 0;
+  for (let i = 0; i < NUM_STEPS; i++) {
+    const card = document.querySelector(`[data-step="${i}"]`);
+    const btn = document.getElementById(`btn-${i}`);
+    if (state[i]) {
+      card.classList.add("done");
+      if (btn) { btn.textContent = "✓ Completed — undo?"; btn.classList.remove("done-toggle"); }
+      done++;
+    } else {
+      card.classList.remove("done");
+      if (btn) { btn.textContent = "Mark done"; btn.classList.add("done-toggle"); }
+    }
+    const seg = document.querySelector(`.seg[data-i="${i}"]`);
+    if (seg) seg.classList.toggle("done", !!state[i]);
+  }
+  const pct = Math.round((done / NUM_STEPS) * 100);
+  document.getElementById("progress-label").textContent = `step ${done} of ${NUM_STEPS}`;
+  document.getElementById("progress-pct").textContent = `${pct}%`;
+  document.getElementById("stat-line").textContent = done === NUM_STEPS ? "🎉 deployed!" : `${NUM_STEPS - done} step${NUM_STEPS - done === 1 ? "" : "s"} remaining`;
+}
+
+function resetProgress() {
+  if (!confirm("Reset all progress?")) return;
+  state = {};
+  saveState(state);
+  render();
+}
+
+function copyCode(btn) {
+  const pre = btn.closest(".code").querySelector("pre");
+  navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+    btn.textContent = "✓ copied";
+    btn.classList.add("copied");
+    setTimeout(() => {
+      btn.textContent = "copy";
+      btn.classList.remove("copied");
+    }, 1400);
+  });
+}
+
+let routePicked = null;
+function pickRoute(which) {
+  routePicked = which;
+  document.getElementById("route-vercel").classList.toggle("active", which === "vercel");
+  document.getElementById("route-other").classList.toggle("active", which === "other");
+  document.getElementById("route-result-vercel").classList.toggle("show", which === "vercel");
+  document.getElementById("route-result-other").classList.toggle("show", which === "other");
+}
+
+/* ---------- COST CALCULATOR ---------- */
+let minInstances = 0;
+function setMin(n) {
+  minInstances = n;
+  document.getElementById("min0").classList.toggle("active", n === 0);
+  document.getElementById("min1").classList.toggle("active", n === 1);
+  updateCost();
+}
+
+function updateCost() {
+  const triages = parseInt(document.getElementById("cost-triages").value || "0", 10);
+  const evals = parseInt(document.getElementById("cost-evals").value || "0", 10);
+
+  // --- Vertex AI Gemini 2.0 Pro per call ---
+  // Realistic call: ~7K input tokens (memo template + retrieved chunks + SAFER + loss)
+  //                  ~1.5K output tokens (full memo)
+  // $3.50 / 1M input · $10.50 / 1M output
+  const proInPerCall = 7.0 * 3.50 / 1000;       // $0.0245
+  const proOutPerCall = 1.5 * 10.50 / 1000;     // $0.01575
+  const proPerCall = proInPerCall + proOutPerCall;  // ~$0.04
+
+  // --- Vertex AI Gemini Flash (parse + critique) ---
+  // 2 calls per triage, ~3K in / 0.4K out each
+  // $0.10 / 1M input · $0.40 / 1M output
+  const flashIn = 2 * 3.0 * 0.10 / 1000;   // $0.0006
+  const flashOut = 2 * 0.4 * 0.40 / 1000;  // $0.00032
+  const flashPerCall = flashIn + flashOut;
+
+  const vertexPro = triages * proPerCall;
+  const vertexFlash = triages * flashPerCall;
+
+  // --- Cloud Run ---
+  // 2 vCPU, 2 GiB. Per-request only if min-instances=0 and CPU-on-request.
+  // Pricing: $0.00002400 / vCPU-second, $0.00000250 / GiB-second
+  // Each triage runs ~10 wall seconds.
+  const crCompute = triages * (10 * (2 * 0.00002400 + 2 * 0.00000250));
+  // Idle memory: $0 if min=0 (since Gen2 default doesn't keep memory billed at idle without CPU);
+  // ~$0.43/day if min=1 (only memory always allocated, CPU on request).
+  const crIdle = minInstances === 1 ? 0.43 : 0.0;
+
+  // --- OpenAI judge (eval only, prorated) ---
+  // Each eval run: ~80 GPT-4o calls × (3K in + 0.2K out)
+  // $2.50 / 1M in · $10.00 / 1M out → ~$0.0095/call → ~$0.76/run
+  const openaiPerDay = (evals * 0.76) / 7;
+
+  // Total
+  const total = vertexPro + vertexFlash + crCompute + crIdle + openaiPerDay;
+
+  function f(v) { return "$" + v.toFixed(2); }
+  function fSmall(v) { return v < 0.01 ? "<$0.01" : "$" + v.toFixed(2); }
+
+  document.getElementById("cost-cr-idle").textContent = fSmall(crIdle);
+  document.getElementById("cost-cr-req").textContent = fSmall(crCompute);
+  document.getElementById("cost-vertex-pro").textContent = fSmall(vertexPro);
+  document.getElementById("cost-vertex-flash").textContent = fSmall(vertexFlash);
+  document.getElementById("cost-openai").textContent = fSmall(openaiPerDay);
+  document.getElementById("cost-total").textContent = f(total);
+  document.getElementById("cost-day").innerHTML = f(total) + '<span style="font-size:18px;color:var(--muted);font-weight:400">/day</span>';
+  document.getElementById("cost-month").textContent = `~${f(total * 30)}/month at this rate`;
+}
+
+/* boot */
+render();
+updateCost();
+// open step 0 by default if nothing started
+if (Object.keys(state).length === 0) toggle(0);
+</script>
+</body>
+</html>

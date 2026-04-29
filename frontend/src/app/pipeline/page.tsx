@@ -1,5 +1,5 @@
 import { SectionRail, type Section } from "@/components/nav/SectionRail";
-import { Section as PipeSection, ProseRow, Note, Caption } from "@/components/pipeline/Section";
+import { Section as PipeSection, ProseRow, Note, Caption, PlainEnglish, Glossary } from "@/components/pipeline/Section";
 import { CodeBlock } from "@/components/code/CodeBlock";
 import { SNIPPETS } from "@/lib/snippets";
 import { HybridSearchBars } from "@/components/viz/HybridSearchBars";
@@ -50,6 +50,46 @@ export default function PipelinePage() {
           </p>
         </header>
 
+        <PlainEnglish title="Start here · what this is, in 60 seconds">
+          <p>
+            <strong>The job:</strong> when a trucking company applies for commercial-auto
+            insurance at The Hartford, an underwriter has to read a stack of documents and
+            decide whether to insure them, decline, or charge more. It takes hours per
+            account.
+          </p>
+          <p>
+            <strong>What we built:</strong> an AI assistant that reads the same documents,
+            looks up the carrier&apos;s safety record, runs a small statistical model on
+            their loss history, and writes a draft underwriting memo with citations.
+            It doesn&apos;t replace the underwriter — it gives them a defensible first
+            pass in seconds instead of hours.
+          </p>
+          <p>
+            <strong>Why this walkthrough exists:</strong> most AI demos stop at &ldquo;look,
+            it answered a question.&rdquo; That&apos;s not enough for an insurer. The 11
+            sections below show every component end-to-end: where the data comes from,
+            how the AI reads it, how we measure whether the answer is any good, and
+            where the system honestly underperforms.
+          </p>
+          <p className="text-ink-muted">
+            You can read this without an AI background or an insurance background. Each
+            section opens with a plain-English summary like this one, then dives into
+            the technical detail underneath.
+          </p>
+          <Glossary
+            items={[
+              { term: "Underwriter", def: "the person at the insurer who decides whether to take on a customer's risk and at what price." },
+              { term: "Carrier", def: "the trucking company applying for insurance — the customer." },
+              { term: "Submission / packet", def: "the application bundle: a form, broker email, loss history, driver records." },
+              { term: "Memo", def: "the underwriter's written rationale — what the system produces here." },
+              { term: "GenAI", def: "generative AI — the LLM that drafts the memo and reasons over the documents." },
+              { term: "Agent", def: "an LLM that can also call tools and loop, not just answer in one shot." },
+              { term: "RAG", def: "retrieval-augmented generation — fetching relevant documents before the LLM writes." },
+              { term: "Vertex AI", def: "Google Cloud's hosted-LLM service. We use it for the Gemini model family." },
+            ]}
+          />
+        </PlainEnglish>
+
         {/* 1. Problem */}
         <PipeSection
           id="problem"
@@ -58,6 +98,21 @@ export default function PipelinePage() {
           title="The underwriter's day, compressed"
           lede="Mid-market commercial auto underwriting is a serial scan of heterogeneous, unstructured artifacts: ACORD applications, broker emails, 5-year loss runs, MVR summaries, FMCSA SAFER snapshots, NTSB narratives for material crashes, and 10-K risk-factor disclosures for public counterparts. The wedge for GenAI isn't replacing the underwriter — it's collapsing the time between 'submission lands' and 'I have a defensible point of view'."
         >
+          <PlainEnglish>
+            <p>
+              When you apply for car insurance, the company looks at your driving record and
+              charges accordingly. <strong>Commercial auto</strong> is the same idea but for
+              trucking companies — and the &ldquo;driving record&rdquo; is way bigger: hundreds
+              of trucks, dozens of states, federal safety inspections, prior crashes, who they
+              haul for, and so on. An <em>underwriter</em> reads all of that to decide what to
+              charge — or whether to insure them at all.
+            </p>
+            <p>
+              The job is mostly about <em>finding the signal</em>: out of dozens of pages,
+              what are the few facts that should change the price? AI is good at this kind of
+              search-and-summarize work, which is why it&apos;s a great fit here.
+            </p>
+          </PlainEnglish>
           <ProseRow
             side={
               <div className="card p-5">
@@ -102,6 +157,21 @@ export default function PipelinePage() {
           title="Real public data, not toy fixtures"
           lede="Insurance interviewers will sniff out toy data immediately. The corpus is built on FMCSA SAFER (carrier safety profiles), FMCSA Crash Files, NTSB accident narratives, NHTSA FARS, and SEC 10-K risk-factor sections from public trucking issuers. Submissions are synthesized on top — but each is tied to a real DOT number so SAFER lookups always return real data."
         >
+          <PlainEnglish>
+            <p>
+              Real underwriters don&apos;t guess; they look up. Every commercial trucking
+              company has a unique federal ID called a <strong>DOT number</strong>. Type that
+              number into the U.S. government&apos;s <em>SAFER</em> database and you get a
+              fact sheet: how many trucks, how many crashes, how often inspectors took a truck
+              off the road for being unsafe, and so on. We use the same public sources here.
+            </p>
+            <p>
+              Below: every dot on the map is a real federal investigation or fatal-crash
+              record. Every shaded state is colored by the rate of commercial-truck crashes
+              there. Drag the &ldquo;year&rdquo; slider to walk through 2019 → 2024 and watch
+              the picture build up. <em>This is the corpus the AI reads.</em>
+            </p>
+          </PlainEnglish>
           <DataSourceMap />
           <ProseRow
             side={
@@ -139,8 +209,24 @@ export default function PipelinePage() {
           number={3}
           eyebrow="Synthesizing the submission layer"
           title="30 ACORD-style submissions, each tied to a real carrier"
-          lede="Brokers don't send tidy JSON. They send a cover email plus an ACORD packet plus a 5-yr loss run plus a driver MVR summary. I generate this with Gemini, vary the broker's tone, and bind each synthesized packet to a real DOT so the SAFER tool returns a real safety profile during retrieval."
+          lede="Brokers don't send tidy JSON. They send a cover email plus an ACORD packet plus a 5-yr loss run plus a driver MVR summary. I script the synthesis with realistic broker tones and bind each synthesized packet to a real DOT so the SAFER tool returns a real safety profile during retrieval. The live agent itself uses Gemini 2.5 Pro for memo drafting and Gemini 2.5 Flash for parsing and self-critique."
         >
+          <PlainEnglish>
+            <p>
+              Real customer applications are sensitive — we can&apos;t put 30 of them on a
+              public website. So we make up <em>fake applications</em>, but each one points
+              at a <em>real</em> trucking company&apos;s DOT number. When the AI looks the
+              company up in the federal database, it gets real data. When the AI quotes
+              numbers, those numbers are real. Only the cover email and the policy paperwork
+              are synthesized.
+            </p>
+            <p>
+              The code on the right is the contract — the &ldquo;shape&rdquo; that every
+              piece of the system agrees on. If a broker email is missing the fleet size,
+              the system can&apos;t pretend it has one; the type system stops it. This is
+              how you keep an AI from hallucinating numbers nobody told it.
+            </p>
+          </PlainEnglish>
           <ProseRow
             side={
               <CodeBlock
@@ -180,6 +266,25 @@ export default function PipelinePage() {
           title="A semantic chunker, BAAI/bge-large-en-v1.5, and a 3D look at the index"
           lede="Long-form NTSB narratives don't tolerate naive recursive chunking — you split a sentence and lose the causal verb. We use a semantic chunker for narratives and recursive splitting for tabular pages, embed with BAAI/bge-large-en-v1.5 (open-weights, defensible cost story for an insurer), and persist into Chroma."
         >
+          <PlainEnglish>
+            <p>
+              An LLM can&apos;t read every document on every question — it&apos;s too slow
+              and too expensive. So we do two things first:
+            </p>
+            <p>
+              <strong>1. Chunking.</strong> Break each long document into bite-size pieces
+              (~200 words each). Smart chunking respects sentence and paragraph boundaries
+              so context isn&apos;t lost mid-thought.
+            </p>
+            <p>
+              <strong>2. Embedding.</strong> Convert each chunk into a list of numbers
+              (a &ldquo;vector&rdquo;) that captures its <em>meaning</em>. Two chunks
+              about driver fatigue end up close together in this number space, even if they
+              use different words. The 3D plot below is exactly that: ~1,100 chunks, each
+              colored by which corpus they came from. Spin it. Where colors mix, the
+              <em> topics</em> are what matter — that&apos;s a healthy embedding.
+            </p>
+          </PlainEnglish>
           <ChunkingStrip />
           <EmbeddingCloud3DLazy />
           <ProseRow
@@ -215,6 +320,28 @@ export default function PipelinePage() {
           title="BM25 + dense + RRF + cross-encoder rerank"
           lede="A pure-dense retriever underperforms on rare keywords; a pure-BM25 retriever underperforms on paraphrase. The standard fix is hybrid retrieval with rank fusion. We add a cross-encoder rerank on the top-50 fused list because cross-encoders catch chunk-level relevance that bi-encoders miss."
         >
+          <PlainEnglish>
+            <p>
+              When the AI needs to answer a question about a specific risk, we have to
+              find the right ~10 chunks out of thousands. There are two classic ways:
+            </p>
+            <p>
+              <strong>Keyword search</strong> (called <em>BM25</em>) — like Google before
+              the era of meaning. Great when the exact word matters (&ldquo;hazmat&rdquo;,
+              &ldquo;BASIC&rdquo;), bad when it doesn&apos;t.
+            </p>
+            <p>
+              <strong>Meaning search</strong> (called <em>dense retrieval</em>) — uses
+              those embedding vectors from the previous step. Great at paraphrase
+              (&ldquo;tired driver&rdquo; ≈ &ldquo;driver fatigue&rdquo;), bad at unusual
+              words it didn&apos;t see during training.
+            </p>
+            <p>
+              We run <em>both</em> and merge the lists. The visualization below shows it
+              live: BM25&apos;s ranking, the dense model&apos;s ranking, and the fused
+              final list that combines both.
+            </p>
+          </PlainEnglish>
           <HybridSearchBars />
           <RagRetrievalRays />
           <ProseRow
@@ -245,6 +372,27 @@ export default function PipelinePage() {
           title="An XGBoost loss-frequency model the agent calls as a tool"
           lede="The job description names PyTorch and Scikit-Learn alongside the GenAI stack on purpose. A well-engineered classical model is still the right answer for a narrow, structured prediction. I trained an XGBoost loss-frequency predictor on FMCSA features, calibrated it with isotonic regression, and exposed it as a tool the agent can invoke."
         >
+          <PlainEnglish>
+            <p>
+              Big LLMs are great at reading and writing. They&apos;re <em>not</em> the
+              right tool for predicting a number from a row of fleet statistics — like
+              &ldquo;given these 10 facts about a trucking company, how many crashes
+              should we expect next year?&rdquo;
+            </p>
+            <p>
+              For that we use a much smaller, much older kind of model called <strong>XGBoost</strong>.
+              It&apos;s ~50× cheaper to run, returns a number in milliseconds, and you
+              can audit its reasoning. The bar chart below shows which features pushed
+              the prediction up or down — &ldquo;OOS rate&rdquo; (how often a truck was
+              taken off the road during inspection) is the biggest driver. The agent calls
+              this little model as if it were one of its tools, and quotes the
+              answer in the memo.
+            </p>
+            <p className="text-ink-muted">
+              The point: a good system uses GenAI <em>and</em> classical ML where each one is
+              actually best.
+            </p>
+          </PlainEnglish>
           <XGBSHAP />
           <CalibrationCurve />
           <ConfusionMatrixOverTime />
@@ -281,6 +429,24 @@ export default function PipelinePage() {
           title="Aggregate loss as a Monte Carlo, not a point estimate"
           lede="An underwriter doesn't reason in expected losses; they reason in tail outcomes. So we simulate the aggregate annual loss as a compound-Poisson-LogNormal and surface VaR/TVaR alongside the mean. The Poisson rate λ comes from the calibrated XGBoost output × power units."
         >
+          <PlainEnglish>
+            <p>
+              A trucking company might cost the insurer $0 in a year (no crashes) or
+              $10M+ (one big lawsuit). The <em>average</em> doesn&apos;t tell you how
+              bad it can get. Underwriters need to know the <strong>worst-case
+              year</strong>, not just the typical one.
+            </p>
+            <p>
+              The simulation below rolls the dice 10,000 times: each simulated year
+              draws how many crashes happen, then how expensive each crash is, then
+              adds them up. Watch the histogram fill in. Two markers slide live:
+              <span className="text-warn-400"> VaR<sub>95</sub></span> (the loss exceeded
+              only 1 year in 20) and <span className="text-brand-400"> TVaR<sub>95</sub></span>
+              (the average of those bad years). Switch to the &ldquo;Adverse fleet&rdquo;
+              dropdown — the average barely moves, but the right tail explodes. <em>That&apos;s
+              the right shape for an underwriter&apos;s intuition.</em>
+            </p>
+          </PlainEnglish>
           <MonteCarloLoss />
           <FreqSeverityHeatmap />
           <ProseRow
@@ -310,6 +476,27 @@ export default function PipelinePage() {
           title="LangGraph: 8 nodes, 2 conditional edges, a self-critique loop"
           lede="LangChain agents are fine for one-shot tools; the moment your reasoning is cyclical, you need a graph. The self-critique loop is the cheapest reliability gain in the system — the agent reads its own memo against a rubric and routes back to retrieval if it flags a gap."
         >
+          <PlainEnglish>
+            <p>
+              An <strong>agent</strong> is an LLM that doesn&apos;t just answer questions
+              — it follows a recipe. Read the application → look up the carrier → fetch
+              relevant evidence → compute the loss numbers → write the memo → check its own
+              work. If it finds a gap, it goes <em>back</em> to fetch more evidence and
+              re-writes. That &ldquo;go back if you missed something&rdquo; is the loop you
+              see in the diagram below.
+            </p>
+            <p>
+              The animation runs through three real example traces — a clean account, a
+              tricky one that triggers the critique loop, and an edge case where the
+              carrier can&apos;t be looked up. Watch each box light up; the labels match
+              what&apos;s actually happening in our backend code.
+            </p>
+            <p className="text-ink-muted">
+              Why this design? Because the worst failure mode for an AI underwriter is
+              <em> sounding confident while missing something material</em>. The critique
+              loop is cheap insurance against that.
+            </p>
+          </PlainEnglish>
           <LangGraphMachine />
           <ToolCallStream />
           <SelfCritiqueDiff />
@@ -356,6 +543,21 @@ export default function PipelinePage() {
           title="Why did the model write 'decline'? An honest proxy."
           lede="Gemini doesn't expose attention weights, so true heatmaps aren't available. We use input attribution via log-prob deltas — for each output token, mask each input token, measure the shift in the focal token's log-probability. This is the standard surrogate for closed-source LLMs and it's interview-defensible."
         >
+          <PlainEnglish>
+            <p>
+              When the AI writes &ldquo;Decline&rdquo;, can we prove that decision came from
+              the <em>data</em> and not from, say, the broker&apos;s tone of voice? The
+              heatmap below answers that. Click any word in the recommendation along the
+              bottom; the strip up top lights up the input words that most influenced it.
+              For &ldquo;Decline,&rdquo; you should see &ldquo;OOS rate · 27%&rdquo; and
+              &ldquo;BASIC HoS · above threshold&rdquo; light up — exactly what we&apos;d
+              want.
+            </p>
+            <p className="text-ink-muted">
+              If a recommendation lit up because of the carrier&apos;s name or the broker
+              greeting, that would be a red flag. This view makes that auditable.
+            </p>
+          </PlainEnglish>
           <AttentionHeatmap />
           <Caption>
             The focal token "Decline" attributes most heavily to the input region containing
@@ -373,6 +575,33 @@ export default function PipelinePage() {
           title="Three independent tracks, ablated"
           lede="Most demos stop at 'it works for this one happy-path query'. The differentiator on this team is going to be the eval harness. We grade retrieval (recall@k, MRR, nDCG, RAGAs), generation (cross-family LLM-as-judge), and end-to-end task quality (red-flag recall on hand-curated ground-truth memos), then ablate every major component."
         >
+          <PlainEnglish>
+            <p>
+              How do you know an AI is any good? You grade it. Three independent ways:
+            </p>
+            <p>
+              <strong>1. Retrieval</strong> — When we ask a question, do the right
+              documents come back? Numbers like &ldquo;recall@10&rdquo; mean &ldquo;of
+              the 10 we fetched, what fraction were the ones the question wanted.&rdquo;
+            </p>
+            <p>
+              <strong>2. Memo quality</strong> — A different AI (GPT-4o, from a different
+              vendor than our writer) reads each memo and scores it. We use a different
+              vendor on purpose — an AI grading itself is biased. Then we compare against
+              a baseline (just an LLM, no agent) — we want our system to win.
+            </p>
+            <p>
+              <strong>3. Task-level</strong> — For 20 hand-picked applications I wrote the
+              memo myself first. The AI&apos;s memos are checked against mine: did it
+              spot the same red flags? Did it claim things that aren&apos;t supported?
+            </p>
+            <p>
+              <strong>And ablations</strong> — turn off each major component (RAG, the
+              critique loop, the small ML model) and rerun the whole eval. The drop tells
+              you what each component is worth. If turning a component <em>off</em>
+              didn&apos;t hurt scores, you don&apos;t need it.
+            </p>
+          </PlainEnglish>
           <EvalDashboard />
           <AblationTable />
           <ProseRow

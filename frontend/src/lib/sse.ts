@@ -16,6 +16,7 @@ export type ChatEvent =
   | { type: "node_enter"; node: string; t_ms: number }
   | { type: "node_exit"; node: string; t_ms: number }
   | { type: "citation"; ref: string; docId: string; snippet: string }
+  | { type: "critique_judge"; judge: string; iter: number }
   | { type: "final"; memo: string; runId: string }
   | { type: "error"; message: string };
 
@@ -68,6 +69,8 @@ function parseChunk(chunk: string): ChatEvent | null {
         return { type: "node_exit", node: obj.node, t_ms: obj.t_ms ?? 0 };
       case "citation":
         return { type: "citation", ref: obj.ref, docId: obj.doc_id, snippet: obj.snippet };
+      case "critique_judge":
+        return { type: "critique_judge", judge: obj.judge ?? "unknown", iter: obj.iter ?? 0 };
       case "final":
         return { type: "final", memo: obj.memo ?? "", runId: obj.run_id ?? "" };
       case "error":

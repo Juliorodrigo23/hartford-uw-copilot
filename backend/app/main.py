@@ -42,8 +42,10 @@ def create_app() -> FastAPI:
     app.include_router(eval_router)
     app.include_router(data_router)
 
-    @app.get("/healthz")
-    def healthz() -> dict[str, str]:
+    # Note: /healthz is reserved by GCP infra layers (returns GFE 404 from the public URL).
+    # Use /health for external health checks instead.
+    @app.get("/health")
+    def health() -> dict[str, str]:
         return {"status": "ok", "version": "0.1.0"}
 
     @app.get("/")

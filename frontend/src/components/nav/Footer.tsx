@@ -10,7 +10,7 @@ export function Footer() {
         <div className="text-sm text-ink-muted">
           <div className="mb-2 font-semibold text-ink">Stack</div>
           <ul className="space-y-1 font-mono text-2xs">
-            <li>Vertex AI · Gemini 2.0 Pro · OpenAI (judge)</li>
+            <li>Vertex AI · Gemini 2.5 Pro · OpenAI (judge)</li>
             <li>LangGraph · LangChain · Pydantic v2</li>
             <li>Chroma · BAAI/bge-large-en · BM25 + RRF + cross-encoder</li>
             <li>XGBoost · SHAP · scikit-learn isotonic</li>
@@ -19,7 +19,7 @@ export function Footer() {
           </ul>
         </div>
         <div className="text-sm text-ink-muted">
-          <div className="mb-2 font-semibold text-ink">Contact</div>
+          <div className="mb-2 font-semibold text-ink">Julio Contreras</div>
           <ul className="space-y-1">
             <li>
               <a
@@ -37,6 +37,36 @@ export function Footer() {
                 rel="noreferrer noopener"
               >
                 juliooo.com
+              </a>
+            </li>
+            <li>
+              <a
+                className="text-accent-400 underline-offset-4 hover:underline"
+                href="https://www.linkedin.com/in/juliooocon/"
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                LinkedIn
+              </a>
+            </li>
+            <li>
+              <a
+                className="text-accent-400 underline-offset-4 hover:underline"
+                href="https://github.com/Juliorodrigo23"
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                GitHub
+              </a>
+            </li>
+            <li>
+              <a
+                className="text-accent-400 underline-offset-4 hover:underline"
+                href="https://scholar.google.com/citations?user=UvH6Ua4AAAAJ"
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                Google Scholar
               </a>
             </li>
           </ul>

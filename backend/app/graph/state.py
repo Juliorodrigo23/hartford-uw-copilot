@@ -52,6 +52,8 @@ class AgentState(TypedDict, total=False):
     critique_iters: int
     critique_gaps: list[str]
     rubric_scores: dict[str, float]
+    critique_judge: str  # "gpt-4o" | "gemini-2.5-flash" | "skipped"
+    critique_provider_override: str | None  # "openai" | "gemini" | None
 
     # Tooling traces
     tool_calls: list[ToolCall]
