@@ -5,8 +5,10 @@ Cross-family runtime critique:
   - CRITIQUE_PROVIDER=gemini → Gemini Flash judges Gemini's draft (cheaper)
   - CRITIQUE_PROVIDER=auto   → openai when a key is present, otherwise gemini
 
-The frontend can also override per-request by passing `critique_provider`
-in the chat body (set on `state['critique_provider_override']`).
+Failure policy: the gate FAILS OPEN (the run finalizes what it has rather
+than dying because a judge was unreachable) but never silently. Any judge
+failure is recorded on `critique_error`, the judge label reflects what
+actually ran, and the SSE layer surfaces it to the trace UI.
 """
 
 from __future__ import annotations
@@ -21,6 +23,7 @@ from app.graph.state import AgentState
 from app.llm.judge_client import openai_runtime_critique
 from app.llm.prompts.memo import CRITIQUE_PROMPT
 from app.llm.vertex_client import gemini_fast
+from app.schemas import CritiqueVerdict
 
 log = logging.getLogger(__name__)
 
@@ -36,6 +39,11 @@ def _evidence_summary(state: AgentState) -> str:
     p = state.get("xgb_pred")
     if p:
         bits.append("XGB · " + json.dumps(p.model_dump(mode="json")))
+    cits = state.get("citations") or []
+    if cits:
+        bits.append("VALID CITATION REFS · " + ", ".join(c.ref for c in cits))
+    else:
+        bits.append("VALID CITATION REFS · none (any [n] in the memo is a critical gap)")
     return "\n".join(bits)
 
 
@@ -60,13 +68,24 @@ async def _gemini_critique(memo: str, evidence: str) -> dict:
     start = text.find("{")
     end = text.rfind("}")
     if start < 0 or end <= start:
-        return {"pass": True, "rubric_scores": {}, "gaps": []}
+        raise ValueError(f"judge returned non-JSON: {text[:200]!r}")
     return json.loads(text[start : end + 1])
 
 
 async def self_critique(state: AgentState) -> AgentState:
     iters = state.get("critique_iters", 0) + 1
     memo = state.get("memo_md", "")
+
+    if state.get("disable_critique"):
+        return {
+            "critique_pass": True,
+            "critique_iters": iters,
+            "critique_gaps": [],
+            "rubric_scores": {},
+            "critique_judge": "disabled",
+            "critique_error": None,
+        }
+
     if not memo:
         return {
             "critique_pass": True,
@@ -74,32 +93,58 @@ async def self_critique(state: AgentState) -> AgentState:
             "critique_gaps": [],
             "rubric_scores": {},
             "critique_judge": "skipped",
+            "critique_error": "no memo to critique",
         }
 
     evidence = _evidence_summary(state)
     provider = _resolve_provider(state)
-    judge_used = "gpt-4o" if provider == "openai" else "gemini-2.5-flash"
-    out: dict | None = None
+    judge_used = settings.openai_judge_model if provider == "openai" else settings.vertex_fast_model
+    error: str | None = None
+    raw: dict | None = None
 
     try:
         if provider == "openai":
-            out = await openai_runtime_critique(memo, evidence)
-            if out is None:
-                # No key / OpenAI down — fall through to Gemini
-                log.info("openai critique unavailable; falling back to gemini")
-                judge_used = "gemini-2.5-flash"
-                out = await _gemini_critique(memo, evidence)
+            raw = await openai_runtime_critique(memo, evidence)
+            if raw is None:
+                # No key / OpenAI down — fall back to Gemini, and say so.
+                log.warning("openai critique unavailable; falling back to gemini")
+                judge_used = settings.vertex_fast_model
+                raw = await _gemini_critique(memo, evidence)
         else:
-            out = await _gemini_critique(memo, evidence)
+            raw = await _gemini_critique(memo, evidence)
     except Exception as e:
-        log.warning("critique failed (%s): %s", judge_used, e)
-        out = {"pass": True, "rubric_scores": {}, "gaps": []}
+        # FAIL OPEN, VISIBLY: the run finalizes, but the state records that
+        # this memo was NOT quality-checked, and the UI shows it.
+        error = f"critique judge failed ({judge_used}): {e}"
+        log.error(error)
+        return {
+            "critique_pass": True,
+            "critique_iters": iters,
+            "critique_gaps": [],
+            "rubric_scores": {},
+            "critique_judge": f"error:{judge_used}",
+            "critique_error": error,
+        }
 
-    out = out or {}
+    try:
+        verdict = CritiqueVerdict.model_validate(raw or {})
+    except Exception as e:
+        error = f"judge returned malformed verdict: {e}"
+        log.error(error)
+        return {
+            "critique_pass": True,
+            "critique_iters": iters,
+            "critique_gaps": [],
+            "rubric_scores": {},
+            "critique_judge": f"error:{judge_used}",
+            "critique_error": error,
+        }
+
     return {
-        "critique_pass": bool(out.get("pass", True)),
+        "critique_pass": verdict.pass_,
         "critique_iters": iters,
-        "critique_gaps": list(out.get("gaps") or []),
-        "rubric_scores": out.get("rubric_scores") or {},
+        "critique_gaps": list(verdict.gaps),
+        "rubric_scores": dict(verdict.rubric_scores),
         "critique_judge": judge_used,
+        "critique_error": None,
     }

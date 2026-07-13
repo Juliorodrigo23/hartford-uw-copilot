@@ -4,8 +4,13 @@ Cross-family judging (Gemini generates, GPT-4o judges) avoids the
 self-judging bias well-documented in the eval literature.
 
 Two surfaces:
-  - judge_memo / pairwise_compare → eval pipeline (sync, n-of-k median)
-  - openai_runtime_critique       → runtime critique node, async, single-shot
+  - judge_memo / pairwise_compare → eval pipeline (sync, n-of-k median).
+    These RAISE JudgeUnavailable when OpenAI is not configured. The eval
+    runner catches that and marks the track "skipped" — placeholder scores
+    are never written into results.
+  - openai_runtime_critique → runtime critique node, async, single-shot.
+    Returns None when unavailable; the node falls back to the Gemini judge
+    and records which judge actually ran.
 """
 
 from __future__ import annotations
@@ -20,6 +25,10 @@ from openai import AsyncOpenAI, OpenAI
 from app.config import settings
 
 log = logging.getLogger(__name__)
+
+
+class JudgeUnavailable(RuntimeError):
+    """Raised when the eval-track judge cannot run (no API key)."""
 
 
 JUDGE_SYSTEM = "You are a strict JSON-only response evaluator."
@@ -45,20 +54,26 @@ GROUND TRUTH (key signals the memo SHOULD surface):
 
 
 def _client() -> OpenAI:
+    if not settings.openai_api_key:
+        raise JudgeUnavailable(
+            "OPENAI_API_KEY is not set. Drop your key into the repo-root .env "
+            "(see .env.example) to enable the GPT judge."
+        )
     return OpenAI(api_key=settings.openai_api_key)
 
 
 def judge_memo(memo: str, ground_truth: dict[str, Any], n_runs: int = 3) -> dict[str, float]:
-    """Run the judge n times. Return median scores per dimension."""
-    if not settings.openai_api_key:
-        # Allow local dev without an OpenAI key. Returns a deterministic
-        # placeholder so the eval pipeline doesn't crash.
-        return {"factual_accuracy": 0.0, "completeness": 0.0, "calibration": 0.0, "citations": 0.0, "format": 0.0}
+    """Run the judge n times. Return median scores per dimension.
+
+    Raises JudgeUnavailable when OpenAI is not configured, so callers can
+    mark the track as skipped instead of recording fake zeros.
+    """
     client = _client()
+    dims = ["factual_accuracy", "completeness", "calibration", "citations", "format"]
     runs: list[dict[str, int]] = []
     for _ in range(n_runs):
         r = client.chat.completions.create(
-            model="gpt-4o",
+            model=settings.openai_judge_model,
             response_format={"type": "json_object"},
             temperature=0.0,
             messages=[
@@ -73,15 +88,15 @@ def judge_memo(memo: str, ground_truth: dict[str, Any], n_runs: int = 3) -> dict
         except json.JSONDecodeError:
             continue
     if not runs:
-        return {"factual_accuracy": 0.0, "completeness": 0.0, "calibration": 0.0, "citations": 0.0, "format": 0.0}
-    keys = runs[0].keys()
-    return {k: float(statistics.median([r.get(k, 0) for r in runs])) for k in keys}
+        raise JudgeUnavailable("judge returned no parseable responses")
+    return {k: float(statistics.median([float(r.get(k, 0)) for r in runs])) for k in dims}
 
 
 def pairwise_compare(memo_a: str, memo_b: str, ground_truth: dict[str, Any]) -> str:
-    """Pairwise A/B preference. Returns 'A', 'B', or 'tie'."""
-    if not settings.openai_api_key:
-        return "tie"
+    """Pairwise A/B preference. Returns 'A', 'B', or 'tie'.
+
+    Raises JudgeUnavailable when OpenAI is not configured.
+    """
     client = _client()
     prompt = f"""Compare two underwriting memos for the same submission. Pick the better one
 on the rubric (factual_accuracy, completeness, calibration, citations, format).
@@ -96,7 +111,7 @@ MEMO B:
 {memo_b}
 """
     r = client.chat.completions.create(
-        model="gpt-4o",
+        model=settings.openai_judge_model,
         response_format={"type": "json_object"},
         temperature=0.0,
         messages=[
@@ -149,17 +164,16 @@ EVIDENCE THE MEMO SHOULD ADDRESS:
 
 
 async def openai_runtime_critique(memo: str, evidence: str) -> dict[str, Any] | None:
-    """Cross-family critique at runtime. Returns None if OpenAI is not configured.
-
-    The caller (self_critique node) gets None back and falls through to the
-    Gemini-Flash critique, so this is safe to call unconditionally.
+    """Cross-family critique at runtime. Returns None if OpenAI is not configured
+    or the call fails; the self_critique node falls back to the Gemini judge and
+    records the substitution.
     """
     if not settings.openai_api_key:
         return None
     try:
         client = AsyncOpenAI(api_key=settings.openai_api_key)
         r = await client.chat.completions.create(
-            model="gpt-4o",
+            model=settings.openai_judge_model,
             response_format={"type": "json_object"},
             temperature=0.0,
             messages=[

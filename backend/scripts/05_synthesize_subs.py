@@ -1,10 +1,16 @@
 """Synthesize 30 ACORD-style submissions and a 200-account book of business.
 
 Each submission:
-  - Tied to a real DOT number from the seed list (so SAFER tools return real data)
-  - Has a broker cover email written by Gemini (varied tone)
-  - Has a 5-year loss run with realistic frequency × severity
-  - Has a vehicle mix consistent with the commodity
+  - Tied to a VERIFIED mid-market carrier from scripts/01's verified_dots.json
+    (real legal name, real power units, non-UNKNOWN operating status; the
+    print-shop failure mode is structurally excluded).
+  - fleet_size is DERIVED from the carrier's real SAFER power-unit count, so
+    the synthetic application never contradicts the federal record.
+  - Displayed under a pseudonym (a fabricated adverse loss run must not be
+    published against a real company's name) with the real SAFER legal name
+    carried in `safer_legal_name` for transparency.
+  - Has a broker cover email (template-varied tone), a 5-year loss run with
+    realistic frequency × severity, and a commodity-consistent vehicle mix.
 
 Idempotent: skips writing if files already exist (force with --rewrite).
 """
@@ -33,6 +39,9 @@ log = logging.getLogger("05_synthesize")
 
 SUB_PATH = settings.data_dir / "synthesized" / "submissions.json"
 BOOK_PATH = settings.data_dir / "synthesized" / "book_of_business.json"
+CACHE_DIR = settings.data_dir / "raw" / "fmcsa" / "safer_cache"
+
+N_SUBMISSIONS = 30
 
 
 CARRIER_NAMES = [
@@ -57,16 +66,31 @@ STATE_BUNDLES = [
 COMMODITIES = ["general_freight", "general_freight", "general_freight", "tank", "hazmat"]
 
 
-def _seed_dots() -> list[str]:
-    seeds_path = Path(__file__).parent / "seed_dot_numbers.json"
-    if seeds_path.exists():
-        return json.loads(seeds_path.read_text())
-    return [str(d) for d in [
-        "1184729", "2839412", "3092714", "2455910", "1873456", "991122",
-        "880013", "1402991", "2017304", "2204882", "2563791", "1129835",
-        "1748902", "2811236", "1633548", "927814", "2980467", "1245778",
-        "770341", "1854207", "2716893",
-    ]]
+async def _verified_carriers(needed: int) -> list[tuple[str, dict]]:
+    """Mid-market carriers from script 01's verified list, re-resolved
+    through safer_lookup for the full profile. Only `mid_market: true`
+    entries are eligible — a submission must never sit on top of a print
+    shop or a mega-fleet again."""
+    verified_path = Path(__file__).parent / "verified_dots.json"
+    if not verified_path.exists():
+        log.error("no verified_dots.json — run scripts/01_download_fmcsa.py first")
+        return []
+    entries = [e for e in json.loads(verified_path.read_text()) if e.get("mid_market")]
+    out: list[tuple[str, dict]] = []
+    for e in entries:
+        dot = str(e["dot"])
+        try:
+            p = await safer_lookup(dot)
+        except Exception as ex:
+            log.warning("DOT %s failed: %s", dot, ex)
+            continue
+        if p is None:
+            log.warning("DOT %s no longer resolves to a validated profile — excluded", dot)
+            continue
+        out.append((dot, p.model_dump(mode="json")))
+        if len(out) >= needed:
+            break
+    return out
 
 
 def _make_loss_run(rng: random.Random, fleet: int, adverse: bool) -> list[dict]:
@@ -101,37 +125,49 @@ Producer""",
     return rng.choice(tones)
 
 
-async def _resolve_real(dot: str) -> dict | None:
-    p = await safer_lookup(dot)
-    return p.model_dump(mode="json") if p else None
-
-
 async def main(rewrite: bool = False) -> None:
     SUB_PATH.parent.mkdir(parents=True, exist_ok=True)
     rng = random.Random(42)
     np_rng = np.random.default_rng(42)
-    seeds = _seed_dots()
 
     if SUB_PATH.exists() and not rewrite:
         log.info("submissions exist · use --rewrite to regenerate")
     else:
+        resolved = await _verified_carriers(needed=N_SUBMISSIONS)
+        if not resolved:
+            log.error("no verified mid-market carriers — run scripts/01_download_fmcsa.py first")
+            return
+        if len(resolved) < N_SUBMISSIONS:
+            log.warning(
+                "only %d verified carriers available; submissions will reuse DOTs "
+                "(add more real mid-market DOT numbers to scripts/seed_dot_numbers.json)",
+                len(resolved),
+            )
         subs: list[dict] = []
-        for i in range(30):
-            dot = seeds[i % len(seeds)]
+        for i in range(N_SUBMISSIONS):
+            dot, safer_snapshot = resolved[i % len(resolved)]
             name = f"{CARRIER_NAMES[i % len(CARRIER_NAMES)]} Inc"
             states = rng.choice(STATE_BUNDLES)
             commodity = rng.choice(COMMODITIES)
-            fleet = int(np_rng.integers(60, 360))
+            # RECONCILIATION: fleet size IS the carrier's real SAFER power-unit
+            # count (±5% broker-form noise, min 20). The submission can never
+            # again claim 86 trucks for a 1-truck entity.
+            real_pu = int(safer_snapshot.get("power_units") or 0)
+            fleet = max(20, int(round(real_pu * (1 + rng.uniform(-0.05, 0.05)))))
             adverse = rng.random() < 0.4 or commodity == "hazmat"
             mix = (
                 {"tractor": 0.86, "straight_truck": 0.10, "trailer": 0.0, "other": 0.04}
                 if commodity != "tank"
                 else {"tractor": 0.74, "straight_truck": 0.06, "trailer": 0.18, "other": 0.02}
             )
-            sub = {
+            subs.append({
                 "id": f"SUB-{i + 1:03d}",
+                # Pseudonym: a synthetic adverse loss run must not be
+                # published under a real company's name…
                 "carrier_name": name,
                 "dot_number": dot,
+                # …but the real identity is carried openly alongside.
+                "safer_legal_name": safer_snapshot.get("legal_name"),
                 "fleet_size": fleet,
                 "vehicle_mix": mix,
                 "states_of_operation": states,
@@ -139,18 +175,16 @@ async def main(rewrite: bool = False) -> None:
                 "loss_run": _make_loss_run(rng, fleet, adverse),
                 "broker_email": _make_email(rng, name, dot, fleet, states),
                 "commodity": commodity,
-            }
-            # Try to attach the SAFER profile so anyone reading the file
-            # sees that the DOT resolves; not used directly by the agent (it
-            # re-fetches), purely for transparency.
-            try:
-                sub["_safer_snapshot"] = await _resolve_real(dot)
-            except Exception:
-                sub["_safer_snapshot"] = None
-            subs.append(sub)
+                # Snapshot at synthesis time, for transparency; the agent
+                # re-fetches through the cache at run time.
+                "_safer_snapshot": safer_snapshot,
+            })
 
         SUB_PATH.write_text(json.dumps({"submissions": subs}, indent=2, default=str))
-        log.info("wrote %d submissions to %s", len(subs), SUB_PATH)
+        log.info(
+            "wrote %d submissions · every fleet_size derived from the carrier's real "
+            "SAFER power units · to %s", len(subs), SUB_PATH,
+        )
 
     # Book of business — 200 accounts for comparable_search
     if BOOK_PATH.exists() and not rewrite:

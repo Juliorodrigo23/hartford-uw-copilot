@@ -1,72 +1,53 @@
 "use client";
 
 /**
- * FreqSeverityHeatmap — 2D KDE of historical commercial-auto claims, with
- * the (frequency, severity) joint density evolving across years. Year scrubber
- * morphs between snapshots; a moving "expected" marker traces the joint mean.
- *
- *   x: claim frequency per power unit per year
- *   y: severity (incurred per claim, $ thousands)
+ * FreqSeverityHeatmap — 2D KDE of the (frequency, severity) joint density
+ * per year, computed from the REAL synthesized loss runs shipped with the
+ * demo (loss_landscape.json, script 08). The year scrubber morphs between
+ * per-year snapshots; the moving marker traces the joint mean.
  */
 
 import * as d3 from "d3";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useData } from "@/lib/useData";
+import { useAnimationGate } from "@/lib/useInView";
+import { DataBadge, PendingCard } from "@/components/DataBadge";
+import type { LossLandscape } from "@/lib/api";
 
 type Sample = { f: number; s: number; year: number };
 
-// Synth data per year — drift over time tells the "loss inflation" story.
-function makeYear(year: number, n = 1200, seed = 1): Sample[] {
-  const out: Sample[] = [];
-  // mu drifts up
-  const muF = 0.025 + (year - 2019) * 0.003;
-  const muS = 50 + (year - 2019) * 12; // $K
-  const r = mulberry32(seed * year);
-  for (let i = 0; i < n; i++) {
-    const u1 = Math.max(r(), 1e-9);
-    const u2 = r();
-    const z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
-    const f = Math.max(0.001, muF + z * 0.012);
-    const u3 = Math.max(r(), 1e-9);
-    const u4 = r();
-    const z2 = Math.sqrt(-2 * Math.log(u3)) * Math.cos(2 * Math.PI * u4);
-    const s = Math.max(2, Math.exp(Math.log(muS) + z2 * 0.6));
-    out.push({ f, s, year });
-  }
-  return out;
-}
-
-function mulberry32(seed: number) {
-  return function () {
-    let t = (seed += 0x6D2B79F5);
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-const YEARS = [2019, 2020, 2021, 2022, 2023, 2024] as const;
-
 export function FreqSeverityHeatmap() {
+  const { data, status } = useData<LossLandscape>("loss_landscape.json");
   const ref = useRef<SVGSVGElement>(null);
-  const [year, setYear] = useState<number>(2024);
-  const [auto, setAuto] = useState(true);
 
+  const years = useMemo(
+    () => Array.from(new Set((data?.points ?? []).map((p) => p.year))).sort(),
+    [data],
+  );
+  const [year, setYear] = useState<number | null>(null);
+  const [auto, setAuto] = useState(true);
+  const { ref: gateRef, active: gateActive } = useAnimationGate<HTMLDivElement>(0.35);
+  const activeYear = year ?? years[years.length - 1] ?? null;
+
+  // 4.5s per year is enough to actually read the density shift; the d3
+  // contour recompute only runs while the card is on screen.
   useEffect(() => {
-    if (!auto) return;
+    if (!auto || !gateActive || years.length < 2) return;
     const id = setInterval(() => {
       setYear((y) => {
-        const i = YEARS.indexOf(y as (typeof YEARS)[number]);
-        return YEARS[(i + 1) % YEARS.length];
+        const cur = y ?? years[years.length - 1];
+        const i = years.indexOf(cur);
+        return years[(i + 1) % years.length];
       });
-    }, 1800);
+    }, 4500);
     return () => clearInterval(id);
-  }, [auto]);
+  }, [auto, gateActive, years]);
 
   useEffect(() => {
     const svg = ref.current;
-    if (!svg) return;
-    const W = svg.clientWidth;
-    const H = svg.clientHeight;
+    if (!svg || !data || activeYear == null) return;
+    const W = svg.clientWidth || 700;
+    const H = svg.clientHeight || 360;
     const padL = 56,
       padR = 16,
       padT = 14,
@@ -74,21 +55,25 @@ export function FreqSeverityHeatmap() {
     const sel = d3.select(svg).attr("viewBox", `0 0 ${W} ${H}`);
     sel.selectAll("*").remove();
 
-    const xs = d3.scaleLinear().domain([0, 0.08]).range([padL, W - padR]);
-    const ys = d3.scaleLinear().domain([0, 250]).range([H - padB, padT]);
+    const pts: Sample[] = data.points.filter((p) => p.year === activeYear);
+    if (!pts.length) return;
 
-    const data = makeYear(year);
+    const fMax = Math.max(0.08, (d3.max(data.points, (d) => d.f) ?? 0.08) * 1.1);
+    const sMax = Math.max(150, (d3.max(data.points, (d) => d.s) ?? 150) * 1.1);
+    const xs = d3.scaleLinear().domain([0, fMax]).range([padL, W - padR]);
+    const ys = d3.scaleLinear().domain([0, sMax]).range([H - padB, padT]);
 
-    // Density via d3-contour
     const density = d3
       .contourDensity<Sample>()
       .x((d) => xs(d.f))
       .y((d) => ys(d.s))
       .size([W, H])
-      .bandwidth(22)
-      .thresholds(14)(data);
+      .bandwidth(26)
+      .thresholds(12)(pts);
 
-    const color = d3.scaleSequential(d3.interpolateRgbBasis(["transparent", "#1e3a8a", "#dc2626", "#fbbf24"])).domain([0, d3.max(density, (d) => d.value) ?? 1]);
+    const color = d3
+      .scaleSequential(d3.interpolateRgbBasis(["transparent", "#1e3a8a", "#dc2626", "#fbbf24"]))
+      .domain([0, d3.max(density, (d) => d.value) ?? 1]);
 
     sel
       .append("g")
@@ -100,6 +85,19 @@ export function FreqSeverityHeatmap() {
       .attr("fill", (d) => color(d.value))
       .attr("fill-opacity", 0.65)
       .attr("stroke", "none");
+
+    // Individual account points
+    sel
+      .append("g")
+      .selectAll("circle")
+      .data(pts)
+      .enter()
+      .append("circle")
+      .attr("cx", (d) => xs(d.f))
+      .attr("cy", (d) => ys(d.s))
+      .attr("r", 2.2)
+      .attr("fill", "#e6ebf2")
+      .attr("fill-opacity", 0.5);
 
     // Axes
     sel
@@ -137,8 +135,8 @@ export function FreqSeverityHeatmap() {
       .text("severity · $ thousands / claim");
 
     // Joint mean marker
-    const fbar = d3.mean(data, (d) => d.f) ?? 0;
-    const sbar = d3.mean(data, (d) => d.s) ?? 0;
+    const fbar = d3.mean(pts, (d) => d.f) ?? 0;
+    const sbar = d3.mean(pts, (d) => d.s) ?? 0;
     sel
       .append("circle")
       .attr("cx", xs(fbar))
@@ -166,34 +164,44 @@ export function FreqSeverityHeatmap() {
       .attr("font-family", "ui-monospace, Menlo, monospace")
       .attr("font-size", 28)
       .attr("opacity", 0.16)
-      .text(String(year));
-  }, [year]);
+      .text(String(activeYear));
+  }, [data, activeYear]);
+
+  if (status === "loading") {
+    return <div className="card p-6 text-sm text-ink-dim">loading loss landscape…</div>;
+  }
+  if (status === "missing" || !data || !years.length) {
+    return (
+      <PendingCard
+        title="Loss landscape not exported yet."
+        command="uv run python scripts/05_synthesize_subs.py && uv run python scripts/08_export_viz_data.py"
+      />
+    );
+  }
 
   return (
-    <div className="card overflow-hidden">
+    <div ref={gateRef} className="card overflow-hidden">
       <div className="flex items-center gap-3 border-b border-border p-3">
         <div className="font-mono text-2xs uppercase tracking-[0.18em] text-ink-dim">
-          (Frequency × Severity) joint density · 2D KDE · public commercial-auto data
+          (Frequency × Severity) joint density · 2D KDE · demo loss runs
         </div>
+        <DataBadge kind="live" note="synthesized loss runs" />
         <div className="ml-auto flex items-center gap-2 text-2xs text-ink-muted">
-          <button
-            className="btn-ghost"
-            onClick={() => setAuto((a) => !a)}
-          >
+          <button className="btn-ghost" onClick={() => setAuto((a) => !a)}>
             {auto ? "auto" : "paused"}
           </button>
           <input
             type="range"
-            min={2019}
-            max={2024}
-            value={year}
+            min={years[0]}
+            max={years[years.length - 1]}
+            value={activeYear ?? years[0]}
             onChange={(e) => {
               setAuto(false);
               setYear(Number(e.target.value));
             }}
             className="h-1 w-32 cursor-pointer"
           />
-          <span className="w-10 font-mono tabular-nums text-ink">{year}</span>
+          <span className="w-10 font-mono tabular-nums text-ink">{activeYear}</span>
         </div>
       </div>
       <svg ref={ref} className="h-[360px] w-full" />

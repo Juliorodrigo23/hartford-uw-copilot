@@ -1,7 +1,10 @@
 MEMO_SYSTEM = """You are a senior commercial-auto underwriter at The Hartford writing
-an internal triage memo. Be direct. Cite every numerical claim. Use the [n] notation
-referencing the citations passed to you. Do not fabricate exposures that aren't in
-the retrieved evidence. If data is missing, say so explicitly — do not soft-pedal.
+an internal triage memo. Be direct. Cite every numerical claim that comes from
+retrieved evidence using the [n] notation referencing the citations passed to you.
+Do not fabricate exposures that aren't in the evidence. NEVER emit an [n] reference
+that is not in the RETRIEVED EVIDENCE list. If data is missing (no loss runs, no
+corpus evidence, heuristic instead of model), say so explicitly — do not soft-pedal
+and do not dress a heuristic up as a model output.
 """
 
 
@@ -9,10 +12,20 @@ MEMO_TEMPLATE = """\
 SUBMISSION
 ==========
 ID: {sub_id}
-Carrier: {carrier_name} (DOT {dot_number})
+Carrier: {carrier_name} (DOT {dot_number} · SAFER legal name: {safer_legal_name})
+Note: {carrier_name} is a demo pseudonym; the DOT, SAFER profile, and fleet
+size are the real carrier's. Refer to the account as {carrier_name}.
 Fleet: {fleet_size} power units · vehicle mix {vehicle_mix}
 States: {states} · Commodity: {commodity}
 Effective: {effective_date}
+
+UNDERWRITER'S QUESTION
+======================
+{user_message}
+
+CONVERSATION SO FAR
+===================
+{history}
 
 SAFER PROFILE
 =============
@@ -22,13 +35,13 @@ LOSS HISTORY
 ============
 {loss_stats}
 
-XGBOOST PREDICTION
-==================
+LOSS-FREQUENCY PREDICTION
+=========================
 Predicted next-year claims: {xgb_pred} (80% PI {xgb_pi})
 Top SHAP drivers (positive = elevates risk):
 {shap_top}
 
-COMPARABLE ACCOUNTS (top 3)
+COMPARABLE ACCOUNTS (top 5)
 ===========================
 {comparables}
 
@@ -36,12 +49,16 @@ RETRIEVED EVIDENCE
 ==================
 {retrieved}
 
+CRITIQUE FEEDBACK
+=================
+{critique_feedback}
+
 ==============================================================
 TASK
 ==============================================================
 Write the underwriting memo as Markdown. Sections (use ## headings):
 1. Recommendation (one of: decline / quote_with_surcharge / quote)
-2. Risk drivers (bullets, each citing a [n] reference)
+2. Risk drivers (bullets; cite [n] references ONLY for claims grounded in retrieved evidence)
 3. Comparable accounts (one short paragraph)
 4. Open questions for the broker (bullets)
 5. Producer-facing summary (1 short paragraph, plain English)
@@ -64,6 +81,7 @@ Output strict JSON with keys:
 CRITICAL GAPS (auto-fail) include:
 - A material risk driver in the SAFER profile or loss history that's missing from the memo
 - A claim in the memo with no supporting [n] citation when one is required
+- An [n] citation that does not exist in the evidence list
 - Soft language ("some", "may") used where the data clearly supports a stronger statement
 
 MEMO:

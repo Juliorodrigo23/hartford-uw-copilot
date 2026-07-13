@@ -6,15 +6,21 @@ from decimal import Decimal
 
 from app.schemas import LossStats, Submission
 
+# Rough industry median premium for mid-fleet commercial auto liability.
+# Surfaced on LossStats (assumed_premium_per_pu_usd) so downstream consumers
+# and the memo itself can disclose the assumption behind the loss ratio.
+ASSUMED_PREMIUM_PER_PU_USD = 5500
+
 
 def loss_stats(sub: Submission) -> LossStats | None:
+    """Frequency / severity / trend / loss ratio from the loss run.
+
+    Returns None when there is no loss run at all: an absent loss history is
+    materially different from a clean one, and the memo must say "no loss
+    runs provided" rather than reporting zeros as if they were computed.
+    """
     if not sub.loss_run:
-        return LossStats(
-            frequency_per_pu_per_yr=0.0,
-            severity_avg_usd=Decimal("0"),
-            trend_3yr_pct=0.0,
-            loss_ratio_3yr=0.0,
-        )
+        return None
     runs = sorted(sub.loss_run, key=lambda r: r.year)
     n_yr = max(1, len(runs))
     total_claims = sum(r.claims for r in runs)
@@ -30,12 +36,14 @@ def loss_stats(sub: Submission) -> LossStats | None:
         cagr = ((last / first) ** (1 / years) - 1) * 100
     else:
         cagr = 0.0
-    # Loss ratio assumes premium ≈ $5,500 / power unit / year (industry rough median for mid-fleet auto liability).
-    premium_3yr = Decimal(sub.fleet_size * 5500 * min(3, n_yr))
-    loss_ratio = float(total_incurred / premium_3yr) if premium_3yr else 0.0
+    premium_3yr = Decimal(sub.fleet_size * ASSUMED_PREMIUM_PER_PU_USD * min(3, n_yr))
+    incurred_last3 = sum(r.incurred_usd for r in last3)
+    loss_ratio = float(incurred_last3 / premium_3yr) if premium_3yr else 0.0
     return LossStats(
         frequency_per_pu_per_yr=freq,
         severity_avg_usd=sev_avg,
         trend_3yr_pct=float(cagr),
         loss_ratio_3yr=loss_ratio,
+        assumed_premium_per_pu_usd=ASSUMED_PREMIUM_PER_PU_USD,
+        n_years=n_yr,
     )

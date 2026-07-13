@@ -17,7 +17,8 @@ async def analyze_loss_history(state: AgentState) -> AgentState:
     if not sub:
         return {}
 
-    # Loss-run statistics
+    # Loss-run statistics (None when no loss run was provided — the memo
+    # must report absence, not zeros)
     t0 = time.time()
     stats = loss_stats(sub)
     ms_loss = int((time.time() - t0) * 1000)
@@ -25,11 +26,21 @@ async def analyze_loss_history(state: AgentState) -> AgentState:
         id=uuid.uuid4().hex[:8],
         name="loss_calc",
         input={"submission_id": sub.id, "n_loss_yrs": len(sub.loss_run)},
-        output=stats.model_dump(mode="json") if stats else None,
+        output=stats.model_dump(mode="json") if stats else {"note": "no loss runs provided"},
         ms=ms_loss,
     )
 
-    # XGBoost loss-frequency
+    out: AgentState = {
+        "loss_stats": stats,
+        "tool_calls": [*state.get("tool_calls", []), tc_loss],
+        "tool_results": [*state.get("tool_results", []), tc_loss],
+    }
+
+    # XGBoost loss-frequency (skippable for the ablation harness)
+    if state.get("disable_xgb"):
+        out["xgb_pred"] = None
+        return out
+
     t0 = time.time()
     pred = xgb_predict(sub, safer)
     ms_xgb = int((time.time() - t0) * 1000)
@@ -40,10 +51,7 @@ async def analyze_loss_history(state: AgentState) -> AgentState:
         output=pred.model_dump(mode="json") if pred else None,
         ms=ms_xgb,
     )
-
-    return {
-        "loss_stats": stats,
-        "xgb_pred": pred,
-        "tool_calls": [*state.get("tool_calls", []), tc_loss, tc_xgb],
-        "tool_results": [*state.get("tool_results", []), tc_loss, tc_xgb],
-    }
+    out["xgb_pred"] = pred
+    out["tool_calls"] = [*out["tool_calls"], tc_xgb]
+    out["tool_results"] = [*out["tool_results"], tc_xgb]
+    return out

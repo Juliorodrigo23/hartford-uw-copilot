@@ -11,6 +11,20 @@ const config: NextConfig = {
     optimizePackageImports: ["lucide-react", "framer-motion", "d3", "three"],
   },
   transpilePackages: ["three"],
+  // With a basePath set, the domain root serves nothing and 404s (which is
+  // what you hit when clicking the URL Vercel prints after a deploy).
+  // Redirect / → basePath so every entry link lands on the app.
+  async redirects() {
+    if (!basePath) return [];
+    return [
+      {
+        source: "/",
+        destination: basePath,
+        basePath: false as const,
+        permanent: false,
+      },
+    ];
+  },
   async headers() {
     return [
       {

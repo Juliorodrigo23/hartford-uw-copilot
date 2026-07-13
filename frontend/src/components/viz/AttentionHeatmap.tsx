@@ -1,18 +1,20 @@
 "use client";
 
 /**
- * AttentionHeatmap — token-level attention proxy. We don't have access to
- * Gemini's true attention weights, so we use *log-prob deltas under masking*
- * as a proxy: how much does each input token shift the log-prob of the
- * generated token? A standard "input attribution" surrogate that's defensible
- * in an interview.
+ * AttentionHeatmap — CONCEPT ILLUSTRATION, clearly badged as such in the UI.
  *
- * UI: a key generated token is highlighted; over the input tokens, a heatmap
- * row shows attribution. A dropdown switches the focal generated token.
+ * Gemini's attention weights aren't exposed, so the production-realistic
+ * approach is input attribution via log-prob deltas under masking. This
+ * component demonstrates what that surface looks like with a MOCK
+ * attribution matrix; it does not claim to show real model internals. The
+ * honest talking point: "here's the method I'd use and the UI it feeds;
+ * computing it for real requires token log-probs, which the Vertex API
+ * exposes via logprobs on generateContent."
  */
 
 import * as d3 from "d3";
 import { useEffect, useRef, useState } from "react";
+import { DataBadge } from "@/components/DataBadge";
 
 type Pair = { input: string[]; output: string[]; attribution: number[][] };
 
@@ -79,7 +81,7 @@ export function AttentionHeatmap() {
     const H = svg.clientHeight;
     const padL = 16;
     const padR = 16;
-    const padT = 64;
+    const padT = 108; // room for the slanted input-token labels
     const padB = 24;
     const cellH = 22;
     const sel = d3.select(svg).attr("viewBox", `0 0 ${W} ${H}`);
@@ -107,16 +109,19 @@ export function AttentionHeatmap() {
       .duration(220)
       .attr("opacity", 0.95);
 
-    // Input tokens
+    // Input tokens — slanted 55° so adjacent labels don't overlap on the
+    // narrow (~15px) cells. Anchored at the cell center, rotated in place.
     sel
       .append("g")
       .selectAll("text")
       .data(SAMPLE.input)
       .enter()
       .append("text")
-      .attr("x", (_, i) => padL + i * cellW + cellW / 2)
-      .attr("y", padT - 8)
-      .attr("text-anchor", "middle")
+      .attr(
+        "transform",
+        (_, i) => `translate(${padL + i * cellW + cellW / 2}, ${padT - 8}) rotate(-55)`,
+      )
+      .attr("text-anchor", "start")
       .attr("fill", "#9aa6b8")
       .attr("font-family", "ui-monospace, Menlo, monospace")
       .attr("font-size", 10)
@@ -171,10 +176,14 @@ export function AttentionHeatmap() {
 
   return (
     <div className="card overflow-hidden">
-      <div className="flex items-center gap-3 border-b border-border p-3">
+      <div className="flex flex-wrap items-center gap-3 border-b border-border p-3">
         <div className="font-mono text-2xs uppercase tracking-[0.18em] text-ink-dim">
-          Input attribution · log-prob delta proxy · single memo generation
+          Input attribution · concept walkthrough
         </div>
+        <DataBadge
+          kind="illustrative"
+          note="mock attribution matrix — shows the masking-based attribution METHOD, not real Gemini values"
+        />
         <div className="ml-auto flex items-center gap-2 text-2xs text-ink-muted">
           <span className="font-mono">focal token:</span>
           <select
@@ -190,7 +199,7 @@ export function AttentionHeatmap() {
           </select>
         </div>
       </div>
-      <svg ref={ref} className="h-[180px] w-full" />
+      <svg ref={ref} className="h-[230px] w-full" />
       <div className="border-t border-border px-4 py-3 text-2xs text-ink-dim">
         Note: Gemini doesn't expose internal attention weights. We use a
         log-prob delta surrogate (mask each input token, measure the shift in

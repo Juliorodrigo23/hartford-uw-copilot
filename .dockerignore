@@ -5,10 +5,6 @@
 **/.turbo
 **/.vercel
 **/.git
-backend/data/raw
-backend/data/processed
-backend/data/chroma
-backend/data/synthesized
 **/.pytest_cache
 **/.mypy_cache
 **/.ruff_cache
@@ -18,3 +14,9 @@ backend/data/synthesized
 *.json.key
 service-account*.json
 frontend
+
+# Raw corpus text is NOT needed at runtime (the index is); keep the image lean.
+# backend/data/{synthesized,chroma,processed,raw/fmcsa,exports} ARE copied — see Dockerfile.
+backend/data/raw/ntsb
+backend/data/raw/sec
+backend/data/checkpoints.sqlite*

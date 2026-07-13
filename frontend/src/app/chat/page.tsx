@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
-import { Send, RotateCcw, Wand2, Scale } from "lucide-react";
+import { Send, RotateCcw, Wand2, Scale, Radio } from "lucide-react";
 import { SubmissionPicker, type ChatSubmission } from "@/components/chat/SubmissionPicker";
 import { MessageStream, type Message } from "@/components/chat/MessageStream";
 import { AgentTracePanel, type TraceEvent } from "@/components/chat/AgentTracePanel";
@@ -19,6 +19,7 @@ export default function ChatPage() {
   const [busy, setBusy] = useState(false);
   const [citations, setCitations] = useState<{ ref: string; doc_id: string; snippet: string }[]>([]);
   const [critique, setCritique] = useState<"auto" | "openai" | "gemini">("auto");
+  const [demoNotice, setDemoNotice] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
   const send = useCallback(
@@ -43,7 +44,10 @@ export default function ChatPage() {
           body: JSON.stringify({
             submission_id: submission?.id,
             message: text,
-            history: [],
+            history: messages
+              .filter((m) => !m.pending && m.text)
+              .slice(-6)
+              .map((m) => ({ role: m.role, content: m.text })),
             critique_provider: critique === "auto" ? null : critique,
           }),
           signal: ac.signal,
@@ -56,7 +60,9 @@ export default function ChatPage() {
         }
 
         for await (const ev of parseSSE(res.body)) {
-          if (ev.type === "node_enter") {
+          if (ev.type === "demo_notice") {
+            setDemoNotice(ev.message);
+          } else if (ev.type === "node_enter") {
             setActive(ev.node);
             setTrace((t) => [...t, { kind: "node_enter", node: ev.node, t_ms: ev.t_ms }]);
           } else if (ev.type === "node_exit") {
@@ -69,19 +75,35 @@ export default function ChatPage() {
             setCitations((c) => [...c, { ref: ev.ref, doc_id: ev.docId, snippet: ev.snippet }]);
             setTrace((t) => [...t, { kind: "citation", ref: ev.ref, doc_id: ev.docId, snippet: ev.snippet }]);
           } else if (ev.type === "critique_judge") {
-            setTrace((t) => [...t, { kind: "critique_judge", judge: ev.judge, iter: ev.iter }]);
+            setTrace((t) => [
+              ...t,
+              { kind: "critique_judge", judge: ev.judge, iter: ev.iter, passed: ev.passed, error: ev.error, gaps: ev.gaps },
+            ]);
+          } else if (ev.type === "redraft") {
+            // The critique loop produced a new draft: clear the streamed
+            // text so the fresh draft replaces the old one cleanly.
+            updateLast((p) => ({ ...p, text: "" }));
           } else if (ev.type === "token") {
             updateLastByAppend(ev.text);
           } else if (ev.type === "final") {
-            // Optional: replace memo with the canonical final string
-            updateLast((prev) => ({ role: "assistant", text: prev.text || ev.memo, pending: false }));
+            updateLast((prev) => ({ role: "assistant", text: ev.memo || prev.text, pending: false }));
             setActive(null);
           } else if (ev.type === "error") {
             updateLast({ role: "assistant", text: `Backend error: ${ev.message}`, pending: false });
           }
         }
 
-        updateLast((p) => ({ ...p, pending: false }));
+        // Stream closed. If nothing ever arrived (proxy timeout, backend
+        // died mid-run), say so instead of leaving an empty bubble.
+        updateLast((p) => ({
+          ...p,
+          pending: false,
+          text:
+            p.text ||
+            "No response received — the stream closed before any tokens arrived. " +
+              "Usually this means the backend run timed out or errored mid-stream; " +
+              "check the Cloud Run logs (gcloud run services logs read uw-copilot-backend --region us-central1).",
+        }));
       } catch (e: unknown) {
         const errAny = e as { name?: string; message?: string };
         if (errAny?.name !== "AbortError") {
@@ -92,7 +114,7 @@ export default function ChatPage() {
         abortRef.current = null;
       }
     },
-    [busy, submission],
+    [busy, submission, critique, messages],
   );
 
   function updateLast(patch: Message | ((prev: Message) => Message)) {
@@ -134,16 +156,24 @@ export default function ChatPage() {
       <div className="mb-4">
         <div className="section-eyebrow">Live demo</div>
         <h1 className="mt-1 text-2xl font-semibold tracking-tight">
-          Underwriting copilot · streaming from Cloud Run
+          Underwriting copilot
         </h1>
         <p className="mt-1 max-w-3xl text-sm text-ink-muted">
           Pick a submission on the left to bind it as context. The middle panel
           streams tokens as they arrive. The right panel shows the live LangGraph
-          trace, tool calls (with input/output JSON), and citations. If you're seeing
-          this on the deployed site, it's hitting the same FastAPI service that
-          produced every number in the pipeline walkthrough.
+          trace, tool calls (with input/output JSON), and citations. Every
+          submission's DOT number resolves to a real FMCSA SAFER carrier profile.
         </p>
       </div>
+
+      {demoNotice && (
+        <div className="mb-4 flex items-start gap-2 rounded-md border border-warn-500/40 bg-warn-500/10 px-3 py-2 text-sm text-warn-400">
+          <Radio size={14} className="mt-0.5 shrink-0" />
+          <span>
+            <strong>Recorded replay.</strong> {demoNotice}
+          </span>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[280px_1fr_320px]">
         {/* Left: submissions */}

@@ -1,11 +1,16 @@
-"""XGBoost loss-frequency predictor — exposed as a tool for the agent."""
+"""XGBoost loss-frequency predictor — exposed as a tool for the agent.
+
+Provenance is explicit: predictions carry `source="xgboost"` only when the
+trained booster produced them. When artifacts are missing we return a
+clearly-labeled `source="heuristic_fallback"` estimate so the memo and the
+trace UI never present a heuristic as a model output.
+"""
 
 from __future__ import annotations
 
 import json
 import logging
 from functools import lru_cache
-from pathlib import Path
 
 import numpy as np
 
@@ -16,41 +21,50 @@ log = logging.getLogger(__name__)
 
 ARTIFACTS = settings.artifacts_dir
 MODEL_PATH = ARTIFACTS / "xgb_loss_freq.json"
-EXPLAINER_PATH = ARTIFACTS / "shap_explainer.pkl"
 META_PATH = ARTIFACTS / "model_meta.json"
 
 
 @lru_cache(maxsize=1)
 def _load_model():
-    """Load XGBoost booster + SHAP explainer if present.
+    """Load the XGBoost booster (+ metadata). No shap import at inference.
 
-    Returns (booster, explainer, feature_names) or None tuple if not yet trained.
-    The agent must still function before training so the eval harness can
-    proceed; in that case we return a fallback predictor (Poisson at λ=0.04 × PUs).
+    Attributions come from XGBoost's NATIVE exact TreeSHAP
+    (`booster.predict(..., pred_contribs=True)`), which returns the same
+    Shapley values as shap.TreeExplainer without importing shap/numba.
+    That matters twice over: a pickled explainer broke across Python
+    versions (audit finding), and initializing numba/llvmlite in a process
+    where torch is already loaded segfaults on macOS arm64 (observed as
+    exit 139 the moment the agent called this tool after retrieval had
+    loaded torch). shap is used only at training time, in its own process.
+
+    Returns (booster, feature_names, version, pi_multipliers).
     """
     if not MODEL_PATH.exists():
-        log.info("XGBoost artifacts not present at %s — using fallback predictor", MODEL_PATH)
-        return (None, None, [])
+        log.warning(
+            "XGBoost artifacts not present at %s — predictions will be labeled "
+            "heuristic_fallback until scripts/06_train_xgb.py is run",
+            MODEL_PATH,
+        )
+        return (None, [], None, None)
     try:
         import xgboost as xgb
-        import shap
 
         booster = xgb.Booster()
         booster.load_model(str(MODEL_PATH))
-        feat_names = []
+        feat_names: list[str] = []
+        version: str | None = None
+        pi_mult: tuple[float, float] | None = None
         if META_PATH.exists():
-            feat_names = json.loads(META_PATH.read_text()).get("feature_names", [])
-        explainer = None
-        if EXPLAINER_PATH.exists():
-            import pickle
-
-            with EXPLAINER_PATH.open("rb") as f:
-                explainer = pickle.load(f)
-        _ = shap  # quiet linters
-        return (booster, explainer, feat_names)
+            meta = json.loads(META_PATH.read_text())
+            feat_names = meta.get("feature_names", [])
+            version = meta.get("version")
+            pm = meta.get("pi80_multipliers")
+            if isinstance(pm, list) and len(pm) == 2:
+                pi_mult = (float(pm[0]), float(pm[1]))
+        return (booster, feat_names, version, pi_mult)
     except Exception as e:
         log.exception("model load failed: %s", e)
-        return (None, None, [])
+        return (None, [], None, None)
 
 
 def _features(sub: Submission, safer: SAFERProfile | None) -> tuple[np.ndarray, list[str]]:
@@ -70,6 +84,9 @@ def _features(sub: Submission, safer: SAFERProfile | None) -> tuple[np.ndarray, 
 
 
 def _fallback(sub: Submission, safer: SAFERProfile | None) -> XGBPrediction:
+    """Deterministic actuarial-style heuristic used ONLY when the model is
+    absent. Labeled as such; produces no SHAP values because there is no
+    model to explain."""
     base_rate = 0.04
     bump = 1.0
     if safer and safer.oos_rate_vehicle > 0.20:
@@ -81,15 +98,14 @@ def _fallback(sub: Submission, safer: SAFERProfile | None) -> XGBPrediction:
     return XGBPrediction(
         pred_claims_next_yr=float(pred),
         pi_80=(round(pi[0], 1), round(pi[1], 1)),
-        shap_top=[
-            {"f": "oos_vehicle", "v": (safer.oos_rate_vehicle - 0.12) * 8 if safer else 0.0},
-            {"f": "fleet_size", "v": float(np.log1p(sub.fleet_size) - 4)},
-        ],
+        shap_top=[],
+        source="heuristic_fallback",
+        model_version=None,
     )
 
 
 def xgb_predict(sub: Submission, safer: SAFERProfile | None) -> XGBPrediction:
-    booster, explainer, feat_names = _load_model()
+    booster, feat_names, version, pi_mult = _load_model()
     if booster is None:
         return _fallback(sub, safer)
 
@@ -103,16 +119,26 @@ def xgb_predict(sub: Submission, safer: SAFERProfile | None) -> XGBPrediction:
         names = [names[i] for i in idx]
     dmat = xgb.DMatrix(x.reshape(1, -1), feature_names=names)
     yhat = float(booster.predict(dmat)[0])
-    pi_low, pi_high = max(0.0, yhat * 0.72), yhat * 1.42  # rough analytic 80% PI
+    # 80% PI from EMPIRICAL out-of-fold residual quantiles (stored in
+    # model_meta.json by training); analytic fallback only for old metadata.
+    lo_m, hi_m = pi_mult if pi_mult else (0.72, 1.42)
+    pi_low, pi_high = max(0.0, yhat * lo_m), yhat * hi_m
+    # Exact TreeSHAP via XGBoost's native predictor; last column is the bias.
     shap_top: list[dict] = []
     try:
-        if explainer is not None:
-            sv = explainer(x.reshape(1, -1)).values[0]
-            top = sorted(
-                ({"f": names[i], "v": float(sv[i])} for i in range(len(names))),
-                key=lambda d: -abs(d["v"]),
-            )
-            shap_top = top[:6]
+        contribs = booster.predict(dmat, pred_contribs=True)[0]
+        shap_vals = contribs[:-1]
+        top = sorted(
+            ({"f": names[i], "v": float(shap_vals[i])} for i in range(len(names))),
+            key=lambda d: -abs(d["v"]),
+        )
+        shap_top = top[:6]
     except Exception as e:
-        log.warning("SHAP explanation failed: %s", e)
-    return XGBPrediction(pred_claims_next_yr=yhat, pi_80=(round(pi_low, 1), round(pi_high, 1)), shap_top=shap_top)
+        log.warning("native TreeSHAP failed: %s", e)
+    return XGBPrediction(
+        pred_claims_next_yr=yhat,
+        pi_80=(round(pi_low, 1), round(pi_high, 1)),
+        shap_top=shap_top,
+        source="xgboost",
+        model_version=version,
+    )

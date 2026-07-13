@@ -1,4 +1,10 @@
-"""Track 1 — Retrieval evaluation."""
+"""Track 1 — Retrieval evaluation.
+
+Every result carries a `status`:
+  ok       — metrics were computed against the golden set
+  skipped  — prerequisites missing (no golden set / empty index); no metrics
+The runner NEVER emits zero-filled metrics for a track that didn't run.
+"""
 
 from __future__ import annotations
 
@@ -40,23 +46,40 @@ def _ndcg(retrieved: list[str], relevant: set[str], k: int = 10) -> float:
 async def evaluate_retrieval(k_final: int = 10) -> dict:
     if not GOLDEN.exists():
         log.warning("no golden retrieval set at %s", GOLDEN)
-        return {
-            "recall_at_5": 0.0,
-            "recall_at_10": 0.0,
-            "mrr": 0.0,
-            "ndcg_at_10": 0.0,
-            "n_questions": 0,
-        }
+        return {"status": "skipped", "reason": f"golden set missing at {GOLDEN}"}
 
     qs = json.loads(GOLDEN.read_text())["questions"]
+
+    # Coverage gate: the golden set labels CHUNK ids. If most labeled ids no
+    # longer exist in the built index (corpus rebuilt, chunk boundaries
+    # moved), scoring would silently measure staleness, not retrieval
+    # quality. Refuse and say so.
+    bm25_path = settings.data_dir / "processed" / "bm25_corpus.json"
+    if bm25_path.exists():
+        index_ids = {d["id"] for d in json.loads(bm25_path.read_text())["docs"]}
+        labeled = {i for q in qs for i in q["relevant_doc_ids"]}
+        missing = labeled - index_ids
+        if labeled and len(missing) / len(labeled) > 0.5:
+            return {
+                "status": "skipped",
+                "reason": (
+                    f"golden set is stale: {len(missing)}/{len(labeled)} labeled chunk ids "
+                    "are not in the built index — relabel retrieval_questions.json "
+                    "against the current corpus before scoring"
+                ),
+            }
+
     recall5: list[float] = []
     recall10: list[float] = []
     mrrs: list[float] = []
     ndcgs: list[float] = []
     by_corpus: dict[str, list[float]] = {}
+    any_hits = False
     for q in qs:
         relevant = set(q["relevant_doc_ids"])
         chunks = await hybrid_search(q["query"], k_final=max(10, k_final))
+        if chunks:
+            any_hits = True
         ids = [c.doc_id for c in chunks]
         recall5.append(_recall_at_k(ids, relevant, 5))
         recall10.append(_recall_at_k(ids, relevant, 10))
@@ -65,19 +88,22 @@ async def evaluate_retrieval(k_final: int = 10) -> dict:
         c = q.get("corpus", "all")
         by_corpus.setdefault(c, []).append(_recall_at_k(ids, relevant, 10))
 
+    if not any_hits:
+        # The index is empty or unreachable. Zeros here would be a lie about
+        # retrieval quality; it's an infrastructure failure, so say so.
+        return {
+            "status": "skipped",
+            "reason": "index returned no chunks for any query — run scripts/02-04 first",
+        }
+
     by_corpus_out = [{"corpus": c, "recall_at_10": _avg(v), "n": len(v)} for c, v in by_corpus.items()]
 
     return {
+        "status": "ok",
         "recall_at_5": _avg(recall5),
         "recall_at_10": _avg(recall10),
         "mrr": _avg(mrrs),
         "ndcg_at_10": _avg(ndcgs),
-        "ragas": {
-            # Filled in by ragas_runner if installed; otherwise zeros.
-            "context_precision": 0.0,
-            "context_recall": 0.0,
-            "faithfulness": 0.0,
-        },
         "by_corpus": by_corpus_out,
         "n_questions": len(qs),
     }

@@ -37,7 +37,17 @@ def _producer_summary(memo_md: str) -> str:
 async def finalize(state: AgentState) -> AgentState:
     sub = state.get("submission")
     memo_md = state.get("memo_md", "")
-    disposition = _extract_disposition(memo_md)
+    if not memo_md or "Error generating memo" in memo_md:
+        # A failed generation is not an underwriting opinion. Emitting the
+        # soft default ("quote_with_surcharge @ 0.5") on an error memo would
+        # be a fabricated recommendation.
+        disposition = Disposition(
+            label="data_insufficient",
+            confidence=0.0,
+            drivers=["memo generation failed — no recommendation produced"],
+        )
+    else:
+        disposition = _extract_disposition(memo_md)
     memo = Memo(
         submission_id=sub.id if sub else "AD_HOC",
         disposition=disposition,

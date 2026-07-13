@@ -1,47 +1,17 @@
 "use client";
 
 /**
- * HybridSearchBars — three columns side-by-side showing how BM25 and dense
- * retrieval rank a sample query, then how Reciprocal Rank Fusion + cross-
- * encoder rerank produces the final list. Emphasizes the "where each ranker
- * disagrees" story: BM25 picks up keyword matches the dense model misses,
- * dense picks up semantic matches the BM25 misses.
+ * HybridSearchBars — how BM25, dense retrieval, RRF fusion, and the
+ * cross-encoder rerank each order the corpus for a golden query. Every
+ * ranking comes from the REAL pipeline (retrieval_example.json, produced by
+ * hybrid_search.search_stages in script 08). Pending until the index exists.
  */
 
 import { motion } from "framer-motion";
-import { useMemo, useState } from "react";
-
-type Doc = {
-  id: string;
-  title: string;
-  source: string;
-};
-
-const DOCS: Doc[] = [
-  { id: "ntsb-2019-04", title: "I-35 multi-vehicle crash · driver fatigue", source: "ntsb" },
-  { id: "10k-knx-2023-rf", title: "Knight-Swift 10-K · risk factors · driver shortage", source: "10k" },
-  { id: "ntsb-2022-12", title: "Jackknife I-10 · brake adjustment failure", source: "ntsb" },
-  { id: "10k-wern-2022-rf", title: "Werner 10-K · accident frequency disclosures", source: "10k" },
-  { id: "forms-iso-ca-0001", title: "ISO CA 00 01 · Business Auto Coverage Form", source: "forms" },
-  { id: "ntsb-2020-08", title: "Doubles, fatigue · run-off-road TX", source: "ntsb" },
-  { id: "10k-jbht-2023-rf", title: "JB Hunt 10-K · safety program disclosures", source: "10k" },
-  { id: "ntsb-2023-03", title: "Fog pileup LA · visibility failure", source: "ntsb" },
-  { id: "industry-ata-2023", title: "ATA 2023 economic outlook · trucking", source: "industry" },
-  { id: "ntsb-2024-01", title: "Hazmat bridge strike · DC", source: "ntsb" },
-];
-
-const QUERIES = [
-  {
-    q: "long-haul fatigue claims for fleets > 200 power units, particularly overnight runs",
-    bm25: ["ntsb-2020-08", "ntsb-2019-04", "10k-knx-2023-rf", "ntsb-2024-01", "ntsb-2022-12", "ntsb-2023-03", "10k-wern-2022-rf", "10k-jbht-2023-rf", "industry-ata-2023", "forms-iso-ca-0001"],
-    dense: ["ntsb-2019-04", "ntsb-2020-08", "10k-jbht-2023-rf", "10k-knx-2023-rf", "10k-wern-2022-rf", "ntsb-2023-03", "industry-ata-2023", "ntsb-2022-12", "ntsb-2024-01", "forms-iso-ca-0001"],
-  },
-  {
-    q: "brake adjustment failure root cause, jackknife on grade",
-    bm25: ["ntsb-2022-12", "ntsb-2024-01", "ntsb-2019-04", "forms-iso-ca-0001", "10k-knx-2023-rf", "ntsb-2020-08", "ntsb-2023-03", "10k-wern-2022-rf", "10k-jbht-2023-rf", "industry-ata-2023"],
-    dense: ["ntsb-2022-12", "ntsb-2019-04", "ntsb-2024-01", "ntsb-2020-08", "ntsb-2023-03", "10k-wern-2022-rf", "10k-knx-2023-rf", "10k-jbht-2023-rf", "industry-ata-2023", "forms-iso-ca-0001"],
-  },
-];
+import { useState } from "react";
+import { useData } from "@/lib/useData";
+import { DataBadge, PendingCard } from "@/components/DataBadge";
+import type { RetrievalExample, RetrievalStageHit } from "@/lib/api";
 
 const SRC_COLORS: Record<string, string> = {
   ntsb: "#60a5fa",
@@ -50,129 +20,98 @@ const SRC_COLORS: Record<string, string> = {
   industry: "#c084fc",
 };
 
-function rrf(rankings: string[][], k = 60): { id: string; score: number }[] {
-  const scores = new Map<string, number>();
-  for (const r of rankings) {
-    r.forEach((id, idx) => {
-      scores.set(id, (scores.get(id) ?? 0) + 1 / (k + idx + 1));
-    });
-  }
-  return Array.from(scores.entries())
-    .map(([id, score]) => ({ id, score }))
-    .sort((a, b) => b.score - a.score);
-}
-
-// "Cross-encoder" fake rerank: shuffle within first 5 with a deterministic
-// nudge based on title length (just for variety in the demo). Real backend
-// uses ms-marco MiniLM cross-encoder.
-function rerank(top: { id: string; score: number }[]): { id: string; score: number }[] {
-  return [...top].slice(0, 8).sort((a, b) => {
-    const lenA = (DOCS.find((d) => d.id === a.id)?.title.length ?? 0);
-    const lenB = (DOCS.find((d) => d.id === b.id)?.title.length ?? 0);
-    return b.score + lenB * 0.0005 - (a.score + lenA * 0.0005);
-  });
-}
-
 export function HybridSearchBars() {
-  const [qIdx, setQIdx] = useState(0);
-  const q = QUERIES[qIdx];
-  const fused = useMemo(() => rrf([q.bm25, q.dense]), [q]);
-  const reranked = useMemo(() => rerank(fused), [fused]);
+  const { data, status } = useData<RetrievalExample>("retrieval_example.json");
+  const [qi, setQi] = useState(0);
 
-  function docMeta(id: string) {
-    return DOCS.find((d) => d.id === id)!;
+  if (status === "loading") {
+    return <div className="card p-6 text-sm text-ink-dim">loading retrieval example…</div>;
   }
+  if (status === "missing" || !data?.queries?.length) {
+    return (
+      <PendingCard
+        title="Per-stage retrieval rankings not exported yet (the index must exist first)."
+        command="uv run python scripts/02_download_ntsb.py && ... 04_build_index.py && 08_export_viz_data.py"
+      />
+    );
+  }
+
+  const q = data.queries[Math.min(qi, data.queries.length - 1)];
+  const columns: { title: string; hits: RetrievalStageHit[] }[] = [
+    { title: "BM25 (keyword)", hits: q.bm25 },
+    { title: "Dense (bge embeddings)", hits: q.dense },
+    { title: "RRF + cross-encoder rerank", hits: q.reranked },
+  ];
+  const rerankTop = new Set(q.reranked.slice(0, 3).map((h) => h.id));
 
   return (
-    <div className="card overflow-hidden">
-      <div className="flex flex-wrap items-center gap-3 border-b border-border p-3">
+    <div className="card p-4">
+      <div className="flex flex-wrap items-center gap-3">
         <div className="font-mono text-2xs uppercase tracking-[0.18em] text-ink-dim">
-          Hybrid retrieval · BM25 + dense + RRF + cross-encoder rerank
+          Hybrid retrieval · real per-stage rankings
         </div>
-        <select
-          className="ml-auto rounded-md border border-border bg-bg-card px-2 py-1 text-xs text-ink"
-          value={qIdx}
-          onChange={(e) => setQIdx(Number(e.target.value))}
-        >
-          {QUERIES.map((qq, i) => (
-            <option key={qq.q} value={i}>
-              {`#${i + 1} · ${qq.q.slice(0, 64)}…`}
-            </option>
-          ))}
-        </select>
+        <DataBadge kind="live" />
+        {data.queries.length > 1 && (
+          <div className="ml-auto flex items-center gap-1 rounded-md border border-border bg-bg-card p-1 text-xs">
+            {data.queries.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setQi(i)}
+                className={`rounded px-2 py-1 ${qi === i ? "bg-bg-subtle text-ink" : "text-ink-muted"}`}
+              >
+                Q{i + 1}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+      <div className="mt-2 rounded-md border border-border bg-bg-subtle/40 px-3 py-2 font-mono text-xs text-ink">
+        “{q.query}”
       </div>
 
-      <div className="p-4">
-        <div className="rounded-md border border-border bg-bg-subtle/50 p-3 font-mono text-xs text-ink">
-          <span className="text-ink-dim">query →</span> {q.q}
-        </div>
-
-        <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
-          <Column title="BM25" subtitle="lexical · rank-bm25" docs={q.bm25.map((id) => ({ id, score: 1 }))} keyPrefix="bm25" />
-          <Column title="Dense" subtitle="bge-large-en-v1.5 · cosine" docs={q.dense.map((id) => ({ id, score: 1 }))} keyPrefix="dense" />
-          <Column title="RRF + rerank" subtitle="reciprocal rank fusion → ms-marco MiniLM" docs={reranked} keyPrefix="rrf" highlight />
-        </div>
-
-        <div className="mt-4 text-2xs text-ink-dim">
-          BM25 surfaces the chunk titled <em>"Doubles, fatigue · run-off-road TX"</em> at the top — a literal keyword match for "fatigue".
-          The dense model promotes <em>"I-35 multi-vehicle crash · driver fatigue"</em> first because the surrounding narrative is
-          semantically closer to the long-haul query, even though the title shares fewer keywords. RRF balances both;
-          the cross-encoder rerank then pushes documents whose <em>chunk-level</em> match is strongest, not just title-level.
-        </div>
+      <div className="mt-3 grid grid-cols-1 gap-3 lg:grid-cols-3">
+        {columns.map((col, ci) => (
+          <div key={col.title} className="card p-2">
+            <div className="mb-2 px-1 font-mono text-2xs uppercase tracking-[0.16em] text-ink-dim">
+              {col.title}
+            </div>
+            <ol className="space-y-1">
+              {col.hits.slice(0, 8).map((h, i) => {
+                const color = SRC_COLORS[h.source] ?? "#9aa6b8";
+                const promoted = ci === 2 && rerankTop.has(h.id);
+                return (
+                  <motion.li
+                    key={h.id}
+                    initial={{ opacity: 0, x: -6 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, amount: 0.2 }}
+                    transition={{ delay: ci * 0.35 + i * 0.12 }}
+                    className={`rounded-md border px-2 py-1.5 text-xs ${
+                      promoted ? "border-accent-500/50 bg-accent-500/10" : "border-border bg-bg-card/60"
+                    }`}
+                    title={h.snippet}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-2xs tabular-nums text-ink-dim">{i + 1}</span>
+                      <span className="h-1.5 w-1.5 rounded-full" style={{ background: color }} />
+                      <span className="truncate font-mono text-ink">{h.id}</span>
+                      <span className="ml-auto font-mono text-2xs tabular-nums text-ink-dim">
+                        {h.score.toFixed(3)}
+                      </span>
+                    </div>
+                  </motion.li>
+                );
+              })}
+            </ol>
+          </div>
+        ))}
+      </div>
+      <div className="mt-3 text-2xs text-ink-dim">
+        Where the columns disagree is the whole argument for hybrid: BM25
+        catches exact terminology, dense catches semantics, RRF fuses both,
+        and the cross-encoder reorders the fused pool with full query-passage
+        attention.
       </div>
     </div>
   );
-
-  function Column({
-    title,
-    subtitle,
-    docs,
-    keyPrefix,
-    highlight,
-  }: {
-    title: string;
-    subtitle: string;
-    docs: { id: string; score: number }[];
-    keyPrefix: string;
-    highlight?: boolean;
-  }) {
-    return (
-      <div className={`card p-3 ${highlight ? "border-brand-700/40 bg-brand-700/5" : ""}`}>
-        <div className="mb-2 flex items-baseline justify-between">
-          <div>
-            <div className="font-mono text-2xs uppercase tracking-[0.18em] text-ink-dim">{subtitle}</div>
-            <div className="text-sm font-semibold">{title}</div>
-          </div>
-          {highlight && (
-            <span className="rounded-full border border-brand-500/40 bg-brand-500/10 px-2 py-0.5 font-mono text-2xs uppercase tracking-[0.18em] text-brand-400">
-              final
-            </span>
-          )}
-        </div>
-        <ol className="space-y-1.5">
-          {docs.slice(0, 8).map((d, i) => {
-            const m = docMeta(d.id);
-            return (
-              <motion.li
-                key={`${keyPrefix}-${d.id}`}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.04, duration: 0.25 }}
-                className="flex items-center gap-2 rounded border border-border/60 bg-bg-card/60 px-2 py-1.5 text-2xs"
-              >
-                <span className="w-4 font-mono tabular-nums text-ink-dim">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <span
-                  className="h-1.5 w-1.5 shrink-0 rounded-full"
-                  style={{ background: SRC_COLORS[m.source] ?? "#9aa6b8" }}
-                />
-                <span className="truncate text-ink">{m.title}</span>
-              </motion.li>
-            );
-          })}
-        </ol>
-      </div>
-    );
-  }
 }

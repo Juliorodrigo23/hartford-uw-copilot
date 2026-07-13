@@ -1,0 +1,501 @@
+target_company,ranking_basis,ranking_source,prospect_name,likely_title,linkedin_url,public_email,public_phone,contact_note,why_this_person,confidence,recommended_channel,email_subject,linkedin_connection_request,tailored_reachout
+Travelers,Commercial lines top 10; commercial auto top 25,"III/NAIC/S&P Global Market Intelligence top 10 commercial lines writers, 2024: https://www.iii.org/fact-statistic/facts-statistics-commercial-lines",Nicholas Wood,"AVP Decision Science, Operations & Underwriting",https://www.linkedin.com/in/nicholas-wood-47b64566,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.","Direct match to underwriting AI, predictive modeling, and operational decision support.",High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for Travelers,"Hi Nicholas, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your decision-science work across underwriting and operations at Travelers, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Nicholas,
+
+I saw your decision-science work across underwriting and operations at Travelers and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+Chubb,Commercial lines top 10; commercial auto top 25,"III/NAIC/S&P Global Market Intelligence top 10 commercial lines writers, 2024: https://www.iii.org/fact-statistic/facts-statistics-commercial-lines",Jing Deng,"VP, Data Science",https://www.linkedin.com/in/jing-deng-fcas-76343812,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Senior data-science leader at a top commercial lines carrier.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for Chubb,"Hi Jing, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your data-science leadership at Chubb, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Jing,
+
+I saw your data-science leadership at Chubb and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+Liberty Mutual,Commercial lines top 10; commercial auto top 25,"III/NAIC/S&P Global Market Intelligence top 10 commercial lines writers, 2024: https://www.iii.org/fact-statistic/facts-statistics-commercial-lines",Rajath Nagaraj,Assistant Director of Data Science,https://www.linkedin.com/in/rajath-nagaraj-0787b8115,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",GenAI and data-science leadership with direct relevance to applied AI insurance use cases.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for Liberty Mutual,"Hi Rajath, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your GenAI-focused data-science work at Liberty Mutual, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Rajath,
+
+I saw your GenAI-focused data-science work at Liberty Mutual and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+Berkshire Hathaway Specialty Insurance,Commercial lines top 10; commercial auto top 25 via Berkshire Hathaway group,"III/NAIC/S&P Global Market Intelligence top 10 commercial lines writers, 2024: https://www.iii.org/fact-statistic/facts-statistics-commercial-lines",Nikhil Khanna,"Global Modeling & Analytics, Berkshire Hathaway Specialty Insurance",https://www.linkedin.com/in/nwkhanna,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Modeling and analytics role inside Berkshire Hathaway's specialty insurance business.,Medium,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for Berkshire Hathaway Specia,"Hi Nikhil, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your global modeling and analytics work at BHSI, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Nikhil,
+
+I saw your global modeling and analytics work at BHSI and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+Zurich North America,Commercial lines top 10; commercial auto top 25,"III/NAIC/S&P Global Market Intelligence top 10 commercial lines writers, 2024: https://www.iii.org/fact-statistic/facts-statistics-commercial-lines",Swati Jain,"AVP, Data & Analytics",https://www.linkedin.com/in/swati-jain-a885245,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Senior data and analytics role at a major commercial insurer.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for Zurich North America,"Hi Swati, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your data and analytics leadership at Zurich North America, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Swati,
+
+I saw your data and analytics leadership at Zurich North America and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+AIG,Commercial lines top 10; commercial auto top 25,"III/NAIC/S&P Global Market Intelligence top 10 commercial lines writers, 2024: https://www.iii.org/fact-statistic/facts-statistics-commercial-lines",Song Chen,"Director, Data Science",https://www.linkedin.com/in/song-chen-001674101,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Director-level data-science leader in insurance.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for AIG,"Hi Song, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your data-science leadership at AIG, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Song,
+
+I saw your data-science leadership at AIG and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+The Hartford,Commercial lines top 10; commercial auto top 25,"III/NAIC/S&P Global Market Intelligence top 10 commercial lines writers, 2024: https://www.iii.org/fact-statistic/facts-statistics-commercial-lines",Dylan Martz,"Director Data Science, Actuarial Technology Innovation",https://www.linkedin.com/in/dylan-martz,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Closest possible internal-fit target for the exact interview/demo context.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for The Hartford,"Hi Dylan, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your actuarial technology innovation work at The Hartford, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Dylan,
+
+I saw your actuarial technology innovation work at The Hartford and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+CNA,Commercial lines top 10; commercial auto top 25,"III/NAIC/S&P Global Market Intelligence top 10 commercial lines writers, 2024: https://www.iii.org/fact-statistic/facts-statistics-commercial-lines",Rich Wein,"SVP & Actuary, Global Portfolio Management and Underwriting Analytics",https://www.linkedin.com/in/rich-wein-fcas-a804b828,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Highly aligned with underwriting analytics and commercial-risk portfolio strategy.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for CNA,"Hi Rich, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your global portfolio-management and underwriting-analytics work at CNA, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Rich,
+
+I saw your global portfolio-management and underwriting-analytics work at CNA and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+Progressive,Commercial lines top 10; commercial auto top 25,"III/NAIC/S&P Global Market Intelligence top 10 commercial lines writers, 2024: https://www.iii.org/fact-statistic/facts-statistics-commercial-lines",John Brunecz,Director of Data Analysis,https://www.linkedin.com/in/john-brunecz-39aa486,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Progressive is the largest commercial auto writer; data-analysis leadership is relevant to auto underwriting analytics.,Medium,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for Progressive,"Hi John, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your data-analysis leadership at Progressive, I’d value connecting. Demo: https://juliooo.com/hartford","Hi John,
+
+I saw your data-analysis leadership at Progressive and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+Tokio Marine HCC,Commercial lines top 10; commercial auto top 25 via Tokio Marine group,"III/NAIC/S&P Global Market Intelligence top 10 commercial lines writers, 2024: https://www.iii.org/fact-statistic/facts-statistics-commercial-lines",Hikaru Tseng,"Senior Manager, Business Analytics",https://www.linkedin.com/in/hikarutseng,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Analytics manager in a specialty commercial insurance group.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for Tokio Marine HCC,"Hi Hikaru, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your business-analytics work in Tokio Marine HCC's cyber and professional lines group, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Hikaru,
+
+I saw your business-analytics work in Tokio Marine HCC's cyber and professional lines group and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+Old Republic,Commercial auto top 25,"AgencyChecklists summary of NAIC 2024 market-share report, top 25 commercial auto insurers: https://agencychecklists.com/2024/04/08/naic-2024-market-share-report-top-25-commercial-auto-insurers-70601/",Nick Gallagher,"Lead Data Scientist, Old Republic Professional",https://www.linkedin.com/in/nick-gallagher-85a857ab,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Data-science lead at Old Republic; relevant for specialty/commercial risk modeling.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for Old Republic,"Hi Nick, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your lead data-science work at Old Republic Professional, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Nick,
+
+I saw your lead data-science work at Old Republic Professional and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+Auto-Owners Insurance,Commercial auto top 25,"AgencyChecklists summary of NAIC 2024 market-share report, top 25 commercial auto insurers: https://agencychecklists.com/2024/04/08/naic-2024-market-share-report-top-25-commercial-auto-insurers-70601/",Ryan Shackelford,"Administrator, Commercial Lines Analytics",https://www.linkedin.com/in/ryan-shackelford-644a66132,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Direct commercial-lines analytics title at a top commercial auto writer.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for Auto-Owners,"Hi Ryan, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your commercial lines analytics work at Auto-Owners, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Ryan,
+
+I saw your commercial lines analytics work at Auto-Owners and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+State Farm,Commercial auto top 25; large U.S. P&C,"AgencyChecklists summary of NAIC 2024 market-share report, top 25 commercial auto insurers: https://agencychecklists.com/2024/04/08/naic-2024-market-share-report-top-25-commercial-auto-insurers-70601/",Jeremy Mulcahey,"Senior Manager, Data Science",https://www.linkedin.com/in/jeremy-mulcahey-2051214a,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Senior data-science manager at a large P&C carrier with commercial auto presence.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for State Farm,"Hi Jeremy, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your senior data-science leadership at State Farm, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Jeremy,
+
+I saw your senior data-science leadership at State Farm and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+W. R. Berkley,Commercial auto top 25; large U.S. P&C,"AgencyChecklists summary of NAIC 2024 market-share report, top 25 commercial auto insurers: https://agencychecklists.com/2024/04/08/naic-2024-market-share-report-top-25-commercial-auto-insurers-70601/",Clark Farrey,VP and Chief Data Officer,https://www.linkedin.com/in/clark-farrey,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Chief data role at a commercial/specialty insurance group.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for W. R. Berkley,"Hi Clark, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your data and analytics strategy leadership at W. R. Berkley, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Clark,
+
+I saw your data and analytics strategy leadership at W. R. Berkley and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+Nationwide,Commercial auto top 25; large U.S. P&C,"AgencyChecklists summary of NAIC 2024 market-share report, top 25 commercial auto insurers: https://agencychecklists.com/2024/04/08/naic-2024-market-share-report-top-25-commercial-auto-insurers-70601/",Craig Maas,"Director, Data Science",https://www.linkedin.com/in/craigmaas,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Director-level data-science leader at a national carrier.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for Nationwide,"Hi Craig, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your data-science leadership at Nationwide, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Craig,
+
+I saw your data-science leadership at Nationwide and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+Great American Insurance Group,Commercial auto top 25 via American Financial Group; large U.S. P&C,"AgencyChecklists summary of NAIC 2024 market-share report, top 25 commercial auto insurers: https://agencychecklists.com/2024/04/08/naic-2024-market-share-report-top-25-commercial-auto-insurers-70601/",Rob Golden,Chief Data & Analytics Officer,https://www.linkedin.com/in/rob-golden-ba847bb,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Executive analytics leader at American Financial Group's P&C business.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for Great American,"Hi Rob, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your chief data and analytics leadership at Great American, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Rob,
+
+I saw your chief data and analytics leadership at Great American and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+Selective Insurance,Commercial auto top 25; large U.S. P&C,"AgencyChecklists summary of NAIC 2024 market-share report, top 25 commercial auto insurers: https://agencychecklists.com/2024/04/08/naic-2024-market-share-report-top-25-commercial-auto-insurers-70601/",Tom Case,"Vice President, Business Intelligence & Operational Insights",https://www.linkedin.com/in/tom-case-cpcu-cic-22b5595,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",VP-level analytics/insights target at a commercial-lines carrier.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for Selective,"Hi Tom, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your BI and operational insights leadership at Selective, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Tom,
+
+I saw your BI and operational insights leadership at Selective and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+Crum & Forster,Commercial auto top 25 via Fairfax group; large U.S. P&C,"AgencyChecklists summary of NAIC 2024 market-share report, top 25 commercial auto insurers: https://agencychecklists.com/2024/04/08/naic-2024-market-share-report-top-25-commercial-auto-insurers-70601/",Jay Koh,"Manager, Underwriting and Strategic Analytics",https://www.linkedin.com/in/jay-koh-cpcu-arm-b398a434,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Exact underwriting + analytics title at a Fairfax commercial/specialty carrier.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for Crum & Forster,"Hi Jay, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your underwriting and strategic analytics work at Crum & Forster, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Jay,
+
+I saw your underwriting and strategic analytics work at Crum & Forster and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+Sentry Insurance,Commercial auto top 25; large U.S. P&C,"AgencyChecklists summary of NAIC 2024 market-share report, top 25 commercial auto insurers: https://agencychecklists.com/2024/04/08/naic-2024-market-share-report-top-25-commercial-auto-insurers-70601/",Sean Nimm,"Chief Actuary, Analytics & Risk Officer",https://www.linkedin.com/in/sean-nimm-a5418278,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.","Executive actuarial, analytics, and risk role at a commercial-auto carrier.",High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for Sentry,"Hi Sean, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your analytics and risk leadership at Sentry, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Sean,
+
+I saw your analytics and risk leadership at Sentry and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+Erie Insurance,Commercial auto top 25; large U.S. P&C,"AgencyChecklists summary of NAIC 2024 market-share report, top 25 commercial auto insurers: https://agencychecklists.com/2024/04/08/naic-2024-market-share-report-top-25-commercial-auto-insurers-70601/",Adrecia Milsap,Data & Analytics Manager,https://www.linkedin.com/in/adrecia-milsap-4aa6797,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Manager-level analytics role at a top P&C and commercial-auto writer.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for Erie,"Hi Adrecia, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your data and analytics management work at Erie, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Adrecia,
+
+I saw your data and analytics management work at Erie and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+Cincinnati Insurance,Commercial auto top 25; large U.S. P&C,"AgencyChecklists summary of NAIC 2024 market-share report, top 25 commercial auto insurers: https://agencychecklists.com/2024/04/08/naic-2024-market-share-report-top-25-commercial-auto-insurers-70601/",Kevin Karp,Commercial Lines Analytics Manager,https://www.linkedin.com/in/kevin-karp-35147178,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Direct commercial-lines analytics manager title.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for Cincinnati,"Hi Kevin, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your commercial lines analytics work at Cincinnati Insurance, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Kevin,
+
+I saw your commercial lines analytics work at Cincinnati Insurance and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+Allstate,Commercial auto top 25; large U.S. P&C,"AgencyChecklists summary of NAIC 2024 market-share report, top 25 commercial auto insurers: https://agencychecklists.com/2024/04/08/naic-2024-market-share-report-top-25-commercial-auto-insurers-70601/",Joe Kleinhenz,"Data Science Vice President, Auto Line",https://www.linkedin.com/in/kleinhenzj,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",VP data-science role tied to auto pricing; relevant to commercial auto risk modeling.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for Allstate,"Hi Joe, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your auto-line data-science leadership at Allstate, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Joe,
+
+I saw your auto-line data-science leadership at Allstate and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+Acuity Insurance,Commercial auto top 25; large U.S. P&C,"AgencyChecklists summary of NAIC 2024 market-share report, top 25 commercial auto insurers: https://agencychecklists.com/2024/04/08/naic-2024-market-share-report-top-25-commercial-auto-insurers-70601/",Stephen Dziatkiewicz,"Manager, Strategic Analytics",https://www.linkedin.com/in/stephen-dziatkiewicz-a4203414,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Analytics manager at a top commercial-auto writer.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for Acuity,"Hi Stephen, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your strategic analytics work at Acuity, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Stephen,
+
+I saw your strategic analytics work at Acuity and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+Federated Insurance,Commercial auto top 25; large U.S. P&C,"AgencyChecklists summary of NAIC 2024 market-share report, top 25 commercial auto insurers: https://agencychecklists.com/2024/04/08/naic-2024-market-share-report-top-25-commercial-auto-insurers-70601/",Jace Jirak,"Business Technology Manager, Data & Analytics Platform",https://www.linkedin.com/in/jace-jirak-55287b13b,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Technology manager for data and analytics platform; possible path into applied AI teams.,Medium,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for Federated,"Hi Jace, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your data and analytics platform leadership at Federated, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Jace,
+
+I saw your data and analytics platform leadership at Federated and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+Arch Insurance,Commercial auto top 25; large U.S. P&C,"AgencyChecklists summary of NAIC 2024 market-share report, top 25 commercial auto insurers: https://agencychecklists.com/2024/04/08/naic-2024-market-share-report-top-25-commercial-auto-insurers-70601/",Caolan Kovach-Orr,"Vice President, Intelligent Automation & Strategic Analytics, North America",https://www.linkedin.com/in/caolankovachorr,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Strong applied AI/automation and analytics executive fit.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for Arch,"Hi Caolan, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your intelligent automation and strategic analytics leadership at Arch North America, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Caolan,
+
+I saw your intelligent automation and strategic analytics leadership at Arch North America and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+Everest Insurance,Large U.S. P&C/specialty carrier,ReinsuranceNe.ws top 100 U.S. P&C insurers based on A.M. Best 2023 net premiums written: https://www.reinsurancene.ws/top-100-u-s-property-casualty-insurance-companies/,Marisa Ratajczak,"Vice President, Head of Insurance Business Analytics",https://www.linkedin.com/in/marisaratajczak,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Head of analytics for insurance business; strong commercial/specialty relevance.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for Everest,"Hi Marisa, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your insurance business analytics leadership at Everest, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Marisa,
+
+I saw your insurance business analytics leadership at Everest and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+FM,Large U.S. P&C/specialty carrier,ReinsuranceNe.ws top 100 U.S. P&C insurers based on A.M. Best 2023 net premiums written: https://www.reinsurancene.ws/top-100-u-s-property-casualty-insurance-companies/,Marty Semeraro,"Vice President, Head of AI Business Integration",https://www.linkedin.com/in/marty-semeraro-5414b65,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",AI integration leader at a major commercial property risk insurer.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for FM,"Hi Marty, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your AI business-integration work at FM, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Marty,
+
+I saw your AI business-integration work at FM and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+Markel,Large U.S. P&C/specialty carrier,ReinsuranceNe.ws top 100 U.S. P&C insurers based on A.M. Best 2023 net premiums written: https://www.reinsurancene.ws/top-100-u-s-property-casualty-insurance-companies/,Jakub Sienkiel,"Director of Analytics, Portfolio Analytics",https://www.linkedin.com/in/jakub-sienkiel-mba-17b8811b,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Portfolio analytics director at specialty insurer; relevant to underwriting portfolio intelligence.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for Markel,"Hi Jakub, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your portfolio analytics work at Markel, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Jakub,
+
+I saw your portfolio analytics work at Markel and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+The Hanover Insurance Group,Large U.S. P&C/specialty carrier,ReinsuranceNe.ws top 100 U.S. P&C insurers based on A.M. Best 2023 net premiums written: https://www.reinsurancene.ws/top-100-u-s-property-casualty-insurance-companies/,Allen Thompson,"VP, Data & Analytics",https://www.linkedin.com/in/allen-thompson-78008113b,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",VP data and analytics at a large P&C carrier.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for The Hanover,"Hi Allen, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your data and analytics leadership at The Hanover, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Allen,
+
+I saw your data and analytics leadership at The Hanover and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+Sompo,Large U.S. P&C/specialty carrier,ReinsuranceNe.ws top 100 U.S. P&C insurers based on A.M. Best 2023 net premiums written: https://www.reinsurancene.ws/top-100-u-s-property-casualty-insurance-companies/,Cihan Kalender,"Executive Officer, Head of Pricing Data Analytics",https://www.linkedin.com/in/cihan-kalender-9538392a,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Pricing/data analytics executive; geography may be less U.S.-specific than other rows.,Medium,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for Sompo,"Hi Cihan, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your AI-driven pricing and data-analytics work at Sompo, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Cihan,
+
+I saw your AI-driven pricing and data-analytics work at Sompo and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+AXA XL,Large U.S. P&C/specialty carrier via XL America/AXA XL,ReinsuranceNe.ws top 100 U.S. P&C insurers based on A.M. Best 2023 net premiums written: https://www.reinsurancene.ws/top-100-u-s-property-casualty-insurance-companies/,Suraj Tiwari,"Head of Innovation, Data & AI Architecture",https://www.linkedin.com/in/suraj-tiwari-4688a010,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Data and AI architecture leader at a global commercial/specialty carrier.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for AXA XL,"Hi Suraj, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your innovation, data, and AI architecture work at AXA XL, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Suraj,
+
+I saw your innovation, data, and AI architecture work at AXA XL and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+QBE North America,Large U.S. P&C/specialty carrier,ReinsuranceNe.ws top 100 U.S. P&C insurers based on A.M. Best 2023 net premiums written: https://www.reinsurancene.ws/top-100-u-s-property-casualty-insurance-companies/,J Seung Lee,"VP, Head of Data Science",https://www.linkedin.com/in/jseunglee,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Head of data science at QBE North America.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for QBE North America,"Hi J, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your data-science leadership at QBE North America, I’d value connecting. Demo: https://juliooo.com/hartford","Hi J,
+
+I saw your data-science leadership at QBE North America and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+AmTrust North America,Large U.S. P&C/specialty carrier,ReinsuranceNe.ws top 100 U.S. P&C insurers based on A.M. Best 2023 net premiums written: https://www.reinsurancene.ws/top-100-u-s-property-casualty-insurance-companies/,Danielle Lanfear,"VP, Transformation & Analytics",https://www.linkedin.com/in/danielle-lanfear-21845421,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",VP transformation and analytics role at a commercial/specialty insurer.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for AmTrust North America,"Hi Danielle, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your transformation and analytics leadership at AmTrust North America, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Danielle,
+
+I saw your transformation and analytics leadership at AmTrust North America and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+Starr Insurance,Large U.S. P&C/specialty carrier,ReinsuranceNe.ws top 100 U.S. P&C insurers based on A.M. Best 2023 net premiums written: https://www.reinsurancene.ws/top-100-u-s-property-casualty-insurance-companies/,Ian Duffell,Assistant Director of Analytics,https://www.linkedin.com/in/ian-duffell-017201261,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Analytics leadership role at specialty commercial carrier.,Medium,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for Starr,"Hi Ian, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your analytics leadership at Starr, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Ian,
+
+I saw your analytics leadership at Starr and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+Westfield Insurance,Large U.S. P&C/specialty carrier,ReinsuranceNe.ws top 100 U.S. P&C insurers based on A.M. Best 2023 net premiums written: https://www.reinsurancene.ws/top-100-u-s-property-casualty-insurance-companies/,Shibu Joykutty,Analytics Leader,https://www.linkedin.com/in/shibu-joykutty-7b34334,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Analytics leader reporting into actuarial/analytics leadership at regional P&C carrier.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for Westfield,"Hi Shibu, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your analytics leadership at Westfield, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Shibu,
+
+I saw your analytics leadership at Westfield and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+AF Group,Large U.S. P&C/specialty carrier,ReinsuranceNe.ws top 100 U.S. P&C insurers based on A.M. Best 2023 net premiums written: https://www.reinsurancene.ws/top-100-u-s-property-casualty-insurance-companies/,Naveena Spitz,"Head of Data, Analytics and AI",https://www.linkedin.com/in/naveena-spitz-a4619017,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Head of data/analytics/AI at commercial workers' compensation specialty carrier.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for AF Group,"Hi Naveena, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your data, analytics, and AI leadership at AF Group, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Naveena,
+
+I saw your data, analytics, and AI leadership at AF Group and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+Core Specialty,Large U.S. P&C/specialty carrier,ReinsuranceNe.ws top 100 U.S. P&C insurers based on A.M. Best 2023 net premiums written: https://www.reinsurancene.ws/top-100-u-s-property-casualty-insurance-companies/,Jianwei Xie,VP Analytics & Underwriting,https://www.linkedin.com/in/jianwei-xie-693a935,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Direct VP analytics and underwriting title at specialty insurer.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for Core Specialty,"Hi Jianwei, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your analytics and underwriting leadership at Core Specialty, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Jianwei,
+
+I saw your analytics and underwriting leadership at Core Specialty and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+ICW Group,Large U.S. P&C/specialty carrier,ReinsuranceNe.ws top 100 U.S. P&C insurers based on A.M. Best 2023 net premiums written: https://www.reinsurancene.ws/top-100-u-s-property-casualty-insurance-companies/,Tim Yen,Analytics Operations Director,https://www.linkedin.com/in/tim-yen-77471526a,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Analytics operations director at commercial lines/workers' comp carrier.,Medium,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for ICW Group,"Hi Tim, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your analytics operations work at ICW Group, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Tim,
+
+I saw your analytics operations work at ICW Group and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+NJM Insurance Group,Large U.S. P&C/specialty carrier,ReinsuranceNe.ws top 100 U.S. P&C insurers based on A.M. Best 2023 net premiums written: https://www.reinsurancene.ws/top-100-u-s-property-casualty-insurance-companies/,Christopher Jones,"Director, Data Governance & Analytics",https://www.linkedin.com/in/christopher-jones-0570b041,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Director role across data governance and analytics at P&C carrier.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for NJM,"Hi Christopher, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your data governance and analytics leadership at NJM, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Christopher,
+
+I saw your data governance and analytics leadership at NJM and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+AXIS Capital,Large U.S. P&C/specialty carrier,ReinsuranceNe.ws top 100 U.S. P&C insurers based on A.M. Best 2023 net premiums written: https://www.reinsurancene.ws/top-100-u-s-property-casualty-insurance-companies/,Daniel Bragg,"Analytics & Innovation Lead, Property",https://www.linkedin.com/in/danielbragg91,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Analytics and innovation lead at global specialty insurer.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for AXIS Capital,"Hi Daniel, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your property analytics and innovation work at AXIS, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Daniel,
+
+I saw your property analytics and innovation work at AXIS and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+Munich Re Specialty - North America,Large U.S. P&C/specialty carrier,ReinsuranceNe.ws top 100 U.S. P&C insurers based on A.M. Best 2023 net premiums written: https://www.reinsurancene.ws/top-100-u-s-property-casualty-insurance-companies/,Joe Morycz,"VP Data and Analytics Lead, Insurtech Programs",https://www.linkedin.com/in/joe-morycz-683b57b7,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Insurtech/data analytics leader with clear innovation mandate.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for Munich Re Specialty - Nor,"Hi Joe, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your data and analytics leadership for insurtech programs at Munich Re Specialty, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Joe,
+
+I saw your data and analytics leadership for insurtech programs at Munich Re Specialty and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+Intact Insurance Specialty Solutions,Large U.S. P&C/specialty carrier,ReinsuranceNe.ws top 100 U.S. P&C insurers based on A.M. Best 2023 net premiums written: https://www.reinsurancene.ws/top-100-u-s-property-casualty-insurance-companies/,Austin James Kennedy,"Head of Innovation & Transformation, Intact Specialty",https://www.linkedin.com/in/austinjameskennedy,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Innovation/transformation leader at specialty commercial insurance business.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for Intact  Specialty Solutio,"Hi Austin, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your innovation and transformation work at Intact Specialty, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Austin,
+
+I saw your innovation and transformation work at Intact Specialty and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+Utica National Insurance Group,Large U.S. P&C/specialty carrier,ReinsuranceNe.ws top 100 U.S. P&C insurers based on A.M. Best 2023 net premiums written: https://www.reinsurancene.ws/top-100-u-s-property-casualty-insurance-companies/,Milissa Carter,Senior Data Scientist / Predictive Modeling Specialist,https://www.linkedin.com/in/milissa-carter-49691745,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Predictive modeling and data-science target at regional commercial/P&C carrier.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for Utica National,"Hi Milissa, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your predictive-modeling work at Utica National, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Milissa,
+
+I saw your predictive-modeling work at Utica National and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+RLI Insurance,Large U.S. P&C/specialty carrier,ReinsuranceNe.ws top 100 U.S. P&C insurers based on A.M. Best 2023 net premiums written: https://www.reinsurancene.ws/top-100-u-s-property-casualty-insurance-companies/,Christine Wallinger,"Director Customer Success, Data Analytics",https://www.linkedin.com/in/christinewallinger,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Data analytics director profile; confirm current organizational fit before outreach.,Medium,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for RLI,"Hi Christine, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your data analytics and product work connected to RLI, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Christine,
+
+I saw your data analytics and product work connected to RLI and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+Kinsale Insurance,Large U.S. P&C/specialty carrier,ReinsuranceNe.ws top 100 U.S. P&C insurers based on A.M. Best 2023 net premiums written: https://www.reinsurancene.ws/top-100-u-s-property-casualty-insurance-companies/,Scott Sheldon,Chief Analytics Officer,https://www.linkedin.com/in/scottasheldon,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Chief analytics executive at fast-growing E&S carrier.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for Kinsale,"Hi Scott, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your chief analytics leadership at Kinsale, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Scott,
+
+I saw your chief analytics leadership at Kinsale and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+Church Mutual,Large U.S. P&C/specialty carrier,ReinsuranceNe.ws top 100 U.S. P&C insurers based on A.M. Best 2023 net premiums written: https://www.reinsurancene.ws/top-100-u-s-property-casualty-insurance-companies/,Nick Jameson,Senior Underwriting Data Analyst,https://www.linkedin.com/in/nick-jameson-0878b2177,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Underwriting data analyst; good practitioner target where manager names were not public.,Medium,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for Church Mutual,"Hi Nick, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your underwriting data analysis work at Church Mutual, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Nick,
+
+I saw your underwriting data analysis work at Church Mutual and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+Aspen Insurance,Large U.S. P&C/specialty carrier,ReinsuranceNe.ws top 100 U.S. P&C insurers based on A.M. Best 2023 net premiums written: https://www.reinsurancene.ws/top-100-u-s-property-casualty-insurance-companies/,Anthony Bishop,Head of Data and Analytics,https://www.linkedin.com/in/anthony-bishop-879b4a290,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Head of data and analytics at specialty insurer; geography may be less U.S.-specific.,Medium,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for Aspen,"Hi Anthony, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your data and analytics leadership at Aspen, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Anthony,
+
+I saw your data and analytics leadership at Aspen and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+FCCI Insurance Group,Large U.S. P&C/specialty carrier,ReinsuranceNe.ws top 100 U.S. P&C insurers based on A.M. Best 2023 net premiums written: https://www.reinsurancene.ws/top-100-u-s-property-casualty-insurance-companies/,Daniel Siu,"Director & Actuary, Predictive Analytics",https://www.linkedin.com/in/danielpaulsiu,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Director-level predictive analytics target at commercial insurer.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for FCCI,"Hi Daniel, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your predictive analytics and actuarial data-science work at FCCI, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Daniel,
+
+I saw your predictive analytics and actuarial data-science work at FCCI and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+SECURA Insurance,Large U.S. P&C/specialty carrier,ReinsuranceNe.ws top 100 U.S. P&C insurers based on A.M. Best 2023 net premiums written: https://www.reinsurancene.ws/top-100-u-s-property-casualty-insurance-companies/,Nate Pritzl,"Manager, Data Science",https://www.linkedin.com/in/nate-pritzl-589b12ba,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Data-science manager at commercial/regional P&C carrier.,High,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for SECURA,"Hi Nate, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your data-science management work at SECURA, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Nate,
+
+I saw your data-science management work at SECURA and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"
+Skyward Specialty Insurance,Large U.S. P&C/specialty carrier,ReinsuranceNe.ws top 100 U.S. P&C insurers based on A.M. Best 2023 net premiums written: https://www.reinsurancene.ws/top-100-u-s-property-casualty-insurance-companies/,Yash Mishra,Senior Data Science Analyst,https://www.linkedin.com/in/yashmishra2810,Not publicly confirmed,Not publicly confirmed,"Use LinkedIn/profile outreach first; do not guess personal emails or phone numbers. For email, use a verified enrichment tool or company recruiting/referral channel.",Data-science practitioner at specialty commercial insurer; use as referral/pathfinding target.,Medium,LinkedIn first; verified work email second if obtained through an enrichment tool,Underwriting AI demo for Skyward Specialty,"Hi Yash, I built a live commercial-auto underwriting GenAI copilot with real FMCSA/NTSB/10-K RAG and XGBoost loss-frequency modeling. Given your data-science work at Skyward Specialty, I’d value connecting. Demo: https://juliooo.com/hartford","Hi Yash,
+
+I saw your data-science work at Skyward Specialty and thought you might appreciate a live, domain-fitted underwriting AI project I built: https://juliooo.com/hartford.
+
+It is a Hartford commercial auto underwriting copilot using Vertex AI/Gemini, LangGraph, RAG over FMCSA SAFER/NTSB/SEC 10-Ks, XGBoost loss-frequency modeling, and a three-track evaluation harness. I built it to mirror how applied AI teams in commercial P&C can move beyond generic RAG demos toward auditable underwriting decision support.
+
+I am positioning myself for applied AI / data science roles in commercial insurance and would be grateful for 15 minutes to get your reaction to the demo and learn whether someone with this kind of build experience could be useful to your team.
+
+Best,
+Julio Contreras"

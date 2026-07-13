@@ -9,6 +9,7 @@
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
+import { useAnimationGate } from "@/lib/useInView";
 
 const SOURCES = [
   { label: "FMCSA", color: "#34d399", anchor: [-9, 4, -2] },
@@ -111,12 +112,20 @@ function SourceLabels() {
 }
 
 export function Hero() {
+  // Freeze the particle loop when the hero scrolls out of view (or the user
+  // prefers reduced motion) — 3,200 particles animating offscreen was one of
+  // the main sources of scroll jank on the landing page.
+  const { ref: gateRef, active: gateActive } = useAnimationGate<HTMLDivElement>(0.1);
   return (
-    <div className="relative h-[440px] w-full overflow-hidden rounded-2xl border border-border bg-gradient-to-b from-bg-panel to-bg">
+    <div
+      ref={gateRef}
+      className="relative h-[440px] w-full overflow-hidden rounded-2xl border border-border bg-gradient-to-b from-bg-panel to-bg"
+    >
       <Canvas
         camera={{ position: [0, 0, 12], fov: 55 }}
         dpr={[1, 2]}
         gl={{ antialias: true, alpha: true }}
+        frameloop={gateActive ? "always" : "never"}
       >
         <color attach="background" args={["#0a0d12"]} />
         <ambientLight intensity={0.6} />

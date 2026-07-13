@@ -26,7 +26,7 @@ export type TraceEvent =
   | { kind: "tool_call"; id: string; name: string; input: unknown }
   | { kind: "tool_result"; id: string; name: string; output: unknown; ms: number }
   | { kind: "citation"; ref: string; doc_id: string; snippet: string }
-  | { kind: "critique_judge"; judge: string; iter: number };
+  | { kind: "critique_judge"; judge: string; iter: number; passed?: boolean; error?: string | null; gaps?: string[] };
 
 export function AgentTracePanel({
   events,
@@ -55,18 +55,29 @@ export function AgentTracePanel({
 
       {lastJudge && (
         <div
-          className={`mb-2 flex items-center gap-2 rounded-md border px-2 py-1.5 text-2xs ${
-            lastJudge.judge.startsWith("gpt")
+          className={`mb-2 flex flex-col gap-1 rounded-md border px-2 py-1.5 text-2xs ${
+            lastJudge.error
+              ? "border-warn-500/40 bg-warn-500/10 text-warn-400"
+              : lastJudge.judge.startsWith("gpt")
               ? "border-info-500/40 bg-info-500/10 text-info-400"
               : "border-accent-500/40 bg-accent-500/10 text-accent-400"
           }`}
         >
-          <Scale size={11} />
-          <span className="font-mono">
+          <span className="flex items-center gap-2 font-mono">
+            <Scale size={11} />
             critique: {lastJudge.judge}
             {judges.length > 1 ? ` · iter ${lastJudge.iter}` : ""}
-            {lastJudge.judge.startsWith("gpt") && " · cross-family"}
+            {lastJudge.passed === false && " · flagged gaps → redrafting"}
+            {!lastJudge.error && lastJudge.judge.startsWith("gpt") && " · cross-family"}
           </span>
+          {lastJudge.error && (
+            <span className="font-mono">
+              ⚠ judge unavailable — this memo was NOT quality-checked ({lastJudge.error})
+            </span>
+          )}
+          {!lastJudge.error && (lastJudge.gaps?.length ?? 0) > 0 && (
+            <span className="text-2xs opacity-90">gaps: {lastJudge.gaps!.join("; ")}</span>
+          )}
         </div>
       )}
 

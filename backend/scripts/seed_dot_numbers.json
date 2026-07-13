@@ -1,0 +1,22 @@
+[
+  {"dot": "53467", "expect": "WERNER"},
+  {"dot": "264184", "expect": "SCHNEIDER"},
+  {"dot": "428823", "expect": "KNIGHT"},
+  {"dot": "90849", "expect": "OLD DOMINION"},
+
+  {"dot": "185040", "expect": "UNITED PETROLEUM"},
+  {"dot": "171830", "expect": "KA BULK"},
+  {"dot": "184405", "expect": "TANK LINES"},
+  {"dot": "229047", "expect": "WILLIAMS TANK"},
+  {"dot": "890682", "expect": "ANDERSEN"},
+  {"dot": "1805208", "expect": "DEDICATED DELIVERY"},
+  {"dot": "1151662", "expect": "PETROLEUM"},
+  {"dot": "1606922", "expect": "BAILEY"},
+  {"dot": "1827085", "expect": "DELTA TANK"},
+  {"dot": "2193193", "expect": "P&T TRANSPORT"},
+  {"dot": "1285259", "expect": "VAN DYK"},
+  {"dot": "3436903", "expect": "FLEET TRANSPORT"},
+  {"dot": "270666", "expect": "ALLIANCE TANK"},
+  {"dot": "502396", "expect": "DOUBLE D"},
+  {"dot": "274904", "expect": "MARSTON"}
+]

@@ -2,30 +2,30 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException
-
-from app.graph.builder import get_graph
+from fastapi import APIRouter, HTTPException, Request
 
 router = APIRouter()
 
 
 @router.get("/traces/{run_id}")
-async def get_trace(run_id: str):
+async def get_trace(run_id: str, request: Request):
     """Return the full LangGraph state snapshot for a given run.
 
-    The frontend uses this to support replay/scrub of a completed run.
+    Reads from the SAME graph (and therefore the same SQLite checkpointer)
+    that /chat writes to — see app.main lifespan. The frontend uses this to
+    replay/scrub a completed run.
     """
-    graph = get_graph()
+    graph = request.app.state.graph
     try:
-        snapshot = graph.get_state({"configurable": {"thread_id": run_id}})
+        snapshot = await graph.aget_state({"configurable": {"thread_id": run_id}})
     except Exception as e:
         raise HTTPException(status_code=404, detail=f"trace not found: {e}")
-    if snapshot is None:
+    if snapshot is None or not snapshot.values:
         raise HTTPException(status_code=404, detail="trace not found")
     return {
         "run_id": run_id,
         "values": _serialize(snapshot.values),
-        "metadata": getattr(snapshot, "metadata", {}),
+        "metadata": getattr(snapshot, "metadata", {}) or {},
     }
 
 

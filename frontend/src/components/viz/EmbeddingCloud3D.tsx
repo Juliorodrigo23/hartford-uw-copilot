@@ -20,6 +20,8 @@ import { OrbitControls } from "@react-three/drei";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { dataPath } from "@/lib/api";
+import { DataBadge } from "@/components/DataBadge";
+import { useAnimationGate } from "@/lib/useInView";
 
 type Pt = { x: number; y: number; z: number; src: string; doc_id: string; snippet: string };
 type Cloud = { points: Pt[] };
@@ -34,17 +36,20 @@ const SRC_COLORS: Record<string, string> = {
 
 const DEFAULT_SRC = "#9aa6b8";
 
-function useEmbeddings(): Cloud {
-  const [cloud, setCloud] = useState<Cloud>({ points: makeFallback() });
+function useEmbeddings(): { cloud: Cloud; live: boolean } {
+  const [state, setState] = useState<{ cloud: Cloud; live: boolean }>({
+    cloud: { points: makeFallback() },
+    live: false,
+  });
   useEffect(() => {
     fetch(dataPath("embeddings_umap.json"))
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
-        if (d && d.points) setCloud(d);
+        if (d && d.points) setState({ cloud: d, live: true });
       })
       .catch(() => {});
   }, []);
-  return cloud;
+  return state;
 }
 
 type SourceGroup = { src: string; pts: Pt[]; geom: THREE.BufferGeometry };
@@ -127,7 +132,8 @@ function PointsCloud({
 }
 
 export function EmbeddingCloud3D() {
-  const cloud = useEmbeddings();
+  const { cloud, live } = useEmbeddings();
+  const { ref: gateRef, active: gateActive } = useAnimationGate<HTMLDivElement>(0.15);
   const sources = useMemo(() => {
     const s = new Set(cloud.points.map((p) => p.src));
     return Array.from(s);
@@ -148,11 +154,16 @@ export function EmbeddingCloud3D() {
   }
 
   return (
-    <div className="card overflow-hidden">
+    <div ref={gateRef} className="card overflow-hidden">
       <div className="flex flex-wrap items-center gap-2 border-b border-border p-3">
         <div className="font-mono text-2xs uppercase tracking-[0.18em] text-ink-dim">
           UMAP · 3D · {cloud.points.length.toLocaleString()} chunks · BAAI/bge-large-en-v1.5
         </div>
+        {live ? (
+          <DataBadge kind="live" />
+        ) : (
+          <DataBadge kind="pending" note="placeholder cloud — run scripts/04 + 08 for real embeddings" />
+        )}
         <div className="ml-auto flex flex-wrap gap-1.5">
           {sources.map((s) => {
             const on = visible.has(s);
@@ -181,6 +192,9 @@ export function EmbeddingCloud3D() {
             dpr={[1, 2]}
             gl={{ antialias: true, alpha: true }}
             raycaster={{ params: { Points: { threshold: 0.15 } } as never }}
+            // Stop the render loop entirely while scrolled past — a WebGL
+            // canvas re-rendering offscreen every frame janks page scroll.
+            frameloop={gateActive ? "always" : "never"}
           >
             <color attach="background" args={["#0a0d12"]} />
             <PointsCloud cloud={cloud} visible={visible} onHover={setHovered} />

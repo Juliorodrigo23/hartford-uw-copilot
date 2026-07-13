@@ -1,61 +1,51 @@
-"""Ablation runner — toggle components and re-score."""
+"""Ablation runner — toggles components ON THE REAL GRAPH and re-scores.
+
+Each ablation sets a state flag that the corresponding node honors
+(disable_rag, disable_critique, disable_comparables, disable_xgb), then
+re-runs the Track 3 task-level eval. No numbers are derived arithmetically;
+if an ablation didn't run, its row says so.
+"""
 
 from __future__ import annotations
 
 import logging
-from contextlib import contextmanager
 
-from app.eval.generation import _baseline_memo, _run_agent  # type: ignore[attr-defined]
-from app.eval.retrieval import evaluate_retrieval
 from app.eval.task_level import evaluate_task_level
 
 log = logging.getLogger(__name__)
 
 
-@contextmanager
-def patched(name: str, target):
-    """Tiny monkey-patch helper. Avoid pytest.MonkeyPatch to keep imports light."""
-    parts = name.rsplit(".", 1)
-    mod = __import__(parts[0], fromlist=[parts[1]])
-    orig = getattr(mod, parts[1])
-    setattr(mod, parts[1], target)
-    try:
-        yield
-    finally:
-        setattr(mod, parts[1], orig)
+# name → state flags. Order matters for display.
+ABLATIONS: list[tuple[str, dict]] = [
+    ("Full system", {}),
+    ("− self-critique", {"disable_critique": True}),
+    ("− RAG", {"disable_rag": True}),
+    ("− comparables", {"disable_comparables": True}),
+    ("− XGBoost loss-freq tool", {"disable_xgb": True}),
+]
+
+ABLATION_ORDER = [name for name, _ in ABLATIONS]
 
 
-async def evaluate_ablation(name: str) -> dict:
-    """Run one named ablation and return scalar metrics."""
-    if name == "Full system":
-        retrieval = await evaluate_retrieval()
-        task = await evaluate_task_level()
-        return {
-            "name": name,
-            "retrieval_recall_at_10": retrieval.get("recall_at_10", 0.0),
-            "redflag_recall": task.get("redflag_recall", 0.0),
-            "pairwise_winrate": 0.81,  # filled by evaluate_generation upstream
-        }
-    # The remaining ablations are *expensive*; the script applies them
-    # through small monkey-patches on the relevant subroutines. We expose
-    # the metric shape here so the script can fill numbers.
+async def evaluate_ablation(name: str, retrieval_recall_at_10: float | None = None) -> dict:
+    """Run one named ablation through the real task-level eval."""
+    flags = dict(ABLATIONS)[name] if name in dict(ABLATIONS) else {}
+    task = await evaluate_task_level(extra_state=flags)
+    if task.get("status") != "ok":
+        return {"name": name, "status": task.get("status", "skipped"), "reason": task.get("reason")}
     return {
         "name": name,
-        "retrieval_recall_at_10": 0.0,
-        "redflag_recall": 0.0,
-        "pairwise_winrate": 0.0,
+        "status": "ok",
+        "retrieval_recall_at_10": 0.0 if flags.get("disable_rag") else retrieval_recall_at_10,
+        "redflag_recall": task["redflag_recall"],
+        "hallucination_rate": task["hallucination_rate"],
+        "n_cases": task["n_cases"],
     }
 
 
-# Names to display in the UI in order
-ABLATION_ORDER = [
-    "Full system",
-    "− self-critique",
-    "− RAG",
-    "− comparables",
-    "− XGBoost loss-freq tool",
-    "Gemini Flash (cheaper)",
-]
-
-
-_ = (_baseline_memo, _run_agent)  # quiet linters
+async def evaluate_all_ablations(retrieval_recall_at_10: float | None = None) -> list[dict]:
+    rows: list[dict] = []
+    for name, _flags in ABLATIONS:
+        log.info("ablation: %s", name)
+        rows.append(await evaluate_ablation(name, retrieval_recall_at_10))
+    return rows

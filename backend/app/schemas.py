@@ -8,10 +8,10 @@ from __future__ import annotations
 
 from datetime import date
 from decimal import Decimal
-from enum import StrEnum
+from enum import Enum
 from typing import Any, Literal
 
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, model_validator
 
 
 class StrictBase(BaseModel):
@@ -25,29 +25,39 @@ class LossYear(StrictBase):
 
 
 class VehicleMix(StrictBase):
-    """Fractions sum to 1 (validated)."""
+    """Vehicle-type fractions. Auto-normalized to sum to 1.0 at construction.
+    An all-zero mix is left untouched (callers treat it as unknown)."""
 
     tractor: float = Field(ge=0, le=1)
     straight_truck: float = Field(default=0.0, ge=0, le=1)
     trailer: float = Field(default=0.0, ge=0, le=1)
     other: float = Field(default=0.0, ge=0, le=1)
 
-    def normalized(self) -> "VehicleMix":
+    @model_validator(mode="after")
+    def _normalize(self) -> "VehicleMix":
         s = self.tractor + self.straight_truck + self.trailer + self.other
-        if s == 0:
-            return self
-        return VehicleMix(
-            tractor=self.tractor / s,
-            straight_truck=self.straight_truck / s,
-            trailer=self.trailer / s,
-            other=self.other / s,
-        )
+        if s > 0 and abs(s - 1.0) > 1e-9:
+            object.__setattr__(self, "tractor", self.tractor / s)
+            object.__setattr__(self, "straight_truck", self.straight_truck / s)
+            object.__setattr__(self, "trailer", self.trailer / s)
+            object.__setattr__(self, "other", self.other / s)
+        return self
+
+    def normalized(self) -> "VehicleMix":
+        """Kept for backward compatibility; construction already normalizes."""
+        return self
 
 
 class Submission(StrictBase):
     id: str
+    # Synthetic pseudonym used on the demo (a fabricated adverse loss run
+    # must never be published under a real company's name)…
     carrier_name: str
     dot_number: str
+    # …but the REAL SAFER identity is carried alongside for transparency,
+    # and fleet_size is derived from the real SAFER power-unit count so the
+    # submission never contradicts the federal record.
+    safer_legal_name: str | None = None
     fleet_size: int = Field(ge=1)
     vehicle_mix: VehicleMix
     states_of_operation: list[str]
@@ -78,12 +88,22 @@ class LossStats(StrictBase):
     severity_avg_usd: Decimal
     trend_3yr_pct: float
     loss_ratio_3yr: float
+    # The loss ratio is computed against an assumed premium; surfacing the
+    # assumption keeps the memo honest about where the denominator comes from.
+    assumed_premium_per_pu_usd: int = 5500
+    n_years: int = 0
 
 
 class XGBPrediction(StrictBase):
     pred_claims_next_yr: float
     pi_80: tuple[float, float]
     shap_top: list[dict[str, Any]] = Field(default_factory=list)
+    # Provenance: "xgboost" when the trained booster produced the number,
+    # "heuristic_fallback" when model artifacts were unavailable. The memo
+    # prompt and the trace UI both surface this so a fallback is never
+    # presented as a model output.
+    source: Literal["xgboost", "heuristic_fallback"] = "xgboost"
+    model_version: str | None = None
 
 
 class ToolCall(StrictBase):
@@ -101,10 +121,10 @@ class Citation(StrictBase):
 
 
 class RetrievedChunk(StrictBase):
-    doc_id: str
+    doc_id: str  # chunk id, e.g. "ntsb-2019-04#chunk-3"
     score: float
     text: str
-    source: str  # ntsb / 10k / forms / industry
+    source: str  # CorpusKind value
 
 
 class Disposition(StrictBase):
@@ -122,9 +142,14 @@ class Memo(StrictBase):
     rubric_scores: dict[str, float] | None = None
 
 
-class CritiqueVerdict(StrictBase):
-    pass_: bool = Field(alias="pass")
-    rubric_scores: dict[str, float]
+class CritiqueVerdict(BaseModel):
+    """Validated shape of a judge response. Both the OpenAI and Gemini
+    critique paths parse into this before the node trusts any field."""
+
+    model_config = ConfigDict(extra="ignore", populate_by_name=True)
+
+    pass_: bool = Field(alias="pass", default=True)
+    rubric_scores: dict[str, float] = Field(default_factory=dict)
     gaps: list[str] = Field(default_factory=list)
 
 
@@ -136,7 +161,7 @@ class ChatRequest(StrictBase):
     critique_provider: str | None = None
 
 
-class CorpusKind(StrEnum):
+class CorpusKind(str, Enum):
     NTSB = "ntsb"
     SEC_10K = "10k"
     FORMS = "forms"

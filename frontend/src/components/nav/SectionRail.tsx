@@ -5,24 +5,50 @@ import { cn } from "@/lib/cn";
 
 export type Section = { id: string; label: string };
 
+/**
+ * SectionRail — scroll spy.
+ *
+ * Position-based rather than IntersectionObserver-ratio-based: with sections
+ * much taller than the viewport, intersection ratios are tiny and unstable,
+ * which made the highlight flicker or stick. Instead we pick the LAST
+ * section whose top has crossed a reading line 35% down the viewport, on a
+ * passive rAF-throttled scroll listener.
+ */
 export function SectionRail({ sections }: { sections: Section[] }) {
   const [active, setActive] = useState<string>(sections[0]?.id ?? "");
 
   useEffect(() => {
-    const elements = sections
-      .map((s) => document.getElementById(s.id))
-      .filter((e): e is HTMLElement => !!e);
-    const obs = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-        if (visible[0]) setActive(visible[0].target.id);
-      },
-      { rootMargin: "-30% 0px -55% 0px", threshold: [0.1, 0.5, 1] },
-    );
-    elements.forEach((el) => obs.observe(el));
-    return () => obs.disconnect();
+    let raf = 0;
+
+    const measure = () => {
+      raf = 0;
+      const line = window.innerHeight * 0.35;
+      let current = sections[0]?.id ?? "";
+      for (const s of sections) {
+        const el = document.getElementById(s.id);
+        if (!el) continue;
+        if (el.getBoundingClientRect().top <= line) current = s.id;
+        else break;
+      }
+      // Bottom of page: force the last section active.
+      if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 4) {
+        current = sections[sections.length - 1]?.id ?? current;
+      }
+      setActive(current);
+    };
+
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(measure);
+    };
+
+    measure();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
   }, [sections]);
 
   return (

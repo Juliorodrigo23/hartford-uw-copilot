@@ -1,66 +1,114 @@
 {
-  "version": 1,
-  "description": "Hand-curated retrieval gold set. relevant_doc_ids point at chunks in the indexed corpora. Until the corpora are indexed, this acts as a structural placeholder; once script 04 builds the index the doc_ids will resolve to real chunks.",
   "questions": [
     {
       "id": "RQ-001",
       "query": "long-haul fatigue claims for fleets > 200 power units, particularly overnight runs",
       "corpus": "ntsb",
-      "relevant_doc_ids": ["ntsb-2019-04#chunk-0", "ntsb-2020-08#chunk-0", "ntsb-2020-08#chunk-1"]
+      "relevant_doc_ids": [
+        "10k-odfl-2023#chunk-1",
+        "10k-sndr-2024#chunk-26",
+        "10k-sndr-2026#chunk-45"
+      ],
+      "_note": "DRAFT \u2014 top-3 reranked pre-filled; CONFIRM OR EDIT before use"
     },
     {
       "id": "RQ-002",
       "query": "brake adjustment failure on grade, jackknife of tractor-trailer",
       "corpus": "ntsb",
-      "relevant_doc_ids": ["ntsb-2022-12#chunk-0", "ntsb-2022-12#chunk-1"]
+      "relevant_doc_ids": [
+        "ntsb-har-2101#chunk-113",
+        "10k-htld-2026#chunk-32",
+        "ntsb-har-2101#chunk-70"
+      ],
+      "_note": "DRAFT \u2014 top-3 reranked pre-filled; CONFIRM OR EDIT before use"
     },
     {
       "id": "RQ-003",
       "query": "Knight-Swift risk-factor disclosures driver shortage and accident frequency",
       "corpus": "10k",
-      "relevant_doc_ids": ["10k-knx-2023-rf#chunk-0", "10k-knx-2023-rf#chunk-1"]
+      "relevant_doc_ids": [
+        "10k-wern-2026#chunk-2",
+        "10k-knx-2025#chunk-49",
+        "10k-knx-2025#chunk-22"
+      ],
+      "_note": "DRAFT \u2014 top-3 reranked pre-filled; CONFIRM OR EDIT before use"
     },
     {
       "id": "RQ-004",
       "query": "ISO commercial auto coverage form business auto exclusions",
       "corpus": "forms",
-      "relevant_doc_ids": ["forms-iso-ca-0001#chunk-0", "forms-iso-ca-0001#chunk-2"]
+      "relevant_doc_ids": [
+        "10k-htld-2024#chunk-30",
+        "10k-knx-2022#chunk-30",
+        "10k-htld-2026#chunk-31"
+      ],
+      "_note": "DRAFT \u2014 top-3 reranked pre-filled; CONFIRM OR EDIT before use"
     },
     {
       "id": "RQ-005",
       "query": "hazmat carrier bridge strike, hazmat release",
       "corpus": "ntsb",
-      "relevant_doc_ids": ["ntsb-2024-01#chunk-0"]
+      "relevant_doc_ids": [
+        "ntsb-har-1901#chunk-140",
+        "ntsb-har-1902#chunk-211",
+        "ntsb-har-2001#chunk-40"
+      ],
+      "_note": "DRAFT \u2014 top-3 reranked pre-filled; CONFIRM OR EDIT before use"
     },
     {
       "id": "RQ-006",
       "query": "Werner accident frequency reserve adequacy disclosures",
       "corpus": "10k",
-      "relevant_doc_ids": ["10k-wern-2022-rf#chunk-0", "10k-wern-2022-rf#chunk-2"]
+      "relevant_doc_ids": [
+        "ntsb-har-2001#chunk-119",
+        "10k-wern-2022#chunk-6",
+        "ntsb-har-2001#chunk-162"
+      ],
+      "_note": "DRAFT \u2014 top-3 reranked pre-filled; CONFIRM OR EDIT before use"
     },
     {
       "id": "RQ-007",
       "query": "fog pileup visibility commercial truck multiple vehicle",
       "corpus": "ntsb",
-      "relevant_doc_ids": ["ntsb-2023-03#chunk-0"]
+      "relevant_doc_ids": [
+        "10k-usx-2023#chunk-40",
+        "ntsb-har-2101#chunk-61",
+        "ntsb-har-2101#chunk-66"
+      ],
+      "_note": "DRAFT \u2014 top-3 reranked pre-filled; CONFIRM OR EDIT before use"
     },
     {
       "id": "RQ-008",
       "query": "OOS rate vehicle maintenance impact on loss frequency",
       "corpus": "10k",
-      "relevant_doc_ids": ["10k-jbht-2023-rf#chunk-1"]
+      "relevant_doc_ids": [
+        "10k-odfl-2026#chunk-34",
+        "10k-sndr-2023#chunk-7",
+        "10k-sndr-2024#chunk-4"
+      ],
+      "_note": "DRAFT \u2014 top-3 reranked pre-filled; CONFIRM OR EDIT before use"
     },
     {
       "id": "RQ-009",
       "query": "BASIC Hours-of-Service compliance threshold federal intervention",
       "corpus": "ntsb",
-      "relevant_doc_ids": ["ntsb-2020-08#chunk-1"]
+      "relevant_doc_ids": [
+        "10k-usx-2022#chunk-29",
+        "10k-usx-2021#chunk-24",
+        "ntsb-har-1902#chunk-264"
+      ],
+      "_note": "DRAFT \u2014 top-3 reranked pre-filled; CONFIRM OR EDIT before use"
     },
     {
       "id": "RQ-010",
       "query": "tank carrier hazmat endorsement requirements liability limits",
       "corpus": "forms",
-      "relevant_doc_ids": ["forms-iso-ca-0021#chunk-0"]
+      "relevant_doc_ids": [
+        "10k-htld-2025#chunk-29",
+        "10k-usx-2019#chunk-18",
+        "ntsb-har-2001#chunk-40"
+      ],
+      "_note": "DRAFT \u2014 top-3 reranked pre-filled; CONFIRM OR EDIT before use"
     }
   ]
 }

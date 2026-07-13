@@ -16,6 +16,10 @@ steps:
   - name: gcr.io/cloud-builders/docker
     args:
       - build
+      # Bake the embedding + reranker models into the image: with a populated
+      # dense index, the first query would otherwise download ~1.4GB from
+      # HuggingFace at request time on a cold container.
+      - --build-arg=PREFETCH_MODELS=1
       - --tag=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/backend:$BUILD_ID
       - --tag=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/backend:latest
       - --file=Dockerfile
@@ -37,7 +41,8 @@ steps:
       - --image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/backend:$BUILD_ID
       - --platform=managed
       - --allow-unauthenticated
-      - --memory=2Gi
+      # 4Gi: bge-large + torch live in-process once dense retrieval is active
+      - --memory=4Gi
       - --cpu=2
       - --concurrency=10
       - --timeout=300s

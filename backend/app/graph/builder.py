@@ -1,14 +1,15 @@
 """LangGraph compile.
 
-We expose two compiled graphs sharing identical wiring:
-  - `get_graph()`       — sync MemorySaver, used by tests + scripts.
-  - `get_async_graph()` — async MemorySaver, used by the FastAPI `/chat`
-    endpoint which streams events via `astream`.
+One graph topology, two checkpointing modes:
 
-We use the in-memory checkpointer instead of the SQLite one. Each chat
-request runs the graph end-to-end in a single process, so cross-process
-durability isn't needed; SQLite's async path also requires a running event
-loop at construction time, which we don't have at module import.
+  - `build_graph(checkpointer)` — the factory. The FastAPI app calls it in
+    its lifespan with an AsyncSqliteSaver so every run's state survives
+    process restarts and is shared by all uvicorn workers in the container.
+    This is what makes `GET /traces/{run_id}` actually work: /chat and
+    /traces read and write the SAME checkpoint database.
+
+  - `get_graph()` — lru-cached MemorySaver compile for scripts, evals, and
+    tests, where durability is unnecessary and a file on disk is unwanted.
 """
 
 from __future__ import annotations
@@ -18,7 +19,6 @@ from functools import lru_cache
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, StateGraph
 
-from app.config import settings
 from app.graph.edges import after_critique, after_enrich
 from app.graph.nodes import (
     analyze_loss_history,
@@ -34,9 +34,7 @@ from app.graph.nodes import (
 from app.graph.state import AgentState
 
 
-def _build_graph() -> StateGraph:
-    g = StateGraph(AgentState)
-
+def _wire(g: StateGraph) -> StateGraph:
     g.add_node("parse_submission", parse_submission)
     g.add_node("enrich_carrier", enrich_carrier)
     g.add_node("retrieve_context", retrieve_context)
@@ -65,19 +63,15 @@ def _build_graph() -> StateGraph:
     )
     g.add_edge("finalize", END)
     g.add_edge("data_insufficient", END)
-
-    settings.data_dir.mkdir(parents=True, exist_ok=True)
     return g
+
+
+def build_graph(checkpointer):
+    """Compile the underwriting graph against a caller-provided checkpointer."""
+    return _wire(StateGraph(AgentState)).compile(checkpointer=checkpointer)
 
 
 @lru_cache(maxsize=1)
 def get_graph():
-    """Sync compile — used by tests and scripts."""
-    return _build_graph().compile(checkpointer=MemorySaver())
-
-
-@lru_cache(maxsize=1)
-def get_async_graph():
-    """Async compile — used by `/chat`. Same checkpointer; LangGraph routes
-    sync vs async based on which method (invoke vs ainvoke) is called."""
-    return _build_graph().compile(checkpointer=MemorySaver())
+    """Ephemeral MemorySaver compile — scripts, evals, and tests."""
+    return build_graph(MemorySaver())

@@ -23,11 +23,11 @@ const COLUMNS: {
     title: "Reasoning",
     badge: "border-info-500/40 bg-info-500/10 text-info-400",
     items: [
-      "LangGraph state machine (8 nodes)",
+      "LangGraph state machine (9 nodes)",
       "Hybrid RAG: BM25 + dense + RRF",
       "Cross-encoder rerank top-50 → top-10",
       "Self-critique loop, max 2 iterations",
-      "Tool calls: SAFER, FARS, loss calc, comps, XGB",
+      "Tool calls: SAFER lookup, loss calc, comparables, XGBoost",
     ],
   },
   {

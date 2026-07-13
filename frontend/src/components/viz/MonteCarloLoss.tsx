@@ -20,6 +20,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Pause, Play, RotateCcw } from "lucide-react";
+import { useAnimationGate } from "@/lib/useInView";
 
 const N_SAMPLES = 10_000;
 const N_BINS = 80;
@@ -108,6 +109,10 @@ export function MonteCarloLoss({ profileIdx = 0 }: { profileIdx?: number }) {
   const [idx, setIdx] = useState(profileIdx);
   const [playing, setPlaying] = useState(true);
   const [drawn, setDrawn] = useState(0);
+  // Only simulate while the card is actually on screen (and the user hasn't
+  // asked for reduced motion): this loop used to run from page load and
+  // re-sort a growing 10k array EVERY frame, which visibly janked scrolling.
+  const { ref: gateRef, active: gateActive, reduced } = useAnimationGate<HTMLDivElement>(0.2);
   const profile = PROFILES[idx];
   const samplesRef = useRef<Float64Array>(new Float64Array(N_SAMPLES));
   const sortedRef = useRef<Float64Array>(new Float64Array(N_SAMPLES));
@@ -124,13 +129,21 @@ export function MonteCarloLoss({ profileIdx = 0 }: { profileIdx?: number }) {
     seedRef.current = (idx + 1) * 4242 + Date.now() % 1000;
   }, [idx]);
 
-  // Animation loop
+  // Animation loop — gated on visibility, human-paced (~55 samples/frame ≈
+  // 3-4 seconds to fill), and the expensive sort runs every 6th frame + at
+  // completion instead of every frame.
   useEffect(() => {
-    if (!playing) return;
+    if (!playing || !gateActive) return;
     let raf = 0;
+    let frame = 0;
     const rng = mulberry32(seedRef.current);
+    const resort = (upto: number) => {
+      const sortedSlice = samplesRef.current.slice(0, upto);
+      sortedSlice.sort();
+      sortedRef.current.set(sortedSlice);
+    };
     const step = () => {
-      const batch = 80;
+      const batch = 55;
       const sb = samplesRef.current;
       const bins = binsRef.current;
       let i = drawn;
@@ -142,10 +155,8 @@ export function MonteCarloLoss({ profileIdx = 0 }: { profileIdx?: number }) {
         const b = Math.min(N_BINS - 1, Math.max(0, Math.floor(v / binWidth)));
         bins[b] += 1;
       }
-      // Re-sort partial; for a naive demo this is fine — we're capped at 10k.
-      const sortedSlice = sb.slice(0, i);
-      sortedSlice.sort();
-      sortedRef.current.set(sortedSlice);
+      frame += 1;
+      if (frame % 6 === 0 || i >= N_SAMPLES) resort(i);
       setDrawn(i);
       drawCanvas();
       if (i < N_SAMPLES) raf = requestAnimationFrame(step);
@@ -153,7 +164,27 @@ export function MonteCarloLoss({ profileIdx = 0 }: { profileIdx?: number }) {
     raf = requestAnimationFrame(step);
     return () => cancelAnimationFrame(raf);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [playing, profile, drawn === N_SAMPLES, idx]);
+  }, [playing, gateActive, profile, drawn === N_SAMPLES, idx]);
+
+  // Reduced motion: fill the histogram instantly instead of animating.
+  useEffect(() => {
+    if (!reduced || drawn > 0) return;
+    const rng = mulberry32(seedRef.current);
+    const sb = samplesRef.current;
+    const bins = binsRef.current;
+    const binWidth = MAX_LOSS_M / N_BINS;
+    for (let i = 0; i < N_SAMPLES; i++) {
+      const v = aggregateLoss(profile, rng) / 1_000_000;
+      sb[i] = v;
+      bins[Math.min(N_BINS - 1, Math.max(0, Math.floor(v / binWidth)))] += 1;
+    }
+    const sorted = sb.slice(0, N_SAMPLES);
+    sorted.sort();
+    sortedRef.current.set(sorted);
+    setDrawn(N_SAMPLES);
+    drawCanvas();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reduced, idx]);
 
   const stats = useMemo(() => {
     const n = drawn;
@@ -276,7 +307,7 @@ export function MonteCarloLoss({ profileIdx = 0 }: { profileIdx?: number }) {
   }, []);
 
   return (
-    <div className="card overflow-hidden">
+    <div ref={gateRef} className="card overflow-hidden">
       <div className="flex flex-wrap items-center gap-3 border-b border-border p-3">
         <div className="flex items-center gap-1.5">
           <button onClick={() => setPlaying((p) => !p)} className="btn-ghost">

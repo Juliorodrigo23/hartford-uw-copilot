@@ -13,11 +13,37 @@
     font-feature-settings: "ss01", "cv11";
   }
 
-  body {
+  /* Smooth anchor jumps (section rail), disabled for reduced-motion users */
+  html {
+    scroll-behavior: smooth;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* Ambient gradients on a fixed compositor layer.
+     NOTE: this used to be `background-attachment: fixed` on <body>, which
+     forces a full-page repaint on every scroll frame (the main source of
+     scroll jank on this page). A position:fixed pseudo-element paints once
+     and lets the compositor scroll the content over it. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
     background-image:
       radial-gradient(1200px 600px at 80% -10%, rgba(220, 38, 38, 0.08), transparent 60%),
       radial-gradient(1000px 500px at 20% 0%, rgba(16, 185, 129, 0.05), transparent 60%);
-    background-attachment: fixed;
   }
 
   ::selection {

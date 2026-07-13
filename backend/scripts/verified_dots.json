@@ -1,0 +1,135 @@
+[
+  {
+    "dot": "53467",
+    "legal_name": "WERNER ENTERPRISES INC",
+    "power_units": 9863,
+    "operating_status": "AUTHORIZED",
+    "mid_market": false
+  },
+  {
+    "dot": "264184",
+    "legal_name": "SCHNEIDER NATIONAL CARRIERS INC",
+    "power_units": 9866,
+    "operating_status": "AUTHORIZED",
+    "mid_market": false
+  },
+  {
+    "dot": "428823",
+    "legal_name": "KNIGHT TRANSPORTATION INC",
+    "power_units": 3200,
+    "operating_status": "AUTHORIZED",
+    "mid_market": false
+  },
+  {
+    "dot": "90849",
+    "legal_name": "OLD DOMINION FREIGHT LINE INC",
+    "power_units": 10974,
+    "operating_status": "AUTHORIZED",
+    "mid_market": false
+  },
+  {
+    "dot": "185040",
+    "legal_name": "UNITED PETROLEUM TRANSPORTS INC",
+    "power_units": 604,
+    "operating_status": "AUTHORIZED",
+    "mid_market": true
+  },
+  {
+    "dot": "171830",
+    "legal_name": "KA BULK TRANSPORT LLC",
+    "power_units": 581,
+    "operating_status": "AUTHORIZED",
+    "mid_market": true
+  },
+  {
+    "dot": "184405",
+    "legal_name": "J & M TANK LINES INC",
+    "power_units": 438,
+    "operating_status": "AUTHORIZED",
+    "mid_market": true
+  },
+  {
+    "dot": "229047",
+    "legal_name": "WILLIAMS TANK LINES LLC",
+    "power_units": 316,
+    "operating_status": "AUTHORIZED",
+    "mid_market": true
+  },
+  {
+    "dot": "890682",
+    "legal_name": "ANDERSEN DISTRIBUTION INC",
+    "power_units": 267,
+    "operating_status": "AUTHORIZED",
+    "mid_market": true
+  },
+  {
+    "dot": "1805208",
+    "legal_name": "DEDICATED DELIVERY PROFESSIONALS INC",
+    "power_units": 91,
+    "operating_status": "AUTHORIZED",
+    "mid_market": true
+  },
+  {
+    "dot": "1151662",
+    "legal_name": "SO CAL PETROLEUM TRANSPORT INC",
+    "power_units": 84,
+    "operating_status": "AUTHORIZED",
+    "mid_market": true
+  },
+  {
+    "dot": "1606922",
+    "legal_name": "BAILEY HEAVY EQUIPMENT HAULING INC",
+    "power_units": 74,
+    "operating_status": "AUTHORIZED",
+    "mid_market": true
+  },
+  {
+    "dot": "1827085",
+    "legal_name": "DELTA TANK LINES LLC",
+    "power_units": 69,
+    "operating_status": "AUTHORIZED",
+    "mid_market": true
+  },
+  {
+    "dot": "2193193",
+    "legal_name": "P&T TRANSPORT LLC",
+    "power_units": 66,
+    "operating_status": "AUTHORIZED",
+    "mid_market": true
+  },
+  {
+    "dot": "1285259",
+    "legal_name": "VAN DYK TANK LINES INC",
+    "power_units": 65,
+    "operating_status": "AUTHORIZED",
+    "mid_market": true
+  },
+  {
+    "dot": "3436903",
+    "legal_name": "247 FLEET TRANSPORT LLC",
+    "power_units": 61,
+    "operating_status": "AUTHORIZED",
+    "mid_market": true
+  },
+  {
+    "dot": "270666",
+    "legal_name": "ALLIANCE TANK LINES LLC",
+    "power_units": 47,
+    "operating_status": "AUTHORIZED",
+    "mid_market": true
+  },
+  {
+    "dot": "502396",
+    "legal_name": "DOUBLE D DISTRIBUTION INC",
+    "power_units": 44,
+    "operating_status": "AUTHORIZED",
+    "mid_market": true
+  },
+  {
+    "dot": "274904",
+    "legal_name": "PS MARSTON ASSOCIATES LLC",
+    "power_units": 65,
+    "operating_status": "AUTHORIZED",
+    "mid_market": true
+  }
+]

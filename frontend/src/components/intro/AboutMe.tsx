@@ -61,7 +61,7 @@ export function AboutMe() {
             <Stat label="RAG" value="Chroma + BM25 + RRF" />
             <Stat label="Rerank" value="ms-marco MiniLM" />
             <Stat label="ML" value="XGBoost + SHAP" />
-            <Stat label="Orchestration" value="LangGraph · 8 nodes" />
+            <Stat label="Orchestration" value="LangGraph · 9 nodes" />
             <Stat label="Eval" value="3 tracks · 4 ablations" />
             <Stat label="Deploy" value="Cloud Run · Vercel" />
           </div>

@@ -6,8 +6,10 @@ Event types emitted:
   - tool_call       : tool invocation start
   - tool_result     : tool invocation finish
   - citation        : source-document chunk attached to the working answer
-  - token           : streaming memo text
-  - critique_judge  : which model judged this iteration ("gpt-4o" / "gemini-2.5-flash")
+  - token           : streaming memo text (whitespace-preserving)
+  - redraft         : the critique loop produced a NEW draft; the client
+                      should clear the previous memo text before appending
+  - critique_judge  : which model judged this iteration, and any judge error
   - final           : end-of-run with the full memo + run_id
   - error           : terminal error
 """
@@ -17,18 +19,27 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import re
 import time
 import uuid
 
-from fastapi import APIRouter, Request, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from sse_starlette.sse import EventSourceResponse
 
 from app.api.auth import verify_hmac
-from app.graph.builder import get_async_graph
 from app.schemas import ChatRequest, ToolCall
 
 router = APIRouter()
 log = logging.getLogger(__name__)
+
+_TOKEN_RE = re.compile(r"\S+\s*")
+
+
+def split_stream_tokens(text: str) -> list[str]:
+    """Split text into word tokens that KEEP their trailing whitespace, so
+    re-joining the stream reproduces the memo byte-for-byte (newlines,
+    markdown indentation and all)."""
+    return _TOKEN_RE.findall(text) or ([text] if text else [])
 
 
 @router.post("/chat")
@@ -40,7 +51,7 @@ async def chat(request: Request):
     except Exception as e:
         raise HTTPException(status_code=422, detail=f"invalid request: {e}")
 
-    graph = get_async_graph()
+    graph = request.app.state.graph
     run_id = uuid.uuid4().hex
     t0 = time.time()
 
@@ -49,8 +60,9 @@ async def chat(request: Request):
         seen_results: set[str] = set()
         seen_citations: set[str] = set()
         last_node: str | None = None
-        token_buffer: list[str] = []
-        final_memo: str = ""
+        streamed = ""          # exactly what has been sent as token events
+        seen_draft = 0         # draft_iters already streamed
+        final_memo = ""
 
         try:
             async for event in graph.astream(
@@ -63,6 +75,7 @@ async def chat(request: Request):
                     "retrieved": [],
                     "citations": [],
                     "critique_iters": 0,
+                    "draft_iters": 0,
                     "critique_provider_override": req.critique_provider,
                 },
                 config={"configurable": {"thread_id": run_id}},
@@ -70,6 +83,8 @@ async def chat(request: Request):
             ):
                 # `event` is { node_name: state_delta } in updates mode.
                 for node_name, delta in event.items():
+                    if delta is None:
+                        delta = {}
                     if node_name != last_node:
                         if last_node:
                             yield {
@@ -120,26 +135,45 @@ async def chat(request: Request):
                             ),
                         }
 
-                    # Critique judge identification — emit once per iteration
+                    # Critique judge identification — emit once per iteration,
+                    # including judge failures so the UI can flag an
+                    # unreviewed memo instead of hiding the outage.
                     judge = delta.get("critique_judge")
-                    if judge and judge != "skipped":
+                    if judge and judge not in ("skipped",):
                         yield {
                             "event": "critique_judge",
                             "data": json.dumps(
-                                {"judge": judge, "iter": delta.get("critique_iters", 0)}
+                                {
+                                    "judge": judge,
+                                    "iter": delta.get("critique_iters", 0),
+                                    "passed": bool(delta.get("critique_pass", True)),
+                                    "error": delta.get("critique_error"),
+                                    "gaps": delta.get("critique_gaps") or [],
+                                }
                             ),
                         }
 
-                    # Stream memo tokens — backend draft_memo writes the full
-                    # text in one shot; chunk it here for the UI.
+                    # Stream memo tokens. draft_memo writes complete drafts;
+                    # `draft_iters` tells us whether this is an incremental
+                    # continuation (same draft) or a brand-new draft from the
+                    # critique loop (client must reset, we re-stream fully).
                     md = delta.get("memo_md")
-                    if md and md != "".join(token_buffer):
-                        new = md[len("".join(token_buffer)):]
+                    if md:
+                        draft = delta.get("draft_iters", seen_draft or 1)
+                        if draft > seen_draft and seen_draft > 0:
+                            yield {"event": "redraft", "data": json.dumps({"iter": draft})}
+                            streamed = ""
+                        seen_draft = max(seen_draft, draft)
+                        new = md[len(streamed):] if md.startswith(streamed) else md
+                        if new and not md.startswith(streamed):
+                            # Unexpected divergence within one draft: resync.
+                            yield {"event": "redraft", "data": json.dumps({"iter": draft})}
+                            streamed = ""
                         if new:
-                            token_buffer.append(new)
-                            for w in new.split(" "):
-                                yield {"event": "token", "data": json.dumps({"text": w + " "})}
-                                await asyncio.sleep(0.005)
+                            for tok in split_stream_tokens(new):
+                                yield {"event": "token", "data": json.dumps({"text": tok})}
+                                await asyncio.sleep(0.004)
+                            streamed += new
                         final_memo = md
 
             if last_node:

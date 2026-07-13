@@ -29,6 +29,9 @@ def _build_query(state: AgentState) -> str:
 
 
 async def retrieve_context(state: AgentState) -> AgentState:
+    if state.get("disable_rag"):
+        return {"retrieved": [], "citations": []}
+
     query = _build_query(state)
     iters = state.get("critique_iters", 0)
 
@@ -39,19 +42,22 @@ async def retrieve_context(state: AgentState) -> AgentState:
 
     chunks = await hybrid_search(query=query, k_final=10)
     if not chunks:
-        log.info("no chunks retrieved for query=%r", query[:120])
-        chunks = []
+        log.warning(
+            "no chunks retrieved for query=%r — if this is unexpected, "
+            "check that scripts/04_build_index.py has been run",
+            query[:120],
+        )
 
-    # Convert to Citation list — index from 1.
-    cits = [
-        Citation(ref=f"[{i + 1}]", doc_id=c.doc_id, snippet=c.text[:240])
-        for i, c in enumerate(chunks)
-    ]
-    # On loop iterations, append rather than replace so the agent has more context.
+    # Merge with prior retrievals (loop iterations append, dedup by chunk id),
+    # then number citations against the MERGED list so [n] refs in the memo
+    # line up with what the model actually sees in the prompt.
     prior = state.get("retrieved", []) or []
     seen = {c.doc_id for c in prior}
     new = [c for c in chunks if c.doc_id not in seen]
     merged: list[RetrievedChunk] = list(prior) + new
 
-    prior_cits = state.get("citations", []) or []
-    return {"retrieved": merged, "citations": prior_cits + cits[: len(new)]}
+    cits = [
+        Citation(ref=f"[{i + 1}]", doc_id=c.doc_id, snippet=c.text[:240])
+        for i, c in enumerate(merged)
+    ]
+    return {"retrieved": merged, "citations": cits}

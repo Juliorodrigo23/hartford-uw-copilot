@@ -43,7 +43,7 @@ class AgentState(TypedDict, total=False):
 
     # Memo
     memo_md: str
-    memo_chunk: str
+    draft_iters: int  # how many times draft_memo has produced a full draft
     disposition: Disposition | None
     memo: Memo | None
 
@@ -52,7 +52,8 @@ class AgentState(TypedDict, total=False):
     critique_iters: int
     critique_gaps: list[str]
     rubric_scores: dict[str, float]
-    critique_judge: str  # "gpt-4o" | "gemini-2.5-flash" | "skipped"
+    critique_judge: str  # "gpt-4o" | "gemini-2.5-flash" | "skipped" | "disabled"
+    critique_error: str | None  # set when the judge errored and the gate passed open
     critique_provider_override: str | None  # "openai" | "gemini" | None
 
     # Tooling traces
@@ -61,3 +62,10 @@ class AgentState(TypedDict, total=False):
 
     # Routing flags
     data_insufficient_reason: str | None
+
+    # Ablation switches (used by the eval harness to measure component
+    # contributions on the REAL graph rather than a simulated one)
+    disable_rag: bool
+    disable_critique: bool
+    disable_comparables: bool
+    disable_xgb: bool

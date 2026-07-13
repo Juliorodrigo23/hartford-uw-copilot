@@ -1,8 +1,15 @@
 """Chunk + embed + persist into Chroma. Builds the BM25 corpus alongside.
 
-Reads all `*.txt` files under `data/raw/{ntsb,sec}/` and ingests them. The
-Chroma collection is selected by directory: `ntsb` → ntsb collection, `sec`
-→ 10k collection, etc.
+Reads all `*.txt` files under `data/raw/{ntsb,sec,forms,industry}/` and
+ingests them. The Chroma collection is selected by directory: `ntsb` → ntsb
+collection, `sec` → 10k collection, etc.
+
+Idempotent for real: each collection is dropped and recreated
+(store.reset_collection) before re-adding, so re-runs never hit
+duplicate-id errors and never accumulate stale chunks.
+
+Identity contract: BM25 corpus entries and Chroma ids are BOTH the chunk id
+"<doc_id>#chunk-<i>". hybrid_search and the golden retrieval set rely on this.
 """
 
 from __future__ import annotations
@@ -12,13 +19,15 @@ import logging
 import sys
 from pathlib import Path
 
-import numpy as np
-
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from app.compat import apply_platform_workarounds  # noqa: E402
+
+apply_platform_workarounds()  # BEFORE torch/onnx imports (macOS OpenMP clash)
 from app.config import settings  # noqa: E402
 from app.rag.chunker import recursive_chunks, semantic_chunks  # noqa: E402
 from app.rag.embeddings import embed_texts  # noqa: E402
-from app.rag.store import get_or_create  # noqa: E402
+from app.rag.store import reset_collection  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("04_build_index")
@@ -35,7 +44,7 @@ SOURCE_TO_COLLECTION = {
 def main():
     raw_dir = settings.data_dir / "raw"
     docs: list[dict] = []
-    for src_dir in raw_dir.glob("*"):
+    for src_dir in sorted(raw_dir.glob("*")):
         if not src_dir.is_dir():
             continue
         coll = SOURCE_TO_COLLECTION.get(src_dir.name)
@@ -66,12 +75,12 @@ def main():
                         "doc_id": doc_id,
                         "source": coll,
                         "text": c.text,
-                        "metadata": c.metadata,
+                        "metadata": {k: v for k, v in c.metadata.items() if isinstance(v, (str, int, float, bool))},
                     }
                 )
 
     if not docs:
-        log.warning("no docs ingested — did you run 02 / 03 first?")
+        log.error("no docs ingested — run scripts 02 and 03 first")
         return
 
     # Embed in batches and persist per collection
@@ -80,12 +89,7 @@ def main():
         by_coll.setdefault(d["source"], []).append(d)
 
     for coll_name, items in by_coll.items():
-        col = get_or_create(coll_name)
-        # Wipe and re-add for idempotence
-        try:
-            col.delete(where={})
-        except Exception:
-            pass
+        col = reset_collection(coll_name)  # drop + recreate: true idempotence
         log.info("embedding %s · %d chunks", coll_name, len(items))
         embs = embed_texts([x["text"] for x in items])
         col.add(
@@ -105,10 +109,8 @@ def main():
     log.info("done · %d total chunks across %d collections", len(docs), len(by_coll))
 
     # Sanity: dimension echo
-    if docs:
-        sample = embed_texts([docs[0]["text"]])
-        log.info("embedding dim = %d", sample.shape[1])
-    _ = np  # quiet linters
+    sample = embed_texts([docs[0]["text"]])
+    log.info("embedding dim = %d", sample.shape[1])
 
 
 if __name__ == "__main__":

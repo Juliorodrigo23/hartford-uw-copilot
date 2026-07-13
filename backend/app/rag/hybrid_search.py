@@ -1,4 +1,9 @@
-"""Hybrid retrieval: BM25 + dense + Reciprocal Rank Fusion + cross-encoder rerank."""
+"""Hybrid retrieval: BM25 + dense + Reciprocal Rank Fusion + cross-encoder rerank.
+
+Identity contract: every ranking stage keys results by CHUNK id
+("<doc_id>#chunk-<i>"). BM25, dense, RRF, and the golden retrieval set all
+share this id space, so fusion dedup and eval matching are exact.
+"""
 
 from __future__ import annotations
 
@@ -6,23 +11,25 @@ import asyncio
 import json
 import logging
 from functools import lru_cache
-from pathlib import Path
 
 import numpy as np
 
 from app.config import settings
 from app.rag.embeddings import embed_query
 from app.rag.store import get_or_create
-from app.schemas import RetrievedChunk
+from app.schemas import CorpusKind, RetrievedChunk
 
 log = logging.getLogger(__name__)
 
 
-COLLECTIONS = ["ntsb", "10k", "forms", "industry"]
+COLLECTIONS = [CorpusKind.NTSB.value, CorpusKind.SEC_10K.value, CorpusKind.FORMS.value, CorpusKind.INDUSTRY.value]
 RRF_K = 60
 DEFAULT_K_DENSE = 50
 DEFAULT_K_BM25 = 50
 DEFAULT_K_FINAL = 10
+
+# Ranking tuple: (chunk_id, score, text, source)
+Hit = tuple[str, float, str, str]
 
 
 @lru_cache(maxsize=1)
@@ -32,6 +39,7 @@ def _bm25():
 
     bm25_path = settings.data_dir / "processed" / "bm25_corpus.json"
     if not bm25_path.exists():
+        log.warning("BM25 corpus not found at %s — run scripts/04_build_index.py", bm25_path)
         return None, []
     raw = json.loads(bm25_path.read_text())
     docs: list[dict] = raw["docs"]
@@ -40,69 +48,97 @@ def _bm25():
 
 
 @lru_cache(maxsize=1)
+def _dense_index_ready() -> bool:
+    """True when at least one Chroma collection actually contains vectors.
+
+    Checked BEFORE loading the embedding model: encoding a query pulls the
+    ~1.3GB bge-large weights, which on a fresh Cloud Run container means a
+    multi-minute HuggingFace download (or an OOM) at request time. Against
+    an empty index that cost buys nothing, so we skip dense entirely and let
+    BM25 carry the query. Cached per process; ship a populated index and
+    restart to enable dense retrieval.
+    """
+    try:
+        for name in COLLECTIONS:
+            if get_or_create(name).count() > 0:
+                return True
+    except Exception as e:
+        log.error("chroma unavailable while probing index: %s", e)
+    log.warning("dense index empty — skipping query embedding (BM25 only). Run scripts/02-04.")
+    return False
+
+
+@lru_cache(maxsize=1)
 def _reranker():
     try:
         from sentence_transformers import CrossEncoder
 
-        return CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2", device="cpu")
+        return CrossEncoder(settings.reranker_model, device="cpu")
     except Exception as e:
         log.warning("cross-encoder unavailable: %s", e)
         return None
 
 
-def _dense_search(query_emb: np.ndarray, k: int) -> list[tuple[str, float, str, str]]:
+def _dense_search(query_emb: np.ndarray, k: int) -> list[Hit]:
     """Search every collection and merge."""
-    out: list[tuple[str, float, str, str]] = []
+    out: list[Hit] = []
     for name in COLLECTIONS:
         try:
             col = get_or_create(name)
-        except Exception:
+        except Exception as e:
+            log.error("chroma collection %s unavailable: %s", name, e)
+            continue
+        n_in_col = col.count()
+        if n_in_col == 0:
             continue
         try:
             r = col.query(
                 query_embeddings=[query_emb.tolist()],
-                n_results=min(k, max(1, col.count())) if hasattr(col, "count") else k,
+                n_results=min(k, n_in_col),
                 include=["documents", "distances", "metadatas"],
             )
         except Exception as e:
-            log.warning("chroma query failed for %s: %s", name, e)
+            log.error("chroma query failed for %s: %s", name, e)
             continue
         ids = r.get("ids", [[]])[0]
         docs = r.get("documents", [[]])[0]
         dists = r.get("distances", [[]])[0]
-        for i, doc_id in enumerate(ids):
+        for i, chunk_id in enumerate(ids):
             distance = dists[i] if i < len(dists) else 1.0
             sim = max(0.0, 1.0 - float(distance))
-            out.append((doc_id, sim, docs[i] if i < len(docs) else "", name))
+            out.append((chunk_id, sim, docs[i] if i < len(docs) else "", name))
     out.sort(key=lambda x: -x[1])
     return out[:k]
 
 
-def _bm25_search(query: str, k: int) -> list[tuple[str, float, str, str]]:
+def _bm25_search(query: str, k: int) -> list[Hit]:
     bm25, docs = _bm25()
     if bm25 is None or not docs:
         return []
     scores = bm25.get_scores(query.lower().split())
     top = np.argsort(scores)[::-1][:k]
+    # NOTE: keyed by chunk id ("id"), not the parent document id, so that
+    # RRF dedup against dense hits and golden-set matching are exact.
     return [
-        (docs[i]["doc_id"], float(scores[i]), docs[i]["text"], docs[i].get("source", ""))
+        (docs[i]["id"], float(scores[i]), docs[i]["text"], docs[i].get("source", ""))
         for i in top
+        if scores[i] > 0
     ]
 
 
-def _rrf(rankings: list[list[tuple[str, float, str, str]]]) -> list[tuple[str, float, str, str]]:
+def _rrf(rankings: list[list[Hit]]) -> list[Hit]:
     """Reciprocal rank fusion. Returns deduped list with summed RRF scores."""
     table: dict[str, list] = {}
     for ranks in rankings:
-        for rank, (doc_id, _score, text, src) in enumerate(ranks):
-            entry = table.get(doc_id) or [doc_id, 0.0, text, src]
+        for rank, (chunk_id, _score, text, src) in enumerate(ranks):
+            entry = table.get(chunk_id) or [chunk_id, 0.0, text, src]
             entry[1] += 1.0 / (RRF_K + rank + 1)
-            table[doc_id] = entry
+            table[chunk_id] = entry
     fused = sorted(table.values(), key=lambda x: -x[1])
     return [tuple(x) for x in fused]  # type: ignore[return-value]
 
 
-def _rerank(query: str, hits: list[tuple[str, float, str, str]], k_final: int) -> list[tuple[str, float, str, str]]:
+def _rerank(query: str, hits: list[Hit], k_final: int) -> list[Hit]:
     if not hits:
         return []
     reranker = _reranker()
@@ -135,13 +171,14 @@ def _hybrid_search_sync(
     k_bm25: int,
     rerank: bool,
 ) -> list[RetrievedChunk]:
-    try:
-        emb = embed_query(query)
-    except Exception as e:
-        log.warning("embedding failed: %s — BM25-only fallback", e)
-        emb = None
+    emb = None
+    if _dense_index_ready():
+        try:
+            emb = embed_query(query)
+        except Exception as e:
+            log.warning("embedding failed: %s — BM25-only fallback", e)
 
-    rankings: list[list[tuple[str, float, str, str]]] = []
+    rankings: list[list[Hit]] = []
     if emb is not None:
         rankings.append(_dense_search(emb, k_dense))
     rankings.append(_bm25_search(query, k_bm25))
@@ -152,6 +189,30 @@ def _hybrid_search_sync(
         fused = fused[:k_final]
 
     return [
-        RetrievedChunk(doc_id=doc_id, score=score, text=text, source=src or "unknown")
-        for (doc_id, score, text, src) in fused
+        RetrievedChunk(doc_id=chunk_id, score=score, text=text, source=src or "unknown")
+        for (chunk_id, score, text, src) in fused
     ]
+
+
+def search_stages(query: str, k: int = 10) -> dict:
+    """Diagnostic surface for the export script: returns the per-stage
+    rankings (bm25, dense, rrf, rerank) for one query so the frontend can
+    show the REAL disagreement between rankers instead of invented lists."""
+    emb = None
+    if _dense_index_ready():
+        try:
+            emb = embed_query(query)
+        except Exception:
+            emb = None
+    dense = _dense_search(emb, k) if emb is not None else []
+    bm25 = _bm25_search(query, k)
+    fused = _rrf([r for r in (dense, bm25) if r])
+    reranked = _rerank(query, fused, k)
+
+    def strip(hits: list[Hit]) -> list[dict]:
+        return [
+            {"id": h[0], "score": round(float(h[1]), 4), "source": h[3], "snippet": h[2][:140]}
+            for h in hits[:k]
+        ]
+
+    return {"query": query, "bm25": strip(bm25), "dense": strip(dense), "rrf": strip(fused), "reranked": strip(reranked)}

@@ -86,6 +86,8 @@ export default function PipelinePage() {
               { term: "Agent", def: "an LLM that can also call tools and loop, not just answer in one shot." },
               { term: "RAG", def: "retrieval-augmented generation — fetching relevant documents before the LLM writes." },
               { term: "Vertex AI", def: "Google Cloud's hosted-LLM service. We use it for the Gemini model family." },
+              { term: "LLM-as-a-judge", def: "using a second AI to grade the first AI's answers against a rubric — like a teacher marking essays. We use a judge from a DIFFERENT vendor so it can't be biased toward its own style." },
+              { term: "Ablation", def: "turning one component off and re-measuring, to prove what each part contributes. If scores don't drop, the component wasn't earning its keep." },
             ]}
           />
         </PlainEnglish>
@@ -155,7 +157,7 @@ export default function PipelinePage() {
           number={2}
           eyebrow="Data sources"
           title="Real public data, not toy fixtures"
-          lede="Insurance interviewers will sniff out toy data immediately. The corpus is built on FMCSA SAFER (carrier safety profiles), FMCSA Crash Files, NTSB accident narratives, NHTSA FARS, and SEC 10-K risk-factor sections from public trucking issuers. Submissions are synthesized on top — but each is tied to a real DOT number so SAFER lookups always return real data."
+          lede="Insurance interviewers will sniff out toy data immediately. The corpus is built on FMCSA SAFER (carrier safety profiles), NTSB accident-investigation narratives, NHTSA FARS fatal-crash counts, and SEC 10-K risk-factor sections from public trucking issuers. Submissions are synthesized on top — but each is tied to a real DOT number verified to resolve in SAFER, so carrier lookups always return real data."
         >
           <PlainEnglish>
             <p>
@@ -166,10 +168,10 @@ export default function PipelinePage() {
               off the road for being unsafe, and so on. We use the same public sources here.
             </p>
             <p>
-              Below: every dot on the map is a real federal investigation or fatal-crash
-              record. Every shaded state is colored by the rate of commercial-truck crashes
-              there. Drag the &ldquo;year&rdquo; slider to walk through 2019 → 2024 and watch
-              the picture build up. <em>This is the corpus the AI reads.</em>
+              Below: every state is shaded by its count of fatal crashes in the federal
+              FARS database — hover any state to see the real number. It&apos;s one of the
+              public datasets this system draws on, and a reminder of why the underwriting
+              question matters: these are real losses, not abstractions.
             </p>
           </PlainEnglish>
           <DataSourceMap />
@@ -178,13 +180,11 @@ export default function PipelinePage() {
               <div className="card p-5 text-sm">
                 <div className="font-mono text-2xs uppercase tracking-[0.18em] text-ink-dim">Sources at a glance</div>
                 <ul className="mt-3 space-y-2 text-ink-muted">
-                  <li>· <span className="text-ink">FMCSA SAFER</span> — fleet size, OOS rates, operating authority, commodity codes</li>
-                  <li>· <span className="text-ink">FMCSA Crash File</span> — ~5 yrs of motor-carrier crash records</li>
-                  <li>· <span className="text-ink">NTSB</span> — long-form narrative investigations (~500 docs)</li>
-                  <li>· <span className="text-ink">NHTSA FARS</span> — fatal-crash microdata</li>
-                  <li>· <span className="text-ink">SEC EDGAR</span> — 10-K Item 1A risk factors for Werner, Knight-Swift, JB Hunt, Schneider, Heartland Express, USXpress (~10 filings × 5 yrs)</li>
-                  <li>· <span className="text-ink">ATA / FleetOwner / Trucking.org</span> — industry context</li>
-                  <li>· ISO CA forms (publicly available in state filings) for coverage-language grounding</li>
+                  <li>· <span className="text-ink">FMCSA SAFER</span> — fleet size, crash counts, out-of-service rates, operating authority; queried live by DOT number and cached</li>
+                  <li>· <span className="text-ink">NTSB</span> — long-form narrative crash investigations (curated highway-mode set)</li>
+                  <li>· <span className="text-ink">NHTSA FARS</span> — fatal-crash counts by state (the map above)</li>
+                  <li>· <span className="text-ink">SEC EDGAR</span> — 10-K Item 1A risk factors for 7 public truckers (Werner, Knight-Swift, JB Hunt, Schneider, Heartland, US Xpress, Old Dominion), up to 5 filings each</li>
+                  <li>· <span className="text-ink">Industry docs + ISO CA coverage forms</span> — pricing and coverage-language grounding</li>
                 </ul>
               </div>
             }
@@ -280,8 +280,8 @@ export default function PipelinePage() {
               <strong>2. Embedding.</strong> Convert each chunk into a list of numbers
               (a &ldquo;vector&rdquo;) that captures its <em>meaning</em>. Two chunks
               about driver fatigue end up close together in this number space, even if they
-              use different words. The 3D plot below is exactly that: ~1,100 chunks, each
-              colored by which corpus they came from. Spin it. Where colors mix, the
+              use different words. The 3D plot below is exactly that: every chunk in the
+              index, colored by which corpus it came from. Spin it. Where colors mix, the
               <em> topics</em> are what matter — that&apos;s a healthy embedding.
             </p>
           </PlainEnglish>
@@ -356,10 +356,12 @@ export default function PipelinePage() {
             }
           >
             <p>
-              The retrieval ablation in section 10 shows the impact: dropping the cross-encoder
-              rerank costs ~5 nDCG points, dropping BM25 entirely costs ~9 points, and dropping
-              dense retrieval is the worst of all three. Hybrid is non-negotiable for this domain;
-              the cross-encoder is a clean win that costs ~80ms.
+              The rankings above are the real pipeline's output for a golden-set query, stage
+              by stage — where BM25 and the dense model disagree is precisely the value of
+              running both. Section 10's eval dashboard carries the measured retrieval metrics
+              (recall@k, MRR, nDCG) and the ablation harness re-runs the agent with retrieval
+              disabled to quantify the contribution. The cross-encoder rerank costs on the
+              order of 100ms on CPU and consistently cleans up the fused ordering.
             </p>
           </ProseRow>
         </PipeSection>
@@ -408,10 +410,11 @@ export default function PipelinePage() {
             }
           >
             <p>
-              Ablations show that <em>removing</em> the XGBoost tool cuts pairwise winrate by ~3
-              points. Modest, but the gain comes for free at inference time — the model is a few
-              hundred KB and predicts in under 30ms. SHAP values let the agent quote drivers
-              ("vehicle OOS rate is the top contributor") in language an underwriter expects.
+              The ablation harness re-runs the agent with the XGBoost tool disabled to measure
+              its contribution (see the eval dashboard for the measured numbers). The gain comes
+              nearly free at inference time — the model is a few hundred KB and predicts in under
+              30ms. SHAP values let the agent quote drivers ("vehicle OOS rate is the top
+              contributor") in language an underwriter expects.
             </p>
             <Note kind="ok">
               The point of this section in an interview is not the model's R². It's that I can
@@ -473,7 +476,7 @@ export default function PipelinePage() {
           id="agent"
           number={8}
           eyebrow="Agent architecture"
-          title="LangGraph: 8 nodes, 2 conditional edges, a self-critique loop"
+          title="LangGraph: 9 nodes, 2 conditional edges, a self-critique loop"
           lede="LangChain agents are fine for one-shot tools; the moment your reasoning is cyclical, you need a graph. The self-critique loop is the cheapest reliability gain in the system — the agent reads its own memo against a rubric and routes back to retrieval if it flags a gap."
         >
           <PlainEnglish>
@@ -486,10 +489,11 @@ export default function PipelinePage() {
               see in the diagram below.
             </p>
             <p>
-              The animation runs through three real example traces — a clean account, a
-              tricky one that triggers the critique loop, and an edge case where the
-              carrier can&apos;t be looked up. Watch each box light up; the labels match
-              what&apos;s actually happening in our backend code.
+              The animation walks three example scenarios — a clean account, a tricky one
+              that triggers the critique loop, and an edge case where the carrier can&apos;t
+              be looked up. The boxes and arrows exactly match the backend graph code (shown
+              on the right); the timings are representative. To watch a REAL run, use the
+              live chat page: the same diagram lights up there with real timings.
             </p>
             <p className="text-ink-muted">
               Why this design? Because the worst failure mode for an AI underwriter is
@@ -545,17 +549,20 @@ export default function PipelinePage() {
         >
           <PlainEnglish>
             <p>
-              When the AI writes &ldquo;Decline&rdquo;, can we prove that decision came from
-              the <em>data</em> and not from, say, the broker&apos;s tone of voice? The
-              heatmap below answers that. Click any word in the recommendation along the
-              bottom; the strip up top lights up the input words that most influenced it.
-              For &ldquo;Decline,&rdquo; you should see &ldquo;OOS rate · 27%&rdquo; and
-              &ldquo;BASIC HoS · above threshold&rdquo; light up — exactly what we&apos;d
-              want.
+              When the AI writes &ldquo;Decline&rdquo;, can we check that the decision came
+              from the <em>data</em> and not from, say, the broker&apos;s tone of voice?
+              The heatmap below demonstrates the auditing method: pick an output word from
+              the dropdown, and the strip lights up the input words that would most
+              influence it. For &ldquo;Decline,&rdquo; the honest answer should be
+              &ldquo;OOS rate · 27%&rdquo; and &ldquo;BASIC HoS · above threshold&rdquo;,
+              not the carrier&apos;s name.
             </p>
             <p className="text-ink-muted">
-              If a recommendation lit up because of the carrier&apos;s name or the broker
-              greeting, that would be a red flag. This view makes that auditable.
+              As the badge says, this panel illustrates the METHOD with mock values —
+              Gemini doesn&apos;t expose its internals, so the real version computes token
+              log-prob shifts under input masking. If a production recommendation lit up on
+              the broker&apos;s greeting rather than the safety data, that would be a red
+              flag this view is designed to catch.
             </p>
           </PlainEnglish>
           <AttentionHeatmap />
@@ -573,7 +580,7 @@ export default function PipelinePage() {
           number={10}
           eyebrow="Evaluation"
           title="Three independent tracks, ablated"
-          lede="Most demos stop at 'it works for this one happy-path query'. The differentiator on this team is going to be the eval harness. We grade retrieval (recall@k, MRR, nDCG, RAGAs), generation (cross-family LLM-as-judge), and end-to-end task quality (red-flag recall on hand-curated ground-truth memos), then ablate every major component."
+          lede="Most demos stop at 'it works for this one happy-path query'. The differentiator on this team is going to be the eval harness. We grade retrieval (recall@k, MRR, nDCG), generation (cross-family LLM-as-judge), and end-to-end task quality (red-flag recall on hand-curated ground-truth memos), then ablate every major component by re-running the real agent with each one disabled."
         >
           <PlainEnglish>
             <p>
@@ -591,9 +598,10 @@ export default function PipelinePage() {
               a baseline (just an LLM, no agent) — we want our system to win.
             </p>
             <p>
-              <strong>3. Task-level</strong> — For 20 hand-picked applications I wrote the
-              memo myself first. The AI&apos;s memos are checked against mine: did it
-              spot the same red flags? Did it claim things that aren&apos;t supported?
+              <strong>3. Task-level</strong> — For a hand-curated set of applications I
+              wrote down the expected answer first: which red flags MUST appear, and which
+              claims must NOT. The AI&apos;s memos are checked against that: did it spot
+              the same red flags? Did it claim things the data doesn&apos;t support?
             </p>
             <p>
               <strong>And ablations</strong> — turn off each major component (RAG, the
@@ -621,12 +629,13 @@ export default function PipelinePage() {
             }
           >
             <p>
-              The system honestly underperforms in two places. <em>Hallucination rate</em> isn't
-              zero — 6% of memo claims are weakly supported by the retrieved chunks, and the
-              critique loop catches most but not all. <em>Materiality precision</em> is 79% —
-              the agent occasionally over-flags low-impact issues to be safe. Both are addressable
-              with targeted prompt work and stricter retrieval thresholds; I'd rather show the
-              real numbers than tune to a perfect demo.
+              Every number on this dashboard comes from an actual eval run; tracks that
+              haven't run yet say so instead of showing placeholders. The two metrics to
+              scrutinize are the <em>hallucination count</em> (forbidden claims that slip
+              past the critique loop) and the ablation deltas (a component whose removal
+              doesn't move red-flag recall isn't earning its latency). I'd rather show
+              real numbers with warts than tune the harness to a perfect demo — an eval
+              that always says "we're good" is worse than no eval.
             </p>
             <Note kind="warn">
               An eval harness that always says "we're good" is more dangerous than no harness.
@@ -658,7 +667,7 @@ export default function PipelinePage() {
             <NextItem
               n={3}
               title="Latency budget triage"
-              body="P95 is 11.4s on warm Cloud Run. The biggest contributor is draft_memo (~4.5s); the second is the cross-encoder rerank (~280ms). Switching draft_memo to Gemini Flash for the first pass and only escalating to Pro on critique-loop costs ~6 winrate points and saves ~2.5s — a trade I'd make for the producer-summary use case but not the underwriting memo."
+              body="draft_memo dominates the latency budget (several seconds of Gemini Pro streaming); the cross-encoder rerank is second (~hundreds of ms on CPU). The obvious experiment: Gemini Flash for the first draft, escalate to Pro only when the critique loop fires, and measure the winrate cost with the ablation harness before shipping the trade."
             />
           </div>
         </PipeSection>

@@ -1,49 +1,31 @@
 "use client";
 
 /**
- * CalibrationCurve — animated reliability diagram for the loss-frequency
- * model. Predicted decile mean vs empirical mean, with histogram of bin
- * sizes underneath. Two series: pre-calibration (raw XGB output) and post-
- * isotonic. The diagonal is the perfect-calibration reference.
+ * CalibrationCurve — reliability diagram for the loss-frequency model,
+ * rendered from REAL out-of-fold calibration bins in model_insights.json
+ * (script 06 computes them, script 08 exports them). Pre-isotonic vs
+ * post-isotonic, with per-decile bin sizes underneath.
  */
 
 import * as d3 from "d3";
 import { useEffect, useRef } from "react";
-
-const RAW = [
-  { p: 0.05, e: 0.062, n: 4820 },
-  { p: 0.12, e: 0.158, n: 4140 },
-  { p: 0.21, e: 0.262, n: 3950 },
-  { p: 0.32, e: 0.378, n: 3680 },
-  { p: 0.43, e: 0.48, n: 3520 },
-  { p: 0.54, e: 0.572, n: 3340 },
-  { p: 0.66, e: 0.66, n: 3210 },
-  { p: 0.77, e: 0.732, n: 3060 },
-  { p: 0.86, e: 0.81, n: 2920 },
-  { p: 0.95, e: 0.872, n: 2710 },
-];
-
-const CAL = [
-  { p: 0.05, e: 0.052, n: 4820 },
-  { p: 0.12, e: 0.131, n: 4140 },
-  { p: 0.21, e: 0.218, n: 3950 },
-  { p: 0.32, e: 0.323, n: 3680 },
-  { p: 0.43, e: 0.434, n: 3520 },
-  { p: 0.54, e: 0.546, n: 3340 },
-  { p: 0.66, e: 0.659, n: 3210 },
-  { p: 0.77, e: 0.768, n: 3060 },
-  { p: 0.86, e: 0.857, n: 2920 },
-  { p: 0.95, e: 0.946, n: 2710 },
-];
+import { useData } from "@/lib/useData";
+import { DataBadge, PendingCard } from "@/components/DataBadge";
+import type { ModelInsights } from "@/lib/api";
 
 export function CalibrationCurve() {
+  const { data, status } = useData<ModelInsights>("model_insights.json");
   const ref = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
     const svg = ref.current;
-    if (!svg) return;
-    const W = svg.clientWidth;
-    const H = svg.clientHeight;
+    if (!svg || !data) return;
+    const RAW = data.calibration.raw;
+    const CAL = data.calibration.calibrated;
+    if (!RAW.length || !CAL.length) return;
+
+    const W = svg.clientWidth || 700;
+    const H = svg.clientHeight || 380;
     const padL = 50,
       padR = 16,
       padT = 14,
@@ -51,22 +33,23 @@ export function CalibrationCurve() {
     const sel = d3.select(svg).attr("viewBox", `0 0 ${W} ${H}`);
     sel.selectAll("*").remove();
 
-    const xs = d3.scaleLinear().domain([0, 1]).range([padL, W - padR]);
-    const ys = d3.scaleLinear().domain([0, 1]).range([H - padB, padT]);
+    const lo = Math.min(RAW[0].p, RAW[0].e, CAL[0].p, CAL[0].e);
+    const xs = d3.scaleLinear().domain([Math.max(0, lo - 0.02), 1]).range([padL, W - padR]);
+    const ys = d3.scaleLinear().domain([Math.max(0, lo - 0.02), 1]).range([H - padB, padT]);
 
     // Diagonal
     sel
       .append("line")
-      .attr("x1", xs(0))
-      .attr("y1", ys(0))
-      .attr("x2", xs(1))
-      .attr("y2", ys(1))
+      .attr("x1", xs.range()[0])
+      .attr("y1", ys.range()[0])
+      .attr("x2", xs.range()[1])
+      .attr("y2", ys.range()[1])
       .attr("stroke", "#1f2733")
       .attr("stroke-dasharray", "4 3");
     sel
       .append("text")
-      .attr("x", xs(1) - 8)
-      .attr("y", ys(1) + 14)
+      .attr("x", xs.range()[1] - 8)
+      .attr("y", ys.range()[1] + 14)
       .attr("text-anchor", "end")
       .attr("fill", "#6c7689")
       .attr("font-family", "ui-monospace, Menlo, monospace")
@@ -79,67 +62,38 @@ export function CalibrationCurve() {
       .y((d) => ys(d.e))
       .curve(d3.curveCatmullRom);
 
-    // Raw line
-    const rawPath = sel
-      .append("path")
-      .datum(RAW)
-      .attr("fill", "none")
-      .attr("stroke", "#fbbf24")
-      .attr("stroke-width", 2)
-      .attr("d", line as never);
-    const rawLen = (rawPath.node() as SVGPathElement).getTotalLength();
-    rawPath
-      .attr("stroke-dasharray", `${rawLen} ${rawLen}`)
-      .attr("stroke-dashoffset", rawLen)
-      .transition()
-      .duration(1200)
-      .attr("stroke-dashoffset", 0);
-
-    // Calibrated line
-    const calPath = sel
-      .append("path")
-      .datum(CAL)
-      .attr("fill", "none")
-      .attr("stroke", "#34d399")
-      .attr("stroke-width", 2.4)
-      .attr("d", line as never);
-    const calLen = (calPath.node() as SVGPathElement).getTotalLength();
-    calPath
-      .attr("stroke-dasharray", `${calLen} ${calLen}`)
-      .attr("stroke-dashoffset", calLen)
-      .transition()
-      .duration(1500)
-      .delay(400)
-      .attr("stroke-dashoffset", 0);
-
-    // Points
-    sel
-      .selectAll("circle.raw")
-      .data(RAW)
-      .enter()
-      .append("circle")
-      .attr("class", "raw")
-      .attr("cx", (d) => xs(d.p))
-      .attr("cy", (d) => ys(d.e))
-      .attr("r", 0)
-      .attr("fill", "#fbbf24")
-      .transition()
-      .delay((_, i) => i * 80)
-      .attr("r", 3.4);
-
-    sel
-      .selectAll("circle.cal")
-      .data(CAL)
-      .enter()
-      .append("circle")
-      .attr("class", "cal")
-      .attr("cx", (d) => xs(d.p))
-      .attr("cy", (d) => ys(d.e))
-      .attr("r", 0)
-      .attr("fill", "#34d399")
-      .transition()
-      .delay((_, i) => 600 + i * 80)
-      .attr("r", 3.6);
+    for (const [series, color, delay] of [
+      [RAW, "#fbbf24", 0],
+      [CAL, "#34d399", 400],
+    ] as const) {
+      const path = sel
+        .append("path")
+        .datum(series as { p: number; e: number }[])
+        .attr("fill", "none")
+        .attr("stroke", color as string)
+        .attr("stroke-width", 2.2)
+        .attr("d", line as never);
+      const len = (path.node() as SVGPathElement).getTotalLength();
+      path
+        .attr("stroke-dasharray", `${len} ${len}`)
+        .attr("stroke-dashoffset", len)
+        .transition()
+        .duration(1200)
+        .delay(delay as number)
+        .attr("stroke-dashoffset", 0);
+      sel
+        .selectAll(`circle.s${delay}`)
+        .data(series as { p: number; e: number }[])
+        .enter()
+        .append("circle")
+        .attr("cx", (d) => xs(d.p))
+        .attr("cy", (d) => ys(d.e))
+        .attr("r", 0)
+        .attr("fill", color as string)
+        .transition()
+        .delay((_, i) => (delay as number) + i * 80)
+        .attr("r", 3.4);
+    }
 
     // Histogram of bin sizes underneath
     const histY = H - padB + 16;
@@ -151,9 +105,9 @@ export function CalibrationCurve() {
       .enter()
       .append("rect")
       .attr("class", "hist")
-      .attr("x", (d) => xs(d.p) - 12)
+      .attr("x", (d) => xs(d.p) - 10)
       .attr("y", histY + histH)
-      .attr("width", 24)
+      .attr("width", 20)
       .attr("height", 0)
       .attr("fill", "#3b82f6")
       .attr("fill-opacity", 0.5)
@@ -169,7 +123,7 @@ export function CalibrationCurve() {
       .attr("fill", "#6c7689")
       .attr("font-family", "ui-monospace, Menlo, monospace")
       .attr("font-size", 10)
-      .text("bin sizes (n samples per decile)");
+      .text("bin sizes (n carriers per decile)");
 
     // Axes
     sel
@@ -196,7 +150,7 @@ export function CalibrationCurve() {
       .attr("fill", "#6c7689")
       .attr("font-family", "ui-monospace, Menlo, monospace")
       .attr("font-size", 10)
-      .text("predicted probability of ≥ 1 claim");
+      .text("predicted P(adverse frequency)");
     sel
       .append("text")
       .attr("transform", `translate(14,${H / 2}) rotate(-90)`)
@@ -204,13 +158,13 @@ export function CalibrationCurve() {
       .attr("fill", "#6c7689")
       .attr("font-family", "ui-monospace, Menlo, monospace")
       .attr("font-size", 10)
-      .text("empirical fraction with claim");
+      .text("empirical adverse fraction");
 
-    // Legend
-    const legend = sel.append("g").attr("transform", `translate(${W - padR - 200}, ${padT + 8})`);
+    // Legend with REAL Brier scores
+    const legend = sel.append("g").attr("transform", `translate(${W - padR - 260}, ${padT + 8})`);
     [
-      { c: "#fbbf24", t: "raw XGB · ECE=0.041" },
-      { c: "#34d399", t: "isotonic-calibrated · ECE=0.008" },
+      { c: "#fbbf24", t: `raw XGB · Brier ${data.calibration.brier_raw.toFixed(4)}` },
+      { c: "#34d399", t: `isotonic-calibrated · Brier ${data.calibration.brier_calibrated.toFixed(4)}` },
     ].forEach((it, i) => {
       legend.append("circle").attr("cx", 6).attr("cy", 6 + i * 18).attr("r", 4).attr("fill", it.c);
       legend
@@ -222,14 +176,27 @@ export function CalibrationCurve() {
         .attr("font-size", 10)
         .text(it.t);
     });
-  }, []);
+  }, [data]);
+
+  if (status === "loading") {
+    return <div className="card p-6 text-sm text-ink-dim">loading calibration…</div>;
+  }
+  if (status === "missing" || !data) {
+    return (
+      <PendingCard
+        title="Calibration data not exported yet."
+        command="uv run python scripts/06_train_xgb.py && uv run python scripts/08_export_viz_data.py"
+      />
+    );
+  }
 
   return (
     <div className="card overflow-hidden">
       <div className="flex items-center gap-3 border-b border-border p-3">
         <div className="font-mono text-2xs uppercase tracking-[0.18em] text-ink-dim">
-          Reliability diagram · XGBoost loss-freq · raw vs isotonic-calibrated
+          Reliability diagram · out-of-fold · raw vs isotonic-calibrated
         </div>
+        <DataBadge kind="live" note={data.version} />
       </div>
       <svg ref={ref} className="h-[380px] w-full" />
     </div>

@@ -3,13 +3,15 @@
 from __future__ import annotations
 
 import json
+import logging
 from functools import lru_cache
-from pathlib import Path
 
 import numpy as np
 
 from app.config import settings
-from app.schemas import Submission
+from app.schemas import LossStats, SAFERProfile, Submission
+
+log = logging.getLogger(__name__)
 
 BOOK_PATH = settings.data_dir / "synthesized" / "book_of_business.json"
 
@@ -36,15 +38,22 @@ def _featurize(d: dict) -> np.ndarray:
     )
 
 
-def _featurize_sub(sub: Submission, oos_vehicle: float = 0.12, oos_driver: float = 0.05) -> np.ndarray:
+def _featurize_sub(
+    sub: Submission,
+    safer: SAFERProfile | None = None,
+    loss: LossStats | None = None,
+) -> np.ndarray:
+    """Build the query vector from what the agent actually knows about this
+    submission: real SAFER OOS rates and real loss-run statistics when
+    available, industry-median priors only when they are not."""
     return _featurize(
         {
             "fleet_size": sub.fleet_size,
-            "oos_vehicle": oos_vehicle,
-            "oos_driver": oos_driver,
-            "loss_ratio_3yr": 0.65,
-            "frequency_per_pu_per_yr": 0.04,
-            "trend_3yr_pct": 0.0,
+            "oos_vehicle": safer.oos_rate_vehicle if safer else 0.12,
+            "oos_driver": safer.oos_rate_driver if safer else 0.05,
+            "loss_ratio_3yr": loss.loss_ratio_3yr if loss else 0.65,
+            "frequency_per_pu_per_yr": loss.frequency_per_pu_per_yr if loss else 0.04,
+            "trend_3yr_pct": loss.trend_3yr_pct if loss else 0.0,
             "commodity": sub.commodity,
         }
     )
@@ -53,6 +62,7 @@ def _featurize_sub(sub: Submission, oos_vehicle: float = 0.12, oos_driver: float
 @lru_cache(maxsize=1)
 def _book() -> tuple[list[dict], np.ndarray]:
     if not BOOK_PATH.exists():
+        log.warning("book of business not found at %s — run scripts/05_synthesize_subs.py", BOOK_PATH)
         return ([], np.zeros((0, 9)))
     raw = json.loads(BOOK_PATH.read_text())
     items = list(raw.get("accounts", raw))
@@ -62,14 +72,25 @@ def _book() -> tuple[list[dict], np.ndarray]:
     return items, M
 
 
-def comparable_search(sub: Submission, k: int = 5) -> list[dict]:
+def comparable_search(
+    sub: Submission,
+    k: int = 5,
+    safer: SAFERProfile | None = None,
+    loss: LossStats | None = None,
+) -> list[dict]:
     items, M = _book()
     if not items:
         return []
-    q = _featurize_sub(sub)
-    # Cosine
-    qn = q / (np.linalg.norm(q) + 1e-9)
-    Mn = M / (np.linalg.norm(M, axis=1, keepdims=True) + 1e-9)
+    q = _featurize_sub(sub, safer=safer, loss=loss)
+    # Standardize per feature against the book's distribution BEFORE cosine.
+    # Raw features are scale-dominated by log(fleet size), which pushed every
+    # similarity to ~0.999 and made the scores meaningless for ranking.
+    mu = M.mean(axis=0)
+    sd = M.std(axis=0) + 1e-9
+    Mz = (M - mu) / sd
+    qz = (q - mu) / sd
+    qn = qz / (np.linalg.norm(qz) + 1e-9)
+    Mn = Mz / (np.linalg.norm(Mz, axis=1, keepdims=True) + 1e-9)
     sims = (Mn @ qn).tolist()
     pairs = sorted(zip(items, sims, strict=False), key=lambda x: -x[1])
     out = []

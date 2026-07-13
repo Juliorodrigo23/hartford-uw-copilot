@@ -1,25 +1,39 @@
-"""Download NTSB highway-mode accident-investigation reports.
+"""Download NTSB highway accident-investigation narratives.
 
-NTSB publishes report PDFs and HTML summaries at https://ntsb.gov.
-For demo purposes we ingest a curated index of public investigation pages
-(highway-mode commercial-truck investigations) and persist the narrative
-text. Idempotent.
+Post-mortem baked into this script: the previous version fetched
+ntsb.gov/investigations/Pages/*.aspx, which are JavaScript-rendered — the
+scraper saved the site's NAVIGATION MENU as five "narratives" and recorded
+success. Nothing here writes to the corpus without passing the content gate.
+
+Two real-text strategies, in order:
+
+1. **CAROL API** (data.ntsb.gov/carol-main-public) — NTSB's public
+   investigation database. We query completed Highway-mode cases and extract
+   the probable-cause / analysis narrative fields from the JSON.
+2. **Report PDFs** — NTSB publishes Highway Accident Reports as PDFs with
+   stable URLs (e.g. .../investigations/AccidentReports/Reports/HAR2201.pdf).
+   Seed list in `ntsb_reports.json` (editable); text extracted with pypdf.
+
+Every candidate document runs through app.rag.content_gate.validate_document
+(min length, nav-menu signature, prose shape, crash-domain keywords, dedupe).
+Rejected documents are NOT written. There are no placeholder narratives —
+if everything fails, the script exits loudly with a nonzero status.
 """
 
 from __future__ import annotations
 
+import io
 import json
 import logging
 import sys
 import time
 from pathlib import Path
-from urllib.parse import urlparse
 
 import httpx
-from bs4 import BeautifulSoup
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from app.config import settings  # noqa: E402
+from app.rag.content_gate import validate_document  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("02_download_ntsb")
@@ -27,101 +41,192 @@ log = logging.getLogger("02_download_ntsb")
 OUT_DIR = settings.data_dir / "raw" / "ntsb"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-# A small curated seed list. Real script reads from a CSV index (search export
-# from NTSB's investigation database). For the demo we include enough to
-# exercise the chunker / index.
-SEED_INVESTIGATIONS = [
-    {
-        "id": "ntsb-2019-04",
-        "url": "https://www.ntsb.gov/investigations/Pages/HWY19MH004.aspx",
-        "title": "I-35 multi-vehicle commercial truck crash · 2019",
-    },
-    {
-        "id": "ntsb-2020-08",
-        "url": "https://www.ntsb.gov/investigations/Pages/HWY20MH008.aspx",
-        "title": "Commercial doubles-trailer fatigue · 2020",
-    },
-    {
-        "id": "ntsb-2022-12",
-        "url": "https://www.ntsb.gov/investigations/Pages/HWY22MH012.aspx",
-        "title": "Brake-adjustment failure · jackknife I-10 · 2022",
-    },
-    {
-        "id": "ntsb-2023-03",
-        "url": "https://www.ntsb.gov/investigations/Pages/HWY23MH003.aspx",
-        "title": "Fog pileup commercial truck · 2023",
-    },
-    {
-        "id": "ntsb-2024-01",
-        "url": "https://www.ntsb.gov/investigations/Pages/HWY24MH001.aspx",
-        "title": "Hazmat carrier bridge strike · 2024",
-    },
+UA = {"User-Agent": "uw-copilot-demo/0.2 (research, contact 23juliorod@gmail.com)"}
+GATE_KWARGS = dict(
+    min_chars=2500,
+    required_any=("crash", "vehicle", "driver", "highway", "carrier", "truck"),
+)
+
+CAROL_URL = "https://data.ntsb.gov/carol-main-public/api/Query/Main"
+
+# Highway Accident Report PDFs. Report numbers are printed on every NTSB
+# highway report ("NTSB/HAR-XX/YY"); URL pattern is stable. Edit/extend this
+# list from https://www.ntsb.gov/investigations/AccidentReports/Pages/highway.aspx
+DEFAULT_REPORT_PDFS = [
+    {"id": "ntsb-har-2201", "url": "https://www.ntsb.gov/investigations/AccidentReports/Reports/HAR2201.pdf"},
+    {"id": "ntsb-har-2202", "url": "https://www.ntsb.gov/investigations/AccidentReports/Reports/HAR2202.pdf"},
+    {"id": "ntsb-har-2301", "url": "https://www.ntsb.gov/investigations/AccidentReports/Reports/HAR2301.pdf"},
+    {"id": "ntsb-har-2302", "url": "https://www.ntsb.gov/investigations/AccidentReports/Reports/HAR2302.pdf"},
+    {"id": "ntsb-har-2401", "url": "https://www.ntsb.gov/investigations/AccidentReports/Reports/HAR2401.pdf"},
+    {"id": "ntsb-har-2101", "url": "https://www.ntsb.gov/investigations/AccidentReports/Reports/HAR2101.pdf"},
+    {"id": "ntsb-har-2102", "url": "https://www.ntsb.gov/investigations/AccidentReports/Reports/HAR2102.pdf"},
+    {"id": "ntsb-har-2001", "url": "https://www.ntsb.gov/investigations/AccidentReports/Reports/HAR2001.pdf"},
+    {"id": "ntsb-har-1901", "url": "https://www.ntsb.gov/investigations/AccidentReports/Reports/HAR1901.pdf"},
+    {"id": "ntsb-har-1902", "url": "https://www.ntsb.gov/investigations/AccidentReports/Reports/HAR1902.pdf"},
 ]
 
 
-def _fetch(url: str) -> str | None:
-    try:
-        r = httpx.get(
-            url,
-            timeout=15,
-            follow_redirects=True,
-            headers={"User-Agent": "uw-copilot-demo/0.1 (contact 23juliorod@gmail.com)"},
-        )
-        if r.status_code != 200:
-            return None
-        return r.text
-    except Exception as e:
-        log.warning("fetch %s failed: %s", url, e)
+def _write(doc_id: str, text: str, meta: dict, seen: set[str]) -> bool:
+    gate = validate_document(text, seen_fingerprints=seen, **GATE_KWARGS)
+    if not gate.ok:
+        log.warning("REJECTED %s: %s", doc_id, gate.reason)
+        return False
+    (OUT_DIR / f"{doc_id}.txt").write_text(text)
+    (OUT_DIR / f"{doc_id}.meta.json").write_text(
+        json.dumps({**meta, "chars": len(text), "gate": "passed"}, indent=2)
+    )
+    log.info("saved %s (%d chars)", doc_id, len(text))
+    return True
+
+
+# ---------------------------------------------------------------------------
+# Strategy 1: CAROL API
+# ---------------------------------------------------------------------------
+
+def _carol_query(max_cases: int = 40) -> list[dict]:
+    """Completed Highway investigations with narrative fields."""
+    payload = {
+        "ResultSetSize": max_cases,
+        "ResultSetOffset": 0,
+        "QueryGroups": [
+            {
+                "QueryRules": [
+                    {
+                        "RuleType": "Simple",
+                        "Values": ["Highway"],
+                        "Columns": ["Event.Mode"],
+                        "Operator": "is",
+                    }
+                ],
+                "AndOr": "and",
+            }
+        ],
+        "AndOr": "and",
+        "SortColumn": "EventDate",
+        "SortDescending": True,
+        "TargetCollection": "cases",
+        "SessionId": 0,
+    }
+    r = httpx.post(CAROL_URL, json=payload, headers=UA, timeout=45)
+    r.raise_for_status()
+    data = r.json()
+    return data.get("Results") or data.get("results") or []
+
+
+def _narrative_from_case(case: dict) -> tuple[str, str] | None:
+    """Pull (case_id, narrative text) from a CAROL case record, defensively."""
+    fields: dict[str, str] = {}
+
+    def walk(obj):
+        if isinstance(obj, dict):
+            for k, v in obj.items():
+                if isinstance(v, str) and len(v) > 200:
+                    fields[k] = v
+                else:
+                    walk(v)
+        elif isinstance(obj, list):
+            for it in obj:
+                walk(it)
+
+    walk(case)
+    narrative_keys = [k for k in fields if any(t in k.lower() for t in ("narrative", "analysis", "probablecause", "factual", "summary"))]
+    if not narrative_keys:
         return None
+    text = "\n\n".join(fields[k] for k in sorted(narrative_keys))
+    case_id = str(
+        case.get("CM_ntsbNum")
+        or case.get("NtsbNo")
+        or case.get("Mkey")
+        or case.get("cm_mkey")
+        or abs(hash(text)) % 10**8
+    ).replace("/", "-")
+    return f"ntsb-carol-{case_id}".lower(), text
 
 
-def _extract_text(html: str) -> str:
-    soup = BeautifulSoup(html, "lxml")
-    for s in soup(["script", "style", "noscript"]):
-        s.decompose()
-    body = soup.body or soup
-    text = body.get_text(separator="\n").strip()
-    # Collapse blank lines
-    return "\n".join(line.strip() for line in text.splitlines() if line.strip())
+def ingest_carol(seen: set[str]) -> int:
+    try:
+        cases = _carol_query()
+    except Exception as e:
+        log.warning("CAROL API unavailable (%s) — falling back to report PDFs", e)
+        return 0
+    saved = 0
+    for case in cases:
+        got = _narrative_from_case(case)
+        if not got:
+            continue
+        doc_id, text = got
+        if (OUT_DIR / f"{doc_id}.txt").exists():
+            saved += 1
+            continue
+        if _write(doc_id, text, {"source": "carol", "id": doc_id}, seen):
+            saved += 1
+    return saved
 
 
-def main():
-    seed_path = Path(__file__).parent / "ntsb_seed.json"
+# ---------------------------------------------------------------------------
+# Strategy 2: report PDFs
+# ---------------------------------------------------------------------------
+
+def _pdf_text(content: bytes) -> str:
+    from pypdf import PdfReader
+
+    reader = PdfReader(io.BytesIO(content))
+    pages = [p.extract_text() or "" for p in reader.pages]
+    return "\n".join(pages)
+
+
+def ingest_report_pdfs(seen: set[str]) -> int:
+    seed_path = Path(__file__).parent / "ntsb_reports.json"
     if seed_path.exists():
         seeds = json.loads(seed_path.read_text())
     else:
-        seeds = SEED_INVESTIGATIONS
+        seeds = DEFAULT_REPORT_PDFS
         seed_path.write_text(json.dumps(seeds, indent=2))
-
-    fetched = 0
+    saved = 0
     for s in seeds:
         out = OUT_DIR / f"{s['id']}.txt"
-        meta = OUT_DIR / f"{s['id']}.meta.json"
         if out.exists():
-            log.info("skipping (cached) %s", s["id"])
+            saved += 1
             continue
-        html = _fetch(s["url"])
-        if not html:
-            # Fallback: write a synthesized placeholder narrative so the
-            # downstream index-build still has something realistic. This
-            # keeps the demo deterministic when ntsb.gov is unreachable.
-            out.write_text(
-                f"NTSB highway-mode investigation summary — {s['title']}.\n\n"
-                "On the night of the incident, the operator of a commercial truck combination "
-                "experienced a critical event consistent with the investigation's findings. "
-                "BASIC scores, hours-of-service logs, and ELD data were reviewed. The carrier's "
-                "operating authority status, fleet composition, and prior crash history were "
-                "examined for contributing factors. Toxicology, brake adjustment, vehicle "
-                "maintenance, and roadway conditions were assessed."
-            )
-            meta.write_text(json.dumps({**s, "fallback": True}, indent=2))
+        try:
+            r = httpx.get(s["url"], headers=UA, timeout=60, follow_redirects=True)
+            if r.status_code != 200 or "pdf" not in (r.headers.get("content-type") or "").lower():
+                log.warning("skip %s: HTTP %s / %s", s["id"], r.status_code, r.headers.get("content-type"))
+                continue
+            text = _pdf_text(r.content)
+        except Exception as e:
+            log.warning("skip %s: %s", s["id"], e)
             continue
-        out.write_text(_extract_text(html))
-        meta.write_text(json.dumps({**s, "host": urlparse(s["url"]).netloc}, indent=2))
-        fetched += 1
+        if _write(s["id"], text, {"source": "report-pdf", **s}, seen):
+            saved += 1
         time.sleep(1.0)
-    log.info("done · %d new investigations downloaded", fetched)
+    return saved
+
+
+def main() -> int:
+    # Purge legacy junk: any existing doc that fails the gate is removed so
+    # a rebuilt index can't inherit the old navigation menus.
+    seen: set[str] = set()
+    for txt in sorted(OUT_DIR.glob("*.txt")):
+        gate = validate_document(txt.read_text(errors="ignore"), seen_fingerprints=seen, **GATE_KWARGS)
+        if not gate.ok:
+            log.warning("purging legacy junk %s (%s)", txt.name, gate.reason)
+            txt.unlink(missing_ok=True)
+            txt.with_suffix(".meta.json").unlink(missing_ok=True)
+
+    n = ingest_carol(seen)
+    n += ingest_report_pdfs(seen)
+    log.info("done · %d validated NTSB documents on disk", n)
+    if n == 0:
+        log.error(
+            "ZERO valid NTSB documents ingested. The corpus would be empty; "
+            "refusing to pretend otherwise. Check network access, or update "
+            "scripts/ntsb_reports.json with current report PDF URLs from "
+            "https://www.ntsb.gov/investigations/AccidentReports/Pages/highway.aspx"
+        )
+        return 1
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

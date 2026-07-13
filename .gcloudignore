@@ -1,0 +1,27 @@
+# Upload rules for `gcloud builds submit`.
+#
+# WITHOUT this file gcloud falls back to .gitignore, which excludes
+# backend/data/** — and the image would build with NO DATA (the exact failure
+# mode this repo used to have). This file keeps the runtime data in the
+# upload while dropping the heavyweight dev directories.
+
+.git
+.gitignore
+**/__pycache__
+**/.venv
+**/node_modules
+**/.next
+**/.turbo
+**/.vercel
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+*.log
+.env
+.env.local
+frontend/
+
+# Raw corpus text not needed in the image (the built index is uploaded)
+backend/data/raw/ntsb/
+backend/data/raw/sec/
+backend/data/checkpoints.sqlite*

@@ -22,6 +22,8 @@ import {
   Gauge,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { DataBadge } from "@/components/DataBadge";
+import { useAnimationGate } from "@/lib/useInView";
 
 type NodeId =
   | "parse_submission"
@@ -67,7 +69,9 @@ const EDGES: Edge[] = [
   { from: "self_critique", to: "finalize", cond: "passes rubric" },
 ];
 
-// Three replayable traces — pulled from real runs (frontend ships sample JSON).
+// Three scripted example traversals. The TOPOLOGY exactly mirrors
+// backend/app/graph/builder.py; the step timings are representative examples
+// (the live chat page shows real node timings from real runs).
 type Trace = { name: string; description: string; steps: { node: NodeId; ms: number }[] };
 const TRACES: Trace[] = [
   {
@@ -126,16 +130,19 @@ export function LangGraphMachine() {
   const [traceIdx, setTraceIdx] = useState(0);
   const [step, setStep] = useState(0);
   const [playing, setPlaying] = useState(true);
-  // 1× = real wall-clock latency. Default 0.8× = a touch slower than real,
-  // which gives you time to read each node label as it lights up.
-  const [speed, setSpeed] = useState(0.8);
+  // 1× = real wall-clock latency. Default 0.5× = half speed, which gives a
+  // first-time reader time to connect each label to the prose around it.
+  const [speed, setSpeed] = useState(0.5);
+  const { ref: gateRef, active: gateActive } = useAnimationGate<HTMLDivElement>(0.3);
   const trace = TRACES[traceIdx];
   const total = trace.steps.length;
   const tickRef = useRef<number | null>(null);
 
   // Auto-step using the trace's per-step latency, scaled by speed.
+  // Only advances while the diagram is on screen, so the traversal begins
+  // when the reader arrives instead of finishing before they scroll down.
   useEffect(() => {
-    if (!playing) return;
+    if (!playing || !gateActive) return;
     const cur = trace.steps[step];
     if (!cur) {
       // Trace finished — linger on the completed state long enough to read
@@ -146,14 +153,15 @@ export function LangGraphMachine() {
         if (tickRef.current) window.clearTimeout(tickRef.current);
       };
     }
-    // Floor at 600ms so even fast nodes (e.g. xgb_loss_freq @ 28ms) hold long
-    // enough to be readable. Cap at 8s so draft_memo doesn't drag the whole run.
-    const ms = Math.min(8000, Math.max(600, cur.ms / speed));
+    // Floor at 1600ms: the fast nodes (parse @ ~200ms, xgb @ ~30ms) were
+    // flying past faster than anyone can read the label + match it to the
+    // prose. Cap at 8s so draft_memo doesn't drag the whole run.
+    const ms = Math.min(8000, Math.max(1600, cur.ms / speed));
     tickRef.current = window.setTimeout(() => setStep((s) => s + 1), ms);
     return () => {
       if (tickRef.current) window.clearTimeout(tickRef.current);
     };
-  }, [step, playing, speed, trace]);
+  }, [step, playing, gateActive, speed, trace]);
 
   const activeNode = trace.steps[step]?.node;
   const completed = useMemo(() => new Set(trace.steps.slice(0, step).map((s) => s.node)), [step, trace]);
@@ -169,9 +177,10 @@ export function LangGraphMachine() {
   const cumulativeMs = trace.steps.slice(0, step).reduce((s, x) => s + x.ms, 0);
 
   return (
-    <div className="card overflow-hidden">
+    <div ref={gateRef} className="card overflow-hidden">
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-3 border-b border-border bg-bg-panel/60 p-3">
+        <DataBadge kind="illustrative" note="topology mirrors builder.py exactly · timings representative · live timings on the chat page" />
         <div className="flex items-center gap-1.5">
           <button
             onClick={() => setPlaying((p) => !p)}

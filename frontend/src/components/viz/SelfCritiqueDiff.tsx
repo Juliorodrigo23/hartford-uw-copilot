@@ -1,79 +1,143 @@
 "use client";
 
 /**
- * SelfCritiqueDiff — shows the memo before and after the self-critique loop.
- * Diffs are highlighted inline; the rubric scores update. The narrative is
- * "the agent caught its own omission of the BASIC HoS violation".
+ * SelfCritiqueDiff — the memo before and after the self-critique loop.
+ *
+ * Data source, in order of preference:
+ *   1. showcase_run.json (scripts/09_capture_showcase.py): REAL drafts and
+ *      REAL judge verdicts from a captured end-to-end run. If the run had
+ *      two drafts, the before/after toggle diffs them; if the first draft
+ *      passed review, that verdict is shown as-is.
+ *   2. A hardcoded worked example, badged illustrative, until a showcase
+ *      run exists.
  */
 
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { DataBadge } from "@/components/DataBadge";
 import { ArrowRight, Check, AlertTriangle } from "lucide-react";
+import { useData } from "@/lib/useData";
+import type { ShowcaseRun } from "@/lib/api";
 
-const V1 = `## Underwriting memo · DOT 2839412 · ABC Transport Inc
+const EXAMPLE_V1 = `## Underwriting memo · (illustrative example)
 
 **Recommendation:** Quote with surcharge.
 
-ABC Transport operates 214 power units in the south-central region with general freight commodity mix. Recent loss runs show 47 claims over 5 years with a $4.2M incurred total. The 3-year trend is increasing at ~14.7%/yr. The synthesized book of comparables shows similar carriers with adverse loss ratios.
+The carrier operates 214 power units with a general-freight commodity mix. Recent loss runs show 47 claims over 5 years with a $4.2M incurred total; the 3-year trend is increasing at ~14.7%/yr.
 
 **Risk drivers:** vehicle maintenance OOS rate (27%), elevated crash frequency relative to comparables.`;
 
-const V2 = `## Underwriting memo · DOT 2839412 · ABC Transport Inc
+const EXAMPLE_V2 = `## Underwriting memo · (illustrative example)
 
 **Recommendation:** Decline OR quote with significant surcharge + pre-binding loss control inspection.
 
-ABC Transport operates 214 power units in the south-central region with general freight commodity mix. Recent loss runs show 47 claims over 5 years with a $4.2M incurred total. The 3-year trend is increasing at ~14.7%/yr. The synthesized book of comparables shows similar carriers with adverse loss ratios.
+The carrier operates 214 power units with a general-freight commodity mix. Recent loss runs show 47 claims over 5 years with a $4.2M incurred total; the 3-year trend is increasing at ~14.7%/yr.
 
-**Risk drivers:** vehicle maintenance OOS rate at 27% (industry median 12%), HoS Compliance BASIC score above the FMCSA federal-intervention threshold [NTSB 2020-08]; XGBoost predicts 12.8 claims next year (80% PI: 9.2–16.7).`;
+**Risk drivers:** vehicle maintenance OOS rate at 27% (industry median 12%), HoS Compliance BASIC above the FMCSA intervention threshold [2]; the loss-frequency model predicts 12.8 claims next year (80% PI: 9.2–16.7).`;
 
-const RUBRIC = [
-  { dim: "Factual accuracy", before: 4.0, after: 4.6 },
-  { dim: "Completeness", before: 2.6, after: 4.4 },
-  { dim: "Calibration of risk language", before: 3.1, after: 4.5 },
-  { dim: "Citation discipline", before: 1.5, after: 4.2 },
-  { dim: "Format adherence", before: 4.4, after: 4.6 },
-];
+const EXAMPLE_RUBRIC: Record<string, [number, number]> = {
+  "factual_accuracy": [4.0, 4.6],
+  "completeness": [2.6, 4.4],
+  "calibration": [3.1, 4.5],
+  "citations": [1.5, 4.2],
+  "format": [4.4, 4.6],
+};
 
 export function SelfCritiqueDiff() {
+  const { data: showcase, status } = useData<ShowcaseRun>("showcase_run.json");
   const [phase, setPhase] = useState<"before" | "after">("before");
+
+  const view = useMemo(() => {
+    if (status === "live" && showcase?.drafts?.length && showcase?.critiques?.length) {
+      const drafts = showcase.drafts;
+      const critiques = showcase.critiques;
+      const looped = drafts.length >= 2;
+      const first = critiques[0];
+      const last = critiques[critiques.length - 1];
+      const dims = Object.keys(first.rubric_scores ?? {});
+      return {
+        live: true as const,
+        looped,
+        judge: last.judge,
+        before: drafts[0],
+        after: drafts[drafts.length - 1],
+        gaps: first.gaps ?? [],
+        rubric: dims.map((d) => ({
+          dim: d.replace(/_/g, " "),
+          before: first.rubric_scores?.[d] ?? 0,
+          after: last.rubric_scores?.[d] ?? first.rubric_scores?.[d] ?? 0,
+        })),
+        meta: showcase,
+      };
+    }
+    return {
+      live: false as const,
+      looped: true,
+      judge: "GPT-4o (example)",
+      before: EXAMPLE_V1,
+      after: EXAMPLE_V2,
+      gaps: ["missing BASIC HoS context", "no model interval cited", '"surcharge" too soft given OOS rate'],
+      rubric: Object.entries(EXAMPLE_RUBRIC).map(([d, [b, a]]) => ({
+        dim: d.replace(/_/g, " "),
+        before: b,
+        after: a,
+      })),
+      meta: null,
+    };
+  }, [showcase, status]);
+
+  const showAfter = phase === "after" && view.looped;
 
   return (
     <div className="card p-4">
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         <div className="font-mono text-2xs uppercase tracking-[0.18em] text-ink-dim">
-          self-critique loop · iteration {phase === "before" ? 1 : 2}
+          self-critique loop{view.live && view.meta ? ` · captured run ${view.meta.run_id}` : ""}
         </div>
-        <div className="ml-auto flex items-center gap-1 rounded-md border border-border bg-bg-card p-1 text-xs">
-          <button
-            onClick={() => setPhase("before")}
-            className={`rounded px-2 py-1 ${phase === "before" ? "bg-bg-subtle text-ink" : "text-ink-muted"}`}
-          >
-            before
-          </button>
-          <button
-            onClick={() => setPhase("after")}
-            className={`rounded px-2 py-1 ${phase === "after" ? "bg-bg-subtle text-ink" : "text-ink-muted"}`}
-          >
-            after critique
-          </button>
-        </div>
+        {view.live ? (
+          <DataBadge
+            kind="live"
+            note={view.looped ? "real drafts + real judge verdicts" : "real judge verdict · first draft passed review"}
+          />
+        ) : (
+          <DataBadge
+            kind="illustrative"
+            note="worked example — run scripts/09_capture_showcase.py to replace with a real captured run"
+          />
+        )}
+        {view.looped && (
+          <div className="ml-auto flex items-center gap-1 rounded-md border border-border bg-bg-card p-1 text-xs">
+            <button
+              onClick={() => setPhase("before")}
+              className={`rounded px-2 py-1 ${phase === "before" ? "bg-bg-subtle text-ink" : "text-ink-muted"}`}
+            >
+              before
+            </button>
+            <button
+              onClick={() => setPhase("after")}
+              className={`rounded px-2 py-1 ${phase === "after" ? "bg-bg-subtle text-ink" : "text-ink-muted"}`}
+            >
+              after critique
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-[1fr_280px]">
-        <div className="card bg-bg-subtle/40 p-4 font-mono text-xs leading-relaxed text-ink">
-          <pre className="whitespace-pre-wrap">{phase === "before" ? V1 : V2}</pre>
+        <div className="card max-h-96 overflow-y-auto bg-bg-subtle/40 p-4 font-mono text-xs leading-relaxed text-ink">
+          <pre className="whitespace-pre-wrap">{showAfter ? view.after : view.before}</pre>
         </div>
         <div className="card p-3">
           <div className="font-mono text-2xs uppercase tracking-[0.18em] text-ink-dim">
-            rubric (judge: GPT-4o)
+            rubric (judge: {view.judge})
           </div>
           <ul className="mt-2 space-y-2">
-            {RUBRIC.map((r) => {
-              const v = phase === "before" ? r.before : r.after;
+            {view.rubric.map((r) => {
+              const v = showAfter ? r.after : r.before;
               return (
                 <li key={r.dim}>
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-ink-muted">{r.dim}</span>
+                    <span className="capitalize text-ink-muted">{r.dim}</span>
                     <span className="font-mono tabular-nums text-ink">{v.toFixed(1)} / 5</span>
                   </div>
                   <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-bg-subtle">
@@ -88,25 +152,27 @@ export function SelfCritiqueDiff() {
             })}
           </ul>
           <div className="mt-3 border-t border-border pt-3 text-2xs text-ink-dim">
-            {phase === "before" ? (
+            {!showAfter && view.gaps.length > 0 ? (
               <span className="flex items-start gap-1">
                 <AlertTriangle size={12} className="mt-0.5 shrink-0 text-warn-400" />
-                Critic flags: missing BASIC HoS context, no XGBoost interval cited,
-                "surcharge" too soft given OOS rate.
+                Critic flags: {view.gaps.join("; ")}.
               </span>
             ) : (
               <span className="flex items-start gap-1">
                 <Check size={12} className="mt-0.5 shrink-0 text-accent-400" />
-                Loop terminates: rubric ≥ 4.0 on every dimension. Memo finalized.
+                {view.looped
+                  ? "Loop terminates: rubric passes. Memo finalized."
+                  : "First draft passed the rubric review; no redraft was needed."}
               </span>
             )}
           </div>
-          <div className="mt-3 flex items-center justify-between text-2xs text-ink-dim">
-            <span>iter 1</span>
-            <ArrowRight size={12} />
-            <span>iter 2</span>
-            <span className="text-ink-muted">avg {(RUBRIC.reduce((s, r) => s + r.after, 0) / RUBRIC.length).toFixed(1)}/5</span>
-          </div>
+          {view.looped && (
+            <div className="mt-3 flex items-center justify-between text-2xs text-ink-dim">
+              <span>iter 1</span>
+              <ArrowRight size={12} />
+              <span>iter 2</span>
+            </div>
+          )}
         </div>
       </div>
     </div>
