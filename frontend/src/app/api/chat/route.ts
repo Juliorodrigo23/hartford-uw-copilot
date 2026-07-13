@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
   // even when a live backend is configured. This keeps the landing CTA
   // deterministic, instant, and free of accidental model spend.
   if (req.nextUrl.searchParams.get("replay") === "1") {
-    return demoStream();
+    return demoStream("walkthrough");
   }
 
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "anon";
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
     // No backend configured: stream a RECORDED REPLAY. The stream announces
     // itself with a demo_notice event and the UI shows a persistent banner —
     // it is never presented as a live agent run.
-    return demoStream();
+    return demoStream("backend-unconfigured");
   }
 
   const ts = Date.now().toString();
@@ -126,7 +126,7 @@ export async function POST(req: NextRequest) {
   });
 }
 
-function demoStream(): Response {
+function demoStream(reason: "walkthrough" | "backend-unconfigured"): Response {
   const enc = new TextEncoder();
   const stream = new ReadableStream({
     async start(controller) {
@@ -138,7 +138,9 @@ function demoStream(): Response {
 
       emit("demo_notice", {
         message:
-          "No live backend is configured (BACKEND_URL unset). This is a recorded replay of the event protocol with synthetic example data — not a live agent run.",
+          reason === "walkthrough"
+            ? "You are viewing the saved recruiter walkthrough. Choose a prompt or type a message to switch to a new live agent run."
+            : "No live backend is configured (BACKEND_URL unset). This is a recorded replay of the event protocol with synthetic example data — not a live agent run.",
       });
 
       const events: { d: number; ev: string; data: unknown }[] = [
@@ -165,9 +167,12 @@ function demoStream(): Response {
         emit(e.ev, e.data);
       }
 
+      const replayExplanation = reason === "walkthrough"
+        ? "**This is the saved walkthrough, not a live agent run.** Send any new prompt to switch to the configured live backend."
+        : "**This is not a live agent run.** Deploy the backend and set BACKEND_URL to stream real memos with real SAFER data, real retrieval citations, and the trained loss-frequency model.";
       const memo = `## Underwriting memo · recorded demo replay
 
-**This is not a live agent run.** Deploy the backend and set BACKEND_URL to stream real memos with real SAFER data, real retrieval citations, and the trained loss-frequency model.
+${replayExplanation}
 
 **What the live system does with a submission like this one:**
 - Pulls the carrier's real FMCSA SAFER profile (crash counts, OOS rates) [1]

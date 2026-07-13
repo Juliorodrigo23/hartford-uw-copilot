@@ -126,6 +126,8 @@ function samplePrompt(submission: ChatSubmission): string {
   return `Triage submission ${submission.id} (${submission.carrier_name}, DOT ${submission.dot_number}). Surface the top 3 risk drivers, recommend a disposition, and cite evidence.`;
 }
 
+type RunMode = "recorded" | "ready" | "connecting" | "live" | null;
+
 export default function ChatPage() {
   const [submission, setSubmission] = useState<ChatSubmission | null>(null);
   const [input, setInput] = useState("");
@@ -136,6 +138,7 @@ export default function ChatPage() {
   const [citations, setCitations] = useState<{ ref: string; doc_id: string; snippet: string }[]>([]);
   const [critique, setCritique] = useState<"auto" | "openai" | "gemini">("auto");
   const [demoNotice, setDemoNotice] = useState<string | null>(null);
+  const [runMode, setRunMode] = useState<RunMode>(null);
   const [demoSubmissionId, setDemoSubmissionId] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
@@ -160,6 +163,8 @@ export default function ChatPage() {
     async (text: string, recordedReplay = false) => {
       if (!text.trim() || busy) return;
       setBusy(true);
+      setDemoNotice(null);
+      setRunMode(recordedReplay ? "recorded" : "connecting");
       setInput("");
       const userMsg: Message = { role: "user", text };
       const placeholder: Message = { role: "assistant", text: "", pending: true };
@@ -184,6 +189,7 @@ export default function ChatPage() {
 
         const res = await openChatStream(body, ac.signal, recordedReplay);
         if (!res.ok || !res.body) {
+          setRunMode(null);
           const detail = await responseError(res);
           updateLast({
             role: "assistant",
@@ -196,7 +202,9 @@ export default function ChatPage() {
         for await (const ev of parseSSE(res.body)) {
           if (ev.type === "demo_notice") {
             setDemoNotice(ev.message);
+            setRunMode("recorded");
           } else if (ev.type === "node_enter") {
+            if (!recordedReplay) setRunMode("live");
             setActive(ev.node);
             setTrace((t) => [...t, { kind: "node_enter", node: ev.node, t_ms: ev.t_ms }]);
           } else if (ev.type === "node_exit") {
@@ -223,6 +231,7 @@ export default function ChatPage() {
             updateLast((prev) => ({ role: "assistant", text: ev.memo || prev.text, pending: false }));
             setActive(null);
           } else if (ev.type === "error") {
+            setRunMode(null);
             updateLast({ role: "assistant", text: `Backend error: ${ev.message}`, pending: false });
           }
         }
@@ -240,6 +249,7 @@ export default function ChatPage() {
         }));
       } catch (e: unknown) {
         if (!isAbortError(e)) {
+          setRunMode(null);
           const detail = errorMessage(e);
           updateLast((previous) => ({
             ...previous,
@@ -297,11 +307,20 @@ export default function ChatPage() {
     setTrace([]);
     setActive(null);
     setCitations([]);
+    setDemoNotice(null);
+    setRunMode(null);
   }
 
   function fillSubmissionPrompt() {
     if (!submission) return;
     setInput(samplePrompt(submission));
+    prepareLiveInteraction();
+  }
+
+  function prepareLiveInteraction() {
+    if (runMode !== "recorded") return;
+    setDemoNotice(null);
+    setRunMode("ready");
   }
 
   return (
@@ -319,11 +338,30 @@ export default function ChatPage() {
         </p>
       </div>
 
-      {demoNotice && (
-        <div className="mb-4 flex items-start gap-2 rounded-md border border-warn-500/40 bg-warn-500/10 px-3 py-2 text-sm text-warn-400">
+      {runMode && (
+        <div
+          className={`mb-4 flex items-start gap-2 rounded-md border px-3 py-2 text-sm ${
+            runMode === "recorded"
+              ? "border-warn-500/40 bg-warn-500/10 text-warn-400"
+              : runMode === "connecting"
+                ? "border-info-500/40 bg-info-500/10 text-info-400"
+                : "border-accent-500/40 bg-accent-500/10 text-accent-400"
+          }`}
+        >
           <Radio size={14} className="mt-0.5 shrink-0" />
           <span>
-            <strong>Recorded replay.</strong> {demoNotice}
+            {runMode === "recorded" && (
+              <><strong>Recorded replay.</strong> {demoNotice ?? "Loading the saved agent trace…"}</>
+            )}
+            {runMode === "ready" && (
+              <><strong>Ready for live analysis.</strong> Send your prompt to start a new agent run.</>
+            )}
+            {runMode === "connecting" && (
+              <><strong>Connecting to the live agent…</strong> Opening the secured event stream.</>
+            )}
+            {runMode === "live" && (
+              <><strong>We are live.</strong> This response and agent trace are streaming from the configured backend.</>
+            )}
           </span>
         </div>
       )}
@@ -341,7 +379,7 @@ export default function ChatPage() {
         {/* Center: chat */}
         <div className="flex h-[640px] flex-col gap-3">
           <MessageStream messages={messages} citations={citations} />
-          <SuggestedPrompts onPick={(p) => setInput(p)} />
+          <SuggestedPrompts onPick={(p) => { setInput(p); prepareLiveInteraction(); }} />
 
           <div className="flex items-center gap-2 rounded-md border border-border bg-bg-card/60 px-2 py-1.5 text-2xs text-ink-muted">
             <Scale size={11} className="text-brand-400" />
@@ -350,7 +388,7 @@ export default function ChatPage() {
               {(["auto", "openai", "gemini"] as const).map((v) => (
                 <button
                   key={v}
-                  onClick={() => setCritique(v)}
+                  onClick={() => { setCritique(v); prepareLiveInteraction(); }}
                   className={`rounded px-2 py-0.5 font-mono ${
                     critique === v ? "bg-bg-subtle text-ink" : "text-ink-muted hover:text-ink"
                   }`}
@@ -373,7 +411,8 @@ export default function ChatPage() {
             )}
             <input
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onFocus={prepareLiveInteraction}
+              onChange={(e) => { setInput(e.target.value); prepareLiveInteraction(); }}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
@@ -407,7 +446,7 @@ export default function ChatPage() {
 
         {/* Right: trace */}
         <div className="h-[640px] overflow-y-auto">
-          <AgentTracePanel events={trace} active={active} recorded={Boolean(demoNotice)} />
+          <AgentTracePanel events={trace} active={active} recorded={runMode === "recorded"} />
         </div>
       </div>
     </div>
