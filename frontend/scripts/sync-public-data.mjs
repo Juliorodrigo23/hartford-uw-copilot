@@ -17,12 +17,9 @@ const frontendRoot = path.resolve(scriptDir, "..");
 const repoRoot = path.resolve(frontendRoot, "..");
 const sourceDir = path.join(repoRoot, "backend", "data", "exports");
 const targetDir = path.join(frontendRoot, "public", "data");
-const retrievalSeed = path.join(
-  repoRoot,
-  "backend",
-  "scripts",
-  "retrieval_example.seed.json",
-);
+// Keep the deterministic retrieval fallback inside the frontend package so
+// isolated Vercel builds do not depend on files above the project root.
+const retrievalSeed = path.join(scriptDir, "retrieval_example.seed.json");
 
 function parseStrictJson(text, source) {
   try {

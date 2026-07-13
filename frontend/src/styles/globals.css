@@ -108,6 +108,36 @@
   .mono-line {
     @apply font-mono text-xs text-ink-muted;
   }
+
+  .provider-rainbow-text {
+    color: transparent;
+    background-image: linear-gradient(
+      90deg,
+      #ff5f6d 0%,
+      #ffb84d 16%,
+      #f9f871 32%,
+      #55e6a5 48%,
+      #55c8ff 64%,
+      #a78bfa 80%,
+      #ff67c4 92%,
+      #ff5f6d 100%
+    );
+    background-size: 300% 100%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: provider-rainbow-shift 4s linear infinite;
+    filter: drop-shadow(0 0 10px rgb(167 139 250 / 24%));
+  }
+}
+
+@keyframes provider-rainbow-shift {
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: 300% 50%;
+  }
 }
 
 @layer utilities {
