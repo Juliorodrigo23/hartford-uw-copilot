@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, FileCode2, MessagesSquare } from "lucide-react";
+import { RotatingInsuranceProvider } from "@/components/RotatingInsuranceProvider";
 
 export function AboutMe() {
   return (
@@ -13,7 +14,7 @@ export function AboutMe() {
             Portfolio · GenAI Data Scientist · GD08AE
           </div>
           <h1 className="text-balance text-3xl font-semibold leading-tight tracking-tight md:text-4xl">
-            A working underwriting copilot for The Hartford —
+            A working underwriting copilot for <RotatingInsuranceProvider /> —
             <span className="text-ink-muted">
               {" "}
               built end-to-end on the stack you already use.

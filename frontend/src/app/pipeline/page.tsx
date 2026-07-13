@@ -19,6 +19,7 @@ import { ShowcaseBanner } from "@/components/viz/ShowcaseBanner";
 import { MonteCarloLoss } from "@/components/viz/MonteCarloLoss";
 import { DataSourceMap } from "@/components/viz/DataSourceMap";
 import EmbeddingCloud3DLazy from "@/components/viz/EmbeddingCloud3DLazy";
+import { RotatingInsuranceProvider } from "@/components/RotatingInsuranceProvider";
 
 const SECTIONS: Section[] = [
   { id: "problem", label: "The problem" },
@@ -54,7 +55,7 @@ export default function PipelinePage() {
         <PlainEnglish title="Start here · what this is, in 60 seconds">
           <p>
             <strong>The job:</strong> when a trucking company applies for commercial-auto
-            insurance at The Hartford, an underwriter has to read a stack of documents and
+            insurance at <RotatingInsuranceProvider />, an underwriter has to read a stack of documents and
             decide whether to insure them, decline, or charge more. It takes hours per
             account.
           </p>
