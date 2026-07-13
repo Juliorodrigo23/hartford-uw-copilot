@@ -1,9 +1,20 @@
 // Lightweight helpers + TS mirrors of the backend export/result schemas.
-const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "/hartford";
+// Keep browser requests in lockstep with next.config.ts. An unset base path
+// means the app is served at `/`; production can opt into `/hartford`.
+const configuredBasePath = (process.env.NEXT_PUBLIC_BASE_PATH ?? "").trim();
+const basePath =
+  configuredBasePath && configuredBasePath !== "/"
+    ? `/${configuredBasePath.replace(/^\/+|\/+$/g, "")}`
+    : "";
+
+export function appPath(path: string) {
+  const absolutePath = path.startsWith("/") ? path : `/${path}`;
+  return `${basePath}${absolutePath}`;
+}
 
 export function dataPath(name: string) {
   // Files under frontend/public/data/* are served at <basePath>/data/*
-  return `${basePath}/data/${name}`;
+  return appPath(`/data/${name}`);
 }
 
 // ---------------------------------------------------------------------------
@@ -102,6 +113,11 @@ export type ModelInsights = {
 
 export type RetrievalStageHit = { id: string; score: number; source: string; snippet: string };
 export type RetrievalExample = {
+  schema_version?: number;
+  provenance?: {
+    kind: "pipeline" | "deterministic_seed_from_real_export";
+    label: string;
+  };
   queries: {
     query: string;
     bm25: RetrievalStageHit[];

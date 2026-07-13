@@ -6,7 +6,7 @@ This repo is a portfolio demo built for The Hartford's Applied AI (GenAI) Data S
 2. **`frontend/`**: a Next.js site with a long-scroll "pipeline walkthrough" (every visualization loads exported pipeline JSON and carries a provenance badge) and a live chat page that streams the agent's run over SSE.
 3. **`backend/scripts/`**: a numbered offline data pipeline (01 to 08, orchestrated by `run_pipeline.sh`) that downloads public data (FMCSA SAFER, NTSB, SEC 10-Ks), builds the vector index, synthesizes demo submissions from verified-resolvable DOTs, trains and calibrates the ML model, runs evals, and exports JSON for the frontend.
 
-Deployment: backend as a Docker image on Cloud Run (via `cloudbuild.yaml`; the image ships the built index, synthesized data, SAFER cache, model artifacts, and viz exports), frontend on Vercel under `juliooo.com/hartford`. The frontend's `/api/chat` route proxies to Cloud Run with HMAC request signing.
+Deployment: backend as a Docker image on Cloud Run (via `cloudbuild.yaml`; the image ships the built index, synthesized data, SAFER cache, model artifacts, and viz exports), frontend on Vercel under `juliooo.com/hartford`. The short-lived `/api/sign` route HMAC-signs the exact body so the browser can stream directly from Cloud Run; `/api/chat` remains a same-origin signed proxy fallback for CORS/connectivity failures and recorded-demo mode.
 
 **Honesty contract:** every number on the site is real pipeline output, an explicit pending state, or a labeled illustration. No placeholder metrics exist in the codebase.
 
@@ -121,7 +121,8 @@ Every track returns `status: ok | skipped` with a reason; **no zero-filled place
 - **`layout.tsx` / `page.tsx`**: shell, hero, about, overview map.
 - **`pipeline/page.tsx`**: the 11-section walkthrough; prose + `CodeBlock` (verbatim snippets from `lib/snippets.ts`) + the viz components.
 - **`chat/page.tsx`**: live demo. Streams `parseSSE` events into `MessageStream` + `AgentTracePanel`; sends the last 6 turns as `history`; handles `redraft` (clears the memo before the new draft streams); shows a persistent banner on `demo_notice`; critique judge toggle per request.
-- **`api/chat/route.ts`**: Node proxy: per-IP hourly limiter (documented as per-instance), HMAC signing, SSE piping, `x-hartford-ratelimit-remaining` passthrough. With no `BACKEND_URL` it streams a recorded replay that ANNOUNCES itself via `demo_notice` and labeled synthetic payloads.
+- **`api/sign/route.ts`**: returns a timestamped HMAC for the exact request body, enabling long browser → Cloud Run streams without a serverless duration ceiling.
+- **`api/chat/route.ts`**: same-origin fallback proxy: per-IP hourly limiter (documented as per-instance), HMAC signing, SSE piping, and explicit upstream errors. With no `BACKEND_URL` it streams a recorded replay that ANNOUNCES itself via `demo_notice` and labeled synthetic payloads.
 
 ### `src/lib/`
 - **`api.ts`**: `dataPath` + typed mirrors of the export/result schemas (`EvalResults` with per-track statuses, `ModelInsights`, `RetrievalExample`, `LossLandscape`, `FarsStateMetrics`, `ChunkingExample`).
@@ -153,10 +154,12 @@ Scenario: the user picks a submission on `/chat`, types a question, and hits sen
 ```
 BROWSER (frontend)
 │ ChatPage.send(text)                                  chat/page.tsx
-│   → fetch POST {basePath}/api/chat  {message, submission_id, history[≤6], critique_provider}
+│   → POST {basePath}/api/sign, then stream directly from Cloud Run
+│   → on signing/CORS/connectivity failure, POST {basePath}/api/chat as a same-origin fallback
 │
-NEXT.JS PROXY (frontend/src/app/api/chat/route.ts)
-│ POST(req) → rateLimit(ip) → HMAC(ts + body) → fetch ${BACKEND_URL}/chat → pipe SSE back
+NEXT.JS ROUTES (frontend/src/app/api/{sign,chat}/route.ts)
+│ sign: HMAC(ts + body) → short-lived direct-stream credentials
+│ chat fallback: rateLimit(ip) → HMAC(ts + body) → fetch ${BACKEND_URL}/chat → pipe SSE back
 │   (no BACKEND_URL → demoStream() with a demo_notice event and labeled synthetic data)
 │
 FASTAPI (backend)

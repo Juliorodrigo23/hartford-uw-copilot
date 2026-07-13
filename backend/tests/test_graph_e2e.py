@@ -10,9 +10,9 @@ from __future__ import annotations
 import importlib
 
 import pytest
+from langgraph.checkpoint.memory import MemorySaver
 
 from app.graph.builder import build_graph
-from langgraph.checkpoint.memory import MemorySaver
 
 # The nodes package re-exports the node FUNCTIONS under the same names as the
 # submodules, so plain `import app.graph.nodes.draft_memo as m` resolves to
@@ -77,6 +77,7 @@ def fake_llms(monkeypatch):
     that only exist after scripts 01/05 run on a networked machine)."""
     parse_mod = importlib.import_module("app.graph.nodes.parse_submission")
     enrich_mod = importlib.import_module("app.graph.nodes.enrich_carrier")
+    retrieve_mod = importlib.import_module("app.graph.nodes.retrieve_context")
 
     monkeypatch.setattr(draft_memo_mod, "gemini", lambda **_kw: _FakeStreamingLLM())
     monkeypatch.setattr(parse_mod, "load_submission", lambda sid: _test_submission() if sid == "SUB-001" else None)
@@ -85,6 +86,14 @@ def fake_llms(monkeypatch):
         return _test_safer()
 
     monkeypatch.setattr(enrich_mod, "safer_lookup", fake_safer)
+
+    async def fake_retrieval(**_kwargs):
+        return []
+
+    # A populated developer Chroma directory must not make these graph tests
+    # download/load native embedding models. Retrieval has focused tests of its
+    # own; this fixture deliberately keeps the graph suite data-independent.
+    monkeypatch.setattr(retrieve_mod, "hybrid_search", fake_retrieval)
 
     async def fake_critique(_memo, _evidence):
         return {"pass": True, "rubric_scores": {"format": 5}, "gaps": []}

@@ -2,8 +2,9 @@
 
 /**
  * RagRetrievalRays — query embedding pulses in the center; rays radiate to
- * the top-k retrieved chunks. Hits come from the REAL reranked results in
- * retrieval_example.json. Ray thickness ∝ rerank score. Pure SVG, no 3D.
+ * the top-k retrieved chunks. Hits come from retrieval_example.json; a
+ * finite RRF fallback is used when the cross-encoder is unavailable. Ray
+ * thickness is proportional to the active final-stage score. Pure SVG.
  */
 
 import { motion } from "framer-motion";
@@ -25,9 +26,10 @@ export function RagRetrievalRays() {
   const hits = useMemo(() => {
     const reranked = data?.queries?.[0]?.reranked ?? [];
     const top = reranked.slice(0, 8);
+    if (!top.length) return [];
     const scores = top.map((h) => h.score);
-    const lo = Math.min(...scores, 0);
-    const hi = Math.max(...scores, 1);
+    const lo = Math.min(...scores);
+    const hi = Math.max(...scores);
     return top.map((h, i) => {
       const norm = hi > lo ? (h.score - lo) / (hi - lo) : 0.5;
       const angle = -15 + i * (360 / Math.max(1, top.length));
@@ -48,19 +50,24 @@ export function RagRetrievalRays() {
   if (status === "missing" || !hits.length) {
     return (
       <PendingCard
-        title="Retrieval rays need the exported reranked results (index required)."
-        command="uv run python scripts/04_build_index.py && uv run python scripts/08_export_viz_data.py"
+        title="Retrieval data sync did not complete. The no-model fallback can repair it."
+        command="cd frontend && pnpm run data:sync"
       />
     );
   }
+
+  const isPipeline = data?.provenance?.kind === "pipeline";
 
   return (
     <div className="card p-4">
       <div className="flex items-center gap-3">
         <div className="font-mono text-2xs uppercase tracking-[0.18em] text-ink-dim">
-          Query → nearest chunks · rerank scores
+          Query → nearest chunks · {isPipeline ? "rerank" : "finite RRF fallback"} scores
         </div>
-        <DataBadge kind="live" />
+        <DataBadge
+          kind={isPipeline ? "live" : "illustrative"}
+          note={isPipeline ? undefined : "real-export-derived deterministic fallback"}
+        />
       </div>
       <svg viewBox="0 0 720 440" className="mt-2 w-full">
         {/* rays */}
@@ -90,7 +97,7 @@ export function RagRetrievalRays() {
           transition={{ duration: 2, repeat: Infinity }}
         />
         <text x={360} y={252} textAnchor="middle" className="fill-ink-dim font-mono text-[10px]">
-          query embedding
+          query {isPipeline ? "embedding" : "fusion"}
         </text>
         {/* hit nodes */}
         {hits.map((h, i) => (

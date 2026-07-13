@@ -1,14 +1,130 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Send, RotateCcw, Wand2, Scale, Radio } from "lucide-react";
 import { SubmissionPicker, type ChatSubmission } from "@/components/chat/SubmissionPicker";
 import { MessageStream, type Message } from "@/components/chat/MessageStream";
 import { AgentTracePanel, type TraceEvent } from "@/components/chat/AgentTracePanel";
 import { SuggestedPrompts } from "@/components/chat/SuggestedPrompts";
+import { appPath } from "@/lib/api";
 import { parseSSE } from "@/lib/sse";
 
-const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "/hartford";
+type SignResponse = {
+  demo?: boolean;
+  backend_url?: string;
+  ts?: string;
+  sig?: string;
+};
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+function isAbortError(error: unknown): boolean {
+  return error instanceof DOMException
+    ? error.name === "AbortError"
+    : typeof error === "object" && error !== null && "name" in error && error.name === "AbortError";
+}
+
+async function proxyChat(body: string, signal: AbortSignal, recordedReplay = false): Promise<Response> {
+  const route = recordedReplay ? "/api/chat?replay=1" : "/api/chat";
+  return fetch(appPath(route), {
+    method: "POST",
+    headers: { "content-type": "application/json", accept: "text/event-stream" },
+    body,
+    signal,
+  });
+}
+
+/** Prefer the direct Cloud Run stream (no serverless duration ceiling), but
+ * fall back to the same-origin Next route whenever signing, CORS, mixed
+ * content, or direct connectivity prevents the browser request. */
+async function openChatStream(
+  body: string,
+  signal: AbortSignal,
+  recordedReplay = false,
+): Promise<Response> {
+  if (recordedReplay) return proxyChat(body, signal, true);
+
+  let directFailure: string | null = null;
+
+  try {
+    const signRes = await fetch(appPath("/api/sign"), {
+      method: "POST",
+      headers: { "content-type": "application/json", accept: "application/json" },
+      body,
+      signal,
+    });
+    if (!signRes.ok) {
+      directFailure = `signing endpoint returned HTTP ${signRes.status}`;
+    } else {
+      const sign = (await signRes.json()) as SignResponse;
+      if (sign.demo === true) {
+        directFailure = "live backend is not configured; recorded-demo proxy selected";
+      } else if (
+        sign.demo === false &&
+        typeof sign.backend_url === "string" &&
+        typeof sign.ts === "string" &&
+        typeof sign.sig === "string"
+      ) {
+        try {
+          const backendUrl = new URL(sign.backend_url);
+          if (backendUrl.protocol !== "http:" && backendUrl.protocol !== "https:") {
+            throw new Error("signing endpoint returned an unsupported backend URL");
+          }
+          const direct = await fetch(new URL("chat", `${backendUrl.toString().replace(/\/+$/, "")}/`), {
+            method: "POST",
+            headers: {
+              "content-type": "application/json",
+              accept: "text/event-stream",
+              "x-hartford-ts": sign.ts,
+              "x-hartford-sig": sign.sig,
+            },
+            body,
+            signal,
+          });
+          // Auth failures happen before a graph run starts, so a proxy retry
+          // is safe and helps when an intermediary strips custom headers.
+          if (direct.status !== 401 && direct.status !== 403) return direct;
+          directFailure = `direct backend returned HTTP ${direct.status}`;
+        } catch (error: unknown) {
+          if (isAbortError(error)) throw error;
+          directFailure = `direct backend connection failed: ${errorMessage(error)}`;
+        }
+      } else {
+        directFailure = "signing endpoint returned an invalid response";
+      }
+    }
+  } catch (error: unknown) {
+    if (isAbortError(error)) throw error;
+    directFailure = `signing request failed: ${errorMessage(error)}`;
+  }
+
+  try {
+    return await proxyChat(body, signal);
+  } catch (error: unknown) {
+    if (isAbortError(error)) throw error;
+    throw new Error(
+      `${directFailure ?? "Direct chat was unavailable"}; same-origin proxy also failed: ${errorMessage(error)}`,
+    );
+  }
+}
+
+async function responseError(res: Response): Promise<string> {
+  const raw = (await res.text()).trim();
+  if (!raw) return `HTTP ${res.status}`;
+  try {
+    const parsed = JSON.parse(raw) as { error?: string; detail?: unknown };
+    const detail = typeof parsed.detail === "string" ? ` ${parsed.detail}` : "";
+    return `${parsed.error ?? `HTTP ${res.status}`}${detail}`.trim();
+  } catch {
+    return raw.slice(0, 2_000);
+  }
+}
+
+function samplePrompt(submission: ChatSubmission): string {
+  return `Triage submission ${submission.id} (${submission.carrier_name}, DOT ${submission.dot_number}). Surface the top 3 risk drivers, recommend a disposition, and cite evidence.`;
+}
 
 export default function ChatPage() {
   const [submission, setSubmission] = useState<ChatSubmission | null>(null);
@@ -20,10 +136,28 @@ export default function ChatPage() {
   const [citations, setCitations] = useState<{ ref: string; doc_id: string; snippet: string }[]>([]);
   const [critique, setCritique] = useState<"auto" | "openai" | "gemini">("auto");
   const [demoNotice, setDemoNotice] = useState<string | null>(null);
+  const [demoSubmissionId, setDemoSubmissionId] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
+  useEffect(() => {
+    const requested = new URLSearchParams(window.location.search).get("demo")?.trim();
+    if (requested) setDemoSubmissionId(requested);
+  }, []);
+
+  const selectSubmission = useCallback(
+    (next: ChatSubmission) => {
+      setSubmission(next);
+      if (demoSubmissionId?.toLowerCase() === next.id.toLowerCase()) {
+        // Prepare the sample prompt. The explicit replay query can launch the
+        // recorded trace without making a live, potentially costly LLM call.
+        setInput((current) => current.trim() || samplePrompt(next));
+      }
+    },
+    [demoSubmissionId],
+  );
+
   const send = useCallback(
-    async (text: string) => {
+    async (text: string, recordedReplay = false) => {
       if (!text.trim() || busy) return;
       setBusy(true);
       setInput("");
@@ -38,24 +172,24 @@ export default function ChatPage() {
       abortRef.current = ac;
 
       try {
-        const res = await fetch(`${basePath}/api/chat`, {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({
-            submission_id: submission?.id,
-            message: text,
-            history: messages
-              .filter((m) => !m.pending && m.text)
-              .slice(-6)
-              .map((m) => ({ role: m.role, content: m.text })),
-            critique_provider: critique === "auto" ? null : critique,
-          }),
-          signal: ac.signal,
+        const body = JSON.stringify({
+          submission_id: submission?.id,
+          message: text,
+          history: messages
+            .filter((m) => !m.pending && m.text)
+            .slice(-6)
+            .map((m) => ({ role: m.role, content: m.text })),
+          critique_provider: critique === "auto" ? null : critique,
         });
+
+        const res = await openChatStream(body, ac.signal, recordedReplay);
         if (!res.ok || !res.body) {
-          const m = await res.text();
-          updateLast({ role: "assistant", text: `Upstream error: ${m}`, pending: false });
-          setBusy(false);
+          const detail = await responseError(res);
+          updateLast({
+            role: "assistant",
+            text: `Chat request failed (HTTP ${res.status}): ${detail}`,
+            pending: false,
+          });
           return;
         }
 
@@ -105,9 +239,15 @@ export default function ChatPage() {
               "check the Cloud Run logs (gcloud run services logs read uw-copilot-backend --region us-central1).",
         }));
       } catch (e: unknown) {
-        const errAny = e as { name?: string; message?: string };
-        if (errAny?.name !== "AbortError") {
-          updateLast({ role: "assistant", text: `Network error: ${errAny.message ?? String(e)}`, pending: false });
+        if (!isAbortError(e)) {
+          const detail = errorMessage(e);
+          updateLast((previous) => ({
+            ...previous,
+            text: previous.text
+              ? `${previous.text}\n\n---\nConnection interrupted: ${detail}`
+              : `Unable to reach the chat service: ${detail}`,
+            pending: false,
+          }));
         }
       } finally {
         setBusy(false);
@@ -116,6 +256,21 @@ export default function ChatPage() {
     },
     [busy, submission, critique, messages],
   );
+
+  const replayStarted = useRef(false);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (
+      params.get("replay") !== "1" ||
+      !submission ||
+      replayStarted.current ||
+      submission.id.toLowerCase() !== demoSubmissionId?.toLowerCase()
+    ) {
+      return;
+    }
+    replayStarted.current = true;
+    void send(samplePrompt(submission), true);
+  }, [demoSubmissionId, send, submission]);
 
   function updateLast(patch: Message | ((prev: Message) => Message)) {
     setMessages((ms) => {
@@ -146,9 +301,7 @@ export default function ChatPage() {
 
   function fillSubmissionPrompt() {
     if (!submission) return;
-    setInput(
-      `Triage submission ${submission.id} (${submission.carrier_name}, DOT ${submission.dot_number}). Surface the top 3 risk drivers, recommend a disposition, and cite evidence.`,
-    );
+    setInput(samplePrompt(submission));
   }
 
   return (
@@ -178,7 +331,11 @@ export default function ChatPage() {
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[280px_1fr_320px]">
         {/* Left: submissions */}
         <div className="space-y-4">
-          <SubmissionPicker selectedId={submission?.id ?? null} onSelect={setSubmission} />
+          <SubmissionPicker
+            selectedId={submission?.id ?? null}
+            preferredId={demoSubmissionId}
+            onSelect={selectSubmission}
+          />
         </div>
 
         {/* Center: chat */}
@@ -250,7 +407,7 @@ export default function ChatPage() {
 
         {/* Right: trace */}
         <div className="h-[640px] overflow-y-auto">
-          <AgentTracePanel events={trace} active={active} />
+          <AgentTracePanel events={trace} active={active} recorded={Boolean(demoNotice)} />
         </div>
       </div>
     </div>

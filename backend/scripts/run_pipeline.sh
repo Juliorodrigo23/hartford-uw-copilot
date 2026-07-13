@@ -4,6 +4,7 @@
 #
 #   ./scripts/run_pipeline.sh            # everything (first run: ~30-60 min)
 #   ./scripts/run_pipeline.sh --quick    # skip LLM evals + UMAP (still real data)
+#   ./scripts/run_pipeline.sh --viz-only # deterministic Part 05 fallback only
 #
 # Prereqs:
 #   - uv sync
@@ -23,12 +24,28 @@
 # public truckers publish their USDOT numbers in 10-Ks and on equipment.
 # ============================================================================
 set -euo pipefail
-cd "$(dirname "$0")/.."
+BACKEND_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$BACKEND_DIR"
 
 QUICK=0
-[[ "${1:-}" == "--quick" ]] && QUICK=1
+VIZ_ONLY=0
+case "${1:-}" in
+  "") ;;
+  --quick) QUICK=1 ;;
+  --viz-only) VIZ_ONLY=1 ;;
+  *) echo "unknown option: $1" >&2; exit 2 ;;
+esac
 
-run() { echo; echo "▶ $*"; uv run python "$@"; }
+run() { echo; echo "▶ $*"; uv run --project "$BACKEND_DIR" python "$@"; }
+
+# Do this before any network/model step. If the full pipeline is interrupted,
+# the frontend still has strict JSON for the retrieval animations; script 08
+# replaces it with live output when the real index is available.
+run scripts/seed_retrieval_viz.py --if-missing
+if [[ "$VIZ_ONLY" == "1" ]]; then
+  echo "✔ Deterministic Part 05 retrieval fallback is ready."
+  exit 0
+fi
 
 run scripts/01_download_fmcsa.py          # verify carriers (writes verified_dots.json)
 run scripts/02_download_ntsb.py           # real NTSB narratives (content-gated)

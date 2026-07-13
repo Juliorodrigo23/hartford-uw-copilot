@@ -44,12 +44,17 @@ steps:
       # 4Gi: bge-large + torch live in-process once dense retrieval is active
       - --memory=4Gi
       - --cpu=2
+      # Full CPU during container start → faster model warmup on cold boot
+      - --cpu-boost
       - --concurrency=10
       - --timeout=300s
-      - --min-instances=0
+      # min-instances=1 keeps one warm instance (no cold start + models
+      # pre-loaded when a reviewer opens the demo). Costs a few tens of
+      # $/month at 4Gi — dial back to 0 after the interview cycle.
+      - --min-instances=1
       - --max-instances=3
       - --service-account=uw-copilot-runner@$PROJECT_ID.iam.gserviceaccount.com
-      - --set-env-vars=GCP_PROJECT_ID=$PROJECT_ID,GCP_LOCATION=${_REGION},VERTEX_MODEL=${_VERTEX_MODEL},VERTEX_FAST_MODEL=${_VERTEX_FAST_MODEL},ALLOW_UNSIGNED_DEV=false,CRITIQUE_PROVIDER=auto
+      - --set-env-vars=GCP_PROJECT_ID=$PROJECT_ID,GCP_LOCATION=${_REGION},VERTEX_MODEL=${_VERTEX_MODEL},VERTEX_FAST_MODEL=${_VERTEX_FAST_MODEL},ALLOW_UNSIGNED_DEV=false,CRITIQUE_PROVIDER=auto,WARM_RAG_MODELS=true
       # HMAC for proxy auth, OpenAI key for cross-family runtime critique (CRITIQUE_PROVIDER=auto
       # uses GPT-4o when present, otherwise falls back to Gemini Flash).
       - --set-secrets=HMAC_SECRET=hmac-secret:latest,OPENAI_API_KEY=openai-api-key:latest

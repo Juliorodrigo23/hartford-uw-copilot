@@ -8,7 +8,6 @@ from pathlib import Path
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -66,6 +65,9 @@ class Settings(BaseSettings):
     reranker_model: str = Field(
         default="cross-encoder/ms-marco-MiniLM-L-6-v2", alias="RERANKER_MODEL"
     )
+    # Native ML runtimes can contend with tests and short-lived CLI commands.
+    # Production opts in explicitly so local/test processes remain lazy.
+    warm_rag_models: bool = Field(default=False, alias="WARM_RAG_MODELS")
 
     # SEC EDGAR requires a contact User-Agent
     sec_edgar_user_agent: str = Field(
@@ -78,12 +80,21 @@ class Settings(BaseSettings):
     allowed_origins: list[str] = Field(
         default_factory=lambda: [
             "http://localhost:3000",
+            "http://127.0.0.1:3000",
             "https://juliooo.com",
+            "https://www.juliooo.com",
+            "https://hartford.juliooo.com",
         ],
         alias="ALLOWED_ORIGINS",
     )
     allowed_origin_regex: str = Field(
-        default=r"https://.*\.vercel\.app", alias="ALLOWED_ORIGIN_REGEX"
+        # Accept Next's alternate local ports as well as Vercel previews.
+        # CORSMiddleware uses fullmatch, so this does not match lookalike hosts.
+        default=(
+            r"(?:http://(?:localhost|127\.0\.0\.1)(?::\d+)?|"
+            r"https://.*\.vercel\.app)"
+        ),
+        alias="ALLOWED_ORIGIN_REGEX",
     )
 
     # Server-side rate limiting for /chat (complements the Vercel proxy limiter)

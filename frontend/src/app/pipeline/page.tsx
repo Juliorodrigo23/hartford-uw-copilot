@@ -15,6 +15,7 @@ import { EvalDashboard } from "@/components/viz/EvalDashboard";
 import { AblationTable } from "@/components/viz/AblationTable";
 import { FreqSeverityHeatmap } from "@/components/viz/FreqSeverityHeatmap";
 import { LangGraphMachine } from "@/components/viz/LangGraphMachine";
+import { ShowcaseBanner } from "@/components/viz/ShowcaseBanner";
 import { MonteCarloLoss } from "@/components/viz/MonteCarloLoss";
 import { DataSourceMap } from "@/components/viz/DataSourceMap";
 import EmbeddingCloud3DLazy from "@/components/viz/EmbeddingCloud3DLazy";
@@ -501,6 +502,7 @@ export default function PipelinePage() {
               loop is cheap insurance against that.
             </p>
           </PlainEnglish>
+          <ShowcaseBanner />
           <LangGraphMachine />
           <ToolCallStream />
           <SelfCritiqueDiff />

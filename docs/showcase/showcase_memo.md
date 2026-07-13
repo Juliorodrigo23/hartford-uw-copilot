@@ -1,75 +1,75 @@
-# Verified end-to-end run · 2026-07-13T01:21:23.522595+00:00
+# Verified end-to-end run · 2026-07-13T07:40:38.592237+00:00
 
 - Submission: **SUB-001** (DOT 185040 · SAFER: UNITED PETROLEUM TRANSPORTS INC)
 - Question: Triage this submission. Surface the top 3 risk drivers, recommend a disposition, and cite evidence.
-- Wall time: 88350 ms · drafts: 2 · retrieved chunks: 15
-- Disposition: `{'label': 'decline', 'confidence': 0.95, 'drivers': ['adverse_loss_history', 'high_crash_frequency', 'fatal_and_injury_crashes']}`
+- Wall time: 79922 ms · drafts: 2 · retrieved chunks: 14
+- Disposition: `{'label': 'decline', 'confidence': 0.9, 'drivers': ['adverse_loss_history', 'high_severity_claims', 'poor_crash_record']}`
 
 ## Critique
-- iter 1 · judge gpt-4o · FLAGGED: Missing carrier-generated loss runs to verify loss history; Unsupported [5, 7]-cited claim regarding BASIC percentile scores; Incomplete context for fatal and injury crashes; Lack of information on safety technology adoption
-- iter 2 · judge gpt-4o · FLAGGED: Missing carrier-generated loss runs, critical for verifying loss history; Unsupported citation [4] for NTSB recommendation on safety technologies; Unsupported citation [5, 7] for BASIC percentile scores no longer public; Incomplete information on safety technology adoption and internal safety metrics
+- iter 1 · judge gpt-4o · FLAGGED: Missing citation for the 3-year loss ratio of 151.5%; No citation for the average claim severity of $115,378; Lack of detailed analysis on the discrepancy between power units in submission and SAFER profile; No citation for the model prediction of 3.7 claims
+- iter 2 · judge gpt-4o · FLAGGED: Missing citation for the 3-year loss ratio of 151.5%; Incomplete explanation of the discrepancy in fleet size between submission and SAFER profile; Lack of detailed analysis on vehicle maintenance concerns despite mentioning OOS rate
 
 ## Citations
-- [1] `ntsb-har-2101#chunk-7` — of occupant protection and crashworthiness standards for medium-size buses. Providing lap/shoulder belts, increasing roof strength, a nd improving window glazin…
-- [2] `ntsb-har-1901#chunk-139` — not match their expectations. Their natural inclination is to leave by the exits they recognize, such as the loading door at the front of a bus (ICE Ergonomics …
-- [3] `10k-usx-2019#chunk-21` — related to the new safety rating system. In its notice of withdrawal, the FMCSA noted that a new rulemaking related to a similar process may be initiated in the…
-- [4] `ntsb-har-2101#chunk-10` — To the National Highway Traffic Safety Administration: Require all newly manufactured commercial motor vehicles with gross vehicle weight ratings above 10,000 p…
-- [5] `10k-odfl-2025#chunk-32` — Fixing America’s Surface Transportation Act of 2015 (the “FAST Act”) on December 4, 2015; however, the FAST Act does not restrict public disclosure of all data …
-- [6] `10k-odfl-2023#chunk-28` — reviewing CSA methodology to address deficiencies identified by the National Academy of Sciences, including the possibility of weak or negative correlation betw…
-- [7] `10k-odfl-2024#chunk-30` — Fixing America’s Surface Transportation Act of 2015 (the “FAST Act”) on December 4, 2015; however, the FAST Act does not restrict public disclosure of all data …
-- [8] `10k-knx-2025#chunk-21` — our fleet. Difficulty in attracting and retaining sufficient numbers of qualified driving associates, independent contractors, and third-party capacity provider…
-- [9] `ntsb-har-1902#chunk-264` — should be incomprehensible in today’s technical world. We have been building bridges in this country for over two hundred years, and long before that in other p…
-- [10] `ntsb-har-2101#chunk-106` — Trucks North America. NTSB Highway Accident Report 47 Appendix B: Consolidated Recommendation Information Title 49 United States Code (USC) 11179(b) requires th…
-- [11] `10k-htld-2023#chunk-8` — our fleet. Like many truckload carriers, we experience substantial difficulty in attracting and retaining sufficient numbers of qualified drivers which includes…
-- [12] `10k-usx-2020#chunk-30` — a long‑standing, recognized practice, extend the Fair Labor Standards Act to independent contractors and impose notice requirements based on employment or indep…
-- [13] `10k-usx-2020#chunk-31` — business of the hiring company; and · the worker is customarily engaged in an independently established trade, occupation, or business. How AB5 will be enforced…
-- [14] `ntsb-har-1902#chunk-39` — who was fatally injured. (c) Vehicle 3: a 2006 Chevrolet 1500 pickup truck, occupied by a 53 -year-old male driv er and a 57-year-old male passenger. Both were …
-- [15] `10k-usx-2020#chunk-49` — safety ratings, ELDs and hours‑of‑service changes and an improved economy could further reduce the pool of eligible drivers or force us to increase driver compe…
+- [1] `10k-usx-2023#chunk-23` — related to the new safety rating system. In its notice of withdrawal, the FMCSA noted that a new rulemaking related to a similar process may be initiated in the…
+- [2] `10k-odfl-2026#chunk-34` — Fixing America’s Surface Transportation Act of 2015 (the “FAST Act”) on December 4, 2015; however, the FAST Act does not restrict public disclosure of all data …
+- [3] `10k-usx-2020#chunk-20` — uncertain if, when or under what form any such rule could be implemented. The FMCSA also recently indicated its intent to perform a new study on the causation o…
+- [4] `10k-wern-2023#chunk-1` — this Form 10-K. Risks Related to our Business and Industry Our business is subject to overall economic conditions that could have a material adverse effect on o…
+- [5] `10k-usx-2020#chunk-90` — safety events (i.e. crashes, inspections, or violations) and carriers are ranked and assigned a rating percentile or score to prioritize them for interventions …
+- [6] `10k-usx-2020#chunk-94` — methodology for determining a carrier’s DOT safety rating would be expanded to include the on‑road safety performance of the carrier’s drivers and equipment, as…
+- [7] `10k-usx-2020#chunk-30` — a long‑standing, recognized practice, extend the Fair Labor Standards Act to independent contractors and impose notice requirements based on employment or indep…
+- [8] `10k-usx-2020#chunk-13` — internal candidates, all of whom are motivated to perform in our transparent, metric‑driven environment. Our President and Chief Executive Officer, Eric Fuller,…
+- [9] `10k-usx-2020#chunk-49` — safety ratings, ELDs and hours‑of‑service changes and an improved economy could further reduce the pool of eligible drivers or force us to increase driver compe…
+- [10] `10k-usx-2020#chunk-106` — which could impede growth, or if we do, we may not be successful in integrating any acquired businesses, either of which could have a material adverse effect on…
+- [11] `10k-usx-2021#chunk-26` — a new rulemaking related to a similar process may be initiated in the future. Therefore, it is uncertain if, when or under what form any such rule could be impl…
+- [12] `10k-usx-2022#chunk-26` — related to the new safety rating system. In its notice of withdrawal, the FMCSA noted that a new rulemaking related to a similar process may be initiated in the…
+- [13] `ntsb-har-2001#chunk-6` — 60 4.4 Previously Issued Recommendations Reclassified in This Report ....................................... 61 Board Member Statement .........................…
+- [14] `ntsb-har-2101#chunk-7` — of occupant protection and crashworthiness standards for medium-size buses. Providing lap/shoulder belts, increasing roof strength, a nd improving window glazin…
 
 ---
 
 TO: Underwriting File
-FROM: Senior Underwriter, Commercial Auto
-DATE: 2024-08-12
-SUBJECT: Triage Memo for ABC Transport Inc (SUB-001)
+FROM: Senior Commercial Auto Underwriter
+DATE: 2024-10-26
+SUBJECT: Triage Memo for Submission SUB-001: ABC Transport Inc
 
 ## Recommendation
 
 Decline.
 
-The submission's adverse loss history, driven by high frequency and severity, presents an unacceptable risk profile. The estimated 3-year loss ratio of 151.5% [Loss History] is untenable.
+The submission presents an unacceptable risk profile driven by a severe, unprofitable loss history and a significant recent crash record that includes multiple fatalities.
 
 ## Risk drivers
 
-*   **Profoundly Unprofitable Loss History:** The account's estimated 3-year loss ratio is 151.5%, based on an assumed premium of $5,500 per power unit [Loss History]. This history includes 2 fatal and 14 injury crashes in the last 24 months [SAFER]. Average severity is over $115,000 [Loss History]. This is not a sustainable risk for our book.
-*   **High Crash Frequency:** The carrier has accumulated 41 total crashes in the past 24 months [SAFER]. This historical rate of ~20 crashes per year is alarming and stands in stark contrast to our loss-frequency model's prediction of 3.7 claims [XGBoost v3-isotonic-2026-07-10]. The model appears to be under-weighting the crash history, making its output unreliable for this submission.
-*   **Significant Severity:** The SAFER profile documents 2 fatal crashes, 14 injury crashes, and 25 towaway crashes within a 24-month period [SAFER]. This indicates a pattern of severe incidents, not just minor fender-benders, which is consistent with the high average severity calculated in the loss history.
+*   **Unacceptable Loss History:** The account's 5-year loss history is untenable. Per the provided loss summary, the 3-year loss ratio is 151.5%, based on an assumed premium of $5,500 per power unit. Average claim severity over the past 5 years is $115,378. This level of historical performance indicates a fundamental lack of profitability that is unlikely to be corrected by pricing adjustments alone.
+*   **Severe Crash Record:** The SAFER profile shows a high rate of severe accidents over the last 24 months, including 41 total crashes, 2 of which were fatal and 14 involved injuries. This on-road performance is a leading indicator of future large losses. Our internal model's SHAP analysis confirms that `crashes_24mo_total` is a primary driver elevating the risk prediction.
+*   **Vehicle Maintenance Concerns:** The carrier's vehicle Out-of-Service (OOS) rate is 14.6% per their SAFER profile. While this is below the national average, it is still a negative signal and is flagged by our frequency model as a factor that increases predicted risk.
+
+Note: Our internal XGBoost model predicts 3.7 claims for the upcoming year. This frequency prediction appears low given the historical loss ratio and severity, suggesting the model may be underweighting the financial impact of this account's past performance.
 
 ## Comparable accounts
 
-Our book has limited appetite for accounts with this profile. Of five comparable large fleets, we only bound one (BOOK-042), which had a loss ratio of 0.91. The other four were declined, non-renewed, or lost to market with loss ratios between 0.94 and 1.07. ABC Transport's estimated loss ratio of 1.51 [Loss History] is significantly worse than any of these peers.
+The provided list of five comparable accounts in our book shows that we have generally not retained or have actively declined large fleets with similar risk characteristics. Of the four comparable accounts with loss ratios near 1.0, three were non-renewed or lost to market. The single comparable account we bound had a significantly better loss ratio (0.91) than this submission. ABC Transport's loss ratio of 151.5% is substantially worse than any of these peers, reinforcing the decision to decline.
 
 ## Open questions for the broker
 
-While the disposition is a decline, should this account be marketed to us again, the following information would be required for any reconsideration.
+Should we reconsider this decline, I would require detailed answers to the following:
 
-*   **Carrier Loss Runs:** We have not been provided with carrier-generated loss runs. The provided loss history is a heuristic based on public data and an assumed premium. We require five years of currently valued, auditable loss runs to verify the account's performance.
-*   **Crash Details:** The SAFER profile shows 2 fatal and 14 injury crashes in the last 24 months [SAFER]. We need detailed accident reports, findings from any litigation, and documentation of post-incident corrective actions for all major events.
-*   **Safety Technology:** What is the fleet's adoption rate of safety technologies like telematics, dash cams, and Advanced Driver-Assistance Systems (ADAS)? The NTSB has specifically recommended lane departure prevention systems for commercial vehicles [4].
-*   **Internal Safety Metrics:** We recognize that BASIC percentile scores are no longer public information [5, 7]. Can the carrier provide internal safety scorecards or metrics used to monitor performance in key areas like Unsafe Driving and HOS Compliance?
+*   Provide complete, currently valued loss runs for the past 5 years. What specific actions has the insured taken to address the large claims that are driving the $115,378 average severity and 151.5% loss ratio?
+*   What specific safety and training initiatives have been implemented in response to the 2 fatal and 14 injury crashes recorded in the past 24 months?
+*   Please reconcile the fleet size. The submission lists 619 power units, but the most recent SAFER profile shows 604.
 
 ## Producer-facing summary
 
-We are declining to offer a quotation for ABC Transport Inc. at this time. The decision is based on a significant history of severe and frequent losses, including 2 fatal and 14 injury crashes over the last 24 months [SAFER], resulting in a highly unprofitable estimated loss ratio.
+After a thorough review of the submission for ABC Transport Inc., we are declining to offer a quotation at this time. The decision is driven by the carrier's recent loss history, which demonstrates a pattern of high-severity claims and an unprofitable premium-to-loss ratio. The fleet's significant crash record over the past 24 months further supports this risk assessment.
 
 ```json
 {
   "disposition": "decline",
-  "confidence": 0.95,
+  "confidence": 0.9,
   "drivers": [
     "adverse_loss_history",
-    "high_crash_frequency",
-    "fatal_and_injury_crashes"
+    "high_severity_claims",
+    "poor_crash_record"
   ]
 }
 ```

@@ -2,10 +2,17 @@ import type { NextConfig } from "next";
 
 // Set NEXT_PUBLIC_BASE_PATH to "/hartford" to nest under a subpath (juliooo.com/hartford),
 // or leave it empty / unset to serve at root (e.g. hartford.juliooo.com).
-const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+const configuredBasePath = (process.env.NEXT_PUBLIC_BASE_PATH ?? "").trim();
+const basePath =
+  configuredBasePath && configuredBasePath !== "/"
+    ? `/${configuredBasePath.replace(/^\/+|\/+$/g, "")}`
+    : "";
 
 const config: NextConfig = {
   ...(basePath ? { basePath, assetPrefix: basePath } : {}),
+  // Keep Next's server trace rooted in this app instead of inferring an
+  // unrelated parent lockfile on developer machines.
+  outputFileTracingRoot: process.cwd(),
   reactStrictMode: true,
   experimental: {
     optimizePackageImports: ["lucide-react", "framer-motion", "d3", "three"],

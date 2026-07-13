@@ -10,6 +10,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import math
 from functools import lru_cache
 
 import numpy as np
@@ -145,7 +146,25 @@ def _rerank(query: str, hits: list[Hit], k_final: int) -> list[Hit]:
     if reranker is None:
         return hits[:k_final]
     pairs = [(query, t) for _id, _s, t, _src in hits[:50]]
-    scores = reranker.predict(pairs)
+    scores = np.asarray(reranker.predict(pairs), dtype=float).reshape(-1)
+    if scores.size != len(pairs):
+        log.warning(
+            "cross-encoder returned %d scores for %d pairs; using fused ranking",
+            scores.size,
+            len(pairs),
+        )
+        return hits[:k_final]
+    finite = np.isfinite(scores)
+    if not finite.all():
+        # Some ONNX/PyTorch combinations have produced an all-NaN result on
+        # otherwise valid passages. Never let those values cross the JSON
+        # boundary: the browser's JSON parser correctly rejects Python's
+        # non-standard `NaN` token and the visualization then looks missing.
+        log.warning(
+            "cross-encoder returned %d non-finite scores; using fused ranking",
+            int((~finite).sum()),
+        )
+        return hits[:k_final]
     order = np.argsort(scores)[::-1][:k_final]
     return [
         (hits[i][0], float(scores[i]), hits[i][2], hits[i][3]) for i in order
@@ -210,9 +229,22 @@ def search_stages(query: str, k: int = 10) -> dict:
     reranked = _rerank(query, fused, k)
 
     def strip(hits: list[Hit]) -> list[dict]:
-        return [
-            {"id": h[0], "score": round(float(h[1]), 4), "source": h[3], "snippet": h[2][:140]}
-            for h in hits[:k]
-        ]
+        out = []
+        for h in hits[:k]:
+            score = float(h[1])
+            if not math.isfinite(score):
+                # `_rerank` guards the normal path. Keep this diagnostic
+                # surface strict as a final defense against future rankers.
+                log.warning("dropping non-finite score for retrieval hit %s", h[0])
+                continue
+            out.append(
+                {
+                    "id": h[0],
+                    "score": round(score, 4),
+                    "source": h[3],
+                    "snippet": h[2][:140],
+                }
+            )
+        return out
 
     return {"query": query, "bm25": strip(bm25), "dense": strip(dense), "rrf": strip(fused), "reranked": strip(reranked)}

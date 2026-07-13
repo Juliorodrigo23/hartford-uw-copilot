@@ -31,9 +31,11 @@ export type TraceEvent =
 export function AgentTracePanel({
   events,
   active,
+  recorded = false,
 }: {
   events: TraceEvent[];
   active: string | null;
+  recorded?: boolean;
 }) {
   const enteredAt = new Map<string, number>();
   const exitedAt = new Map<string, number>();
@@ -50,7 +52,7 @@ export function AgentTracePanel({
   return (
     <div className="card flex h-full flex-col p-3">
       <div className="mb-2 flex items-center gap-2 font-mono text-2xs uppercase tracking-[0.18em] text-ink-dim">
-        <Cpu size={12} /> live agent trace
+        <Cpu size={12} /> {recorded ? "recorded trace replay" : "live agent trace"}
       </div>
 
       {lastJudge && (

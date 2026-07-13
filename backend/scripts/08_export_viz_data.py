@@ -1,8 +1,9 @@
 """Export precomputed viz JSON.
 
-Every export is REAL pipeline output. An export whose prerequisites are
-missing is skipped with a log line; it is never replaced with invented
-numbers. The frontend shows a pending state for missing files.
+Every normal export is real pipeline output. Retrieval also has an explicit,
+deterministic fallback derived from a previous real BM25/dense/RRF export, so
+a no-network/no-model review still renders Part 05. Its provenance is marked
+``deterministic_seed_from_real_export`` and a successful live run replaces it.
 
 Writes to BOTH:
   - backend/data/exports/         (ships in the Docker image; served by GET /data/{name})
@@ -39,28 +40,44 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from app.compat import apply_platform_workarounds  # noqa: E402
+from app.compat import apply_platform_workarounds
 
 apply_platform_workarounds()  # BEFORE torch/onnx imports (macOS OpenMP clash)
 
 from app.config import settings  # noqa: E402
 from app.ml.risk_simulation import aggregate_loss_distribution  # noqa: E402
 from app.tools.submissions import list_submissions  # noqa: E402
+from scripts.seed_retrieval_viz import (  # noqa: E402
+    load_seed_payload,
+    strict_json_dumps,
+    validate_retrieval_payload,
+    write_seed_exports,
+)
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("08_export_viz")
 
-FRONTEND_DATA = Path(settings.data_dir).parent.parent / "frontend" / "public" / "data"
+REPO_ROOT = Path(__file__).resolve().parents[2]
+FRONTEND_DATA = REPO_ROOT / "frontend" / "public" / "data"
 EXPORTS = settings.exports_dir
 
 
 def _write(name: str, payload: dict) -> None:
+    # Python's default encoder emits NaN/Infinity even though neither token is
+    # legal JSON. Browsers reject the *whole* response, which previously made
+    # two populated retrieval views look pending. All exports are strict now.
+    text = strict_json_dumps(payload)
     EXPORTS.mkdir(parents=True, exist_ok=True)
-    text = json.dumps(payload)
-    (EXPORTS / name).write_text(text)
+
+    def atomic_write(path: Path) -> None:
+        tmp = path.with_name(f".{path.name}.tmp")
+        tmp.write_text(text)
+        tmp.replace(path)
+
+    atomic_write(EXPORTS / name)
     if FRONTEND_DATA.parent.exists():
         FRONTEND_DATA.mkdir(parents=True, exist_ok=True)
-        (FRONTEND_DATA / name).write_text(text)
+        atomic_write(FRONTEND_DATA / name)
     log.info("wrote %s", name)
 
 
@@ -97,8 +114,8 @@ def export_submissions_index():
                 log.warning("bad safer cache for %s: %s", s.dot_number, e)
         if s.commodity == "hazmat":
             red_flags.append("Hazmat")
-        loss_total = sum(int(l.incurred_usd) for l in s.loss_run)
-        loss_count = sum(l.claims for l in s.loss_run)
+        loss_total = sum(int(loss.incurred_usd) for loss in s.loss_run)
+        loss_count = sum(loss.claims for loss in s.loss_run)
         items.append(
             {
                 "id": s.id,
@@ -204,14 +221,14 @@ def export_loss_landscape():
         return
     points = []
     for s in subs:
-        for l in s.loss_run:
-            if l.claims <= 0:
+        for loss in s.loss_run:
+            if loss.claims <= 0:
                 continue
             points.append(
                 {
-                    "year": l.year,
-                    "f": round(l.claims / max(1, s.fleet_size), 5),
-                    "s": round(float(l.incurred_usd) / l.claims / 1000.0, 1),  # $K per claim
+                    "year": loss.year,
+                    "f": round(loss.claims / max(1, s.fleet_size), 5),
+                    "s": round(float(loss.incurred_usd) / loss.claims / 1000.0, 1),  # $K per claim
                     "id": s.id,
                 }
             )
@@ -219,21 +236,35 @@ def export_loss_landscape():
 
 
 def export_retrieval_example():
-    from app.rag.hybrid_search import search_stages
+    """Export live rankings, retaining the deterministic seed on any failure."""
+    try:
+        from app.rag.hybrid_search import search_stages
 
-    golden = settings.data_dir.parent / "app" / "eval" / "golden_set" / "retrieval_questions.json"
-    if not golden.exists():
-        log.warning("skip retrieval_example.json — no golden set")
-        return
-    qs = json.loads(golden.read_text())["questions"][:2]
-    stages = []
-    for q in qs:
-        st = search_stages(q["query"], k=10)
-        if not (st["bm25"] or st["dense"]):
-            log.warning("skip retrieval_example.json — index empty (run scripts/02-04)")
-            return
-        stages.append(st)
-    _write("retrieval_example.json", {"queries": stages})
+        golden = settings.data_dir.parent / "app" / "eval" / "golden_set" / "retrieval_questions.json"
+        if not golden.exists():
+            raise FileNotFoundError("retrieval golden set is missing")
+        qs = json.loads(golden.read_text())["questions"][:2]
+        stages = []
+        for q in qs:
+            st = search_stages(q["query"], k=10)
+            if not (st["bm25"] or st["dense"]):
+                raise RuntimeError("retrieval index and BM25 corpus are empty")
+            stages.append(st)
+        payload = {
+            "schema_version": 1,
+            "provenance": {
+                "kind": "pipeline",
+                "label": "hybrid_search.search_stages",
+            },
+            "queries": stages,
+        }
+        validate_retrieval_payload(payload)
+        _write("retrieval_example.json", payload)
+    except Exception as exc:
+        # Do not remove the already-installed valid seed. Rewriting it here
+        # also repairs an old export containing Python's illegal NaN tokens.
+        log.warning("live retrieval export unavailable (%s); using deterministic seed", exc)
+        _write("retrieval_example.json", load_seed_payload())
 
 
 def export_chunking_example():
@@ -286,7 +317,7 @@ def export_embeddings_umap():
         log.warning("UMAP failed (%s); using PCA fallback", e)
         m = embs.mean(axis=0, keepdims=True)
         X = embs - m
-        U, S, Vt = np.linalg.svd(X, full_matrices=False)
+        U, S, _Vt = np.linalg.svd(X, full_matrices=False)
         coords = U[:, :3] * S[:3]
         method = "pca"
 
@@ -347,6 +378,13 @@ def main():
     parser.add_argument("--fars-year", type=int, default=2022)
     parser.add_argument("--skip-umap", action="store_true", help="Skip the UMAP export (slow on CPU)")
     args = parser.parse_args()
+
+    # Install/repair the tiny no-model retrieval artifact first. If a later,
+    # unrelated export fails, Part 05 still has valid browser JSON.
+    seed_outputs = [EXPORTS]
+    if FRONTEND_DATA.parent.exists():
+        seed_outputs.append(FRONTEND_DATA)
+    write_seed_exports(seed_outputs, only_if_missing=True)
 
     export_eval_results()
     export_submissions_index()

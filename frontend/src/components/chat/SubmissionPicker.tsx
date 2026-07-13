@@ -2,6 +2,7 @@
 
 import { useData } from "@/lib/useData";
 import { cn } from "@/lib/cn";
+import { useEffect, useMemo, useRef } from "react";
 import { Loader2, Truck, TriangleAlert } from "lucide-react";
 
 export type ChatSubmission = {
@@ -16,13 +17,25 @@ export type ChatSubmission = {
 
 export function SubmissionPicker({
   selectedId,
+  preferredId,
   onSelect,
 }: {
   selectedId: string | null;
+  preferredId?: string | null;
   onSelect: (sub: ChatSubmission) => void;
 }) {
   const { data, status } = useData<{ submissions: ChatSubmission[] }>("submissions_index.json");
-  const subs = data?.submissions ?? [];
+  const subs = useMemo(() => data?.submissions ?? [], [data]);
+  const appliedPreferredId = useRef<string | null>(null);
+
+  useEffect(() => {
+    const requested = preferredId?.trim();
+    if (!requested || appliedPreferredId.current === requested || subs.length === 0) return;
+    const match = subs.find((sub) => sub.id.toLowerCase() === requested.toLowerCase());
+    if (!match) return;
+    appliedPreferredId.current = requested;
+    onSelect(match);
+  }, [onSelect, preferredId, subs]);
 
   return (
     <div className="card p-3">

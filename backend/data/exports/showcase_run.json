@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-07-13T01:21:23.522595+00:00",
-  "run_id": "showcase-f36de9cf",
+  "generated_at": "2026-07-13T07:40:38.592237+00:00",
+  "run_id": "showcase-13cd1071",
   "question": "Triage this submission. Surface the top 3 risk drivers, recommend a disposition, and cite evidence.",
   "submission": {
     "id": "SUB-001",
@@ -74,7 +74,7 @@
   },
   "tool_calls": [
     {
-      "id": "bbbfea66",
+      "id": "e15e6f0f",
       "name": "safer_lookup",
       "input": {
         "dot_number": "185040"
@@ -103,7 +103,7 @@
       "ms": 0
     },
     {
-      "id": "d94300dc",
+      "id": "f30aca23",
       "name": "loss_calc",
       "input": {
         "submission_id": "SUB-001",
@@ -120,7 +120,7 @@
       "ms": 0
     },
     {
-      "id": "1cf3aa5e",
+      "id": "5ee8c95d",
       "name": "xgb_loss_freq",
       "input": {
         "submission_id": "SUB-001"
@@ -160,10 +160,10 @@
         "source": "xgboost",
         "model_version": "v3-isotonic-2026-07-10"
       },
-      "ms": 153
+      "ms": 47
     },
     {
-      "id": "affe19d8",
+      "id": "8db2d311",
       "name": "comparable_search",
       "input": {
         "submission_id": "SUB-001",
@@ -208,10 +208,10 @@
           }
         ]
       },
-      "ms": 1
+      "ms": 0
     },
     {
-      "id": "4074a6e0",
+      "id": "bbeaf016",
       "name": "loss_calc",
       "input": {
         "submission_id": "SUB-001",
@@ -228,7 +228,7 @@
       "ms": 0
     },
     {
-      "id": "49845cb7",
+      "id": "15d12776",
       "name": "xgb_loss_freq",
       "input": {
         "submission_id": "SUB-001"
@@ -271,7 +271,7 @@
       "ms": 1
     },
     {
-      "id": "f0f08c13",
+      "id": "cc02be6d",
       "name": "comparable_search",
       "input": {
         "submission_id": "SUB-001",
@@ -322,151 +322,146 @@
   "citations": [
     {
       "ref": "[1]",
-      "doc_id": "ntsb-har-2101#chunk-7",
-      "snippet": "of occupant protection and crashworthiness standards for medium-size buses. Providing lap/shoulder belts, increasing roof strength, a nd improving window glazing would enhance the protection provided to occupants of medium-size buses. Resea"
-    },
-    {
-      "ref": "[2]",
-      "doc_id": "ntsb-har-1901#chunk-139",
-      "snippet": "not match their expectations. Their natural inclination is to leave by the exits they recognize, such as the loading door at the front of a bus (ICE Ergonomics Ltd. 1996). Training in school bus evacuation teaches students to use the front"
-    },
-    {
-      "ref": "[3]",
-      "doc_id": "10k-usx-2019#chunk-21",
+      "doc_id": "10k-usx-2023#chunk-23",
       "snippet": "related to the new safety rating system. In its notice of withdrawal, the FMCSA noted that a new rulemaking related to a similar process may be initiated in the future. Therefore, it is uncertain if, when or under what form any such rule co"
     },
     {
+      "ref": "[2]",
+      "doc_id": "10k-odfl-2026#chunk-34",
+      "snippet": "Fixing America\u2019s Surface Transportation Act of 2015 (the \u201cFAST Act\u201d) on December 4, 2015; however, the FAST Act does not restrict public disclosure of all data collected by the FMCSA. The FMCSA is currently refining CSA methodology to prior"
+    },
+    {
+      "ref": "[3]",
+      "doc_id": "10k-usx-2020#chunk-20",
+      "snippet": "uncertain if, when or under what form any such rule could be implemented. The FMCSA also recently indicated its intent to perform a new study on the causation of crashes. Although it remains unclear whether such a study will ultimately be u"
+    },
+    {
       "ref": "[4]",
-      "doc_id": "ntsb-har-2101#chunk-10",
-      "snippet": "To the National Highway Traffic Safety Administration: Require all newly manufactured commercial motor vehicles with gross vehicle weight ratings above 10,000 pounds to be equipped with lane departure prevention systems. (H-21-1) [This new"
+      "doc_id": "10k-wern-2023#chunk-1",
+      "snippet": "this Form 10-K. Risks Related to our Business and Industry Our business is subject to overall economic conditions that could have a material adverse effect on our results of operations. We are sensitive to changes in overall economic condit"
     },
     {
       "ref": "[5]",
-      "doc_id": "10k-odfl-2025#chunk-32",
-      "snippet": "Fixing America\u2019s Surface Transportation Act of 2015 (the \u201cFAST Act\u201d) on December 4, 2015; however, the FAST Act does not restrict public disclosure of all data collected by the FMCSA. The FMCSA is currently reviewing CSA methodology to addr"
+      "doc_id": "10k-usx-2020#chunk-90",
+      "snippet": "safety events (i.e. crashes, inspections, or violations) and carriers are ranked and assigned a rating percentile or score to prioritize them for interventions if they are above a certain threshold. As a result, our fleet could be ranked po"
     },
     {
       "ref": "[6]",
-      "doc_id": "10k-odfl-2023#chunk-28",
-      "snippet": "reviewing CSA methodology to address deficiencies identified by the National Academy of Sciences, including the possibility of weak or negative correlation between current safety improvement categories and vehicle crash risk. Nevertheless,"
+      "doc_id": "10k-usx-2020#chunk-94",
+      "snippet": "methodology for determining a carrier\u2019s DOT safety rating would be expanded to include the on\u2011road safety performance of the carrier\u2019s drivers and equipment, as well as results obtained from investigations. Exceeding certain thresholds base"
     },
     {
       "ref": "[7]",
-      "doc_id": "10k-odfl-2024#chunk-30",
-      "snippet": "Fixing America\u2019s Surface Transportation Act of 2015 (the \u201cFAST Act\u201d) on December 4, 2015; however, the FAST Act does not restrict public disclosure of all data collected by the FMCSA. The FMCSA is currently reviewing CSA methodology to addr"
-    },
-    {
-      "ref": "[8]",
-      "doc_id": "10k-knx-2025#chunk-21",
-      "snippet": "our fleet. Difficulty in attracting and retaining sufficient numbers of qualified driving associates, independent contractors, and third-party capacity providers could have a materially adverse effect on our growth and profitability. The tr"
-    },
-    {
-      "ref": "[9]",
-      "doc_id": "ntsb-har-1902#chunk-264",
-      "snippet": "should be incomprehensible in today\u2019s technical world. We have been building bridges in this country for over two hundred years, and long before that in other parts of the world. The science should be well sorted out by now \u2013 and for the mo"
-    },
-    {
-      "ref": "[10]",
-      "doc_id": "ntsb-har-2101#chunk-106",
-      "snippet": "Trucks North America. NTSB Highway Accident Report 47 Appendix B: Consolidated Recommendation Information Title 49 United States Code (USC) 11179(b) requires the following information on the recommendations in this report. For each recommen"
-    },
-    {
-      "ref": "[11]",
-      "doc_id": "10k-htld-2023#chunk-8",
-      "snippet": "our fleet. Like many truckload carriers, we experience substantial difficulty in attracting and retaining sufficient numbers of qualified drivers which includes to a lesser extent, our engagement of independent contractors. Independent cont"
-    },
-    {
-      "ref": "[12]",
       "doc_id": "10k-usx-2020#chunk-30",
       "snippet": "a long\u2011standing, recognized practice, extend the Fair Labor Standards Act to independent contractors and impose notice requirements based on employment or independent contractor status and fines for failure to comply. Some states have put i"
     },
     {
+      "ref": "[8]",
+      "doc_id": "10k-usx-2020#chunk-13",
+      "snippet": "internal candidates, all of whom are motivated to perform in our transparent, metric\u2011driven environment. Our President and Chief Executive Officer, Eric Fuller, has over 20 years of experience at U.S. Xpress and has been responsible for dev"
+    },
+    {
+      "ref": "[9]",
+      "doc_id": "10k-usx-2020#chunk-49",
+      "snippet": "safety ratings, ELDs and hours\u2011of\u2011service changes and an improved economy could further reduce the pool of eligible drivers or force us to increase driver compensation to attract and retain drivers. We have seen evidence that stricter hours"
+    },
+    {
+      "ref": "[10]",
+      "doc_id": "10k-usx-2020#chunk-106",
+      "snippet": "which could impede growth, or if we do, we may not be successful in integrating any acquired businesses, either of which could have a material adverse effect on our business. Historically, a key component of our growth strategy has been to"
+    },
+    {
+      "ref": "[11]",
+      "doc_id": "10k-usx-2021#chunk-26",
+      "snippet": "a new rulemaking related to a similar process may be initiated in the future. Therefore, it is uncertain if, when or under what form any such rule could be implemented. The FMCSA also recently indicated its intent to perform a new study on"
+    },
+    {
+      "ref": "[12]",
+      "doc_id": "10k-usx-2022#chunk-26",
+      "snippet": "related to the new safety rating system. In its notice of withdrawal, the FMCSA noted that a new rulemaking related to a similar process may be initiated in the future. Therefore, it is uncertain if, when or under what form any such rule co"
+    },
+    {
       "ref": "[13]",
-      "doc_id": "10k-usx-2020#chunk-31",
-      "snippet": "business of the hiring company; and \u00b7 the worker is customarily engaged in an independently established trade, occupation, or business. How AB5 will be enforced is still to be determined. While it was set to go into effect in January 2020,"
+      "doc_id": "ntsb-har-2001#chunk-6",
+      "snippet": "60 4.4 Previously Issued Recommendations Reclassified in This Report ....................................... 61 Board Member Statement ........................................................................................................"
     },
     {
       "ref": "[14]",
-      "doc_id": "ntsb-har-1902#chunk-39",
-      "snippet": "who was fatally injured. (c) Vehicle 3: a 2006 Chevrolet 1500 pickup truck, occupied by a 53 -year-old male driv er and a 57-year-old male passenger. Both were fatally injured. (d) Vehicle 4: a 2014 Ford F150 pickup truck , occupied by a 39"
-    },
-    {
-      "ref": "[15]",
-      "doc_id": "10k-usx-2020#chunk-49",
-      "snippet": "safety ratings, ELDs and hours\u2011of\u2011service changes and an improved economy could further reduce the pool of eligible drivers or force us to increase driver compensation to attract and retain drivers. We have seen evidence that stricter hours"
+      "doc_id": "ntsb-har-2101#chunk-7",
+      "snippet": "of occupant protection and crashworthiness standards for medium-size buses. Providing lap/shoulder belts, increasing roof strength, a nd improving window glazing would enhance the protection provided to occupants of medium-size buses. Resea"
     }
   ],
-  "retrieved_count": 15,
+  "retrieved_count": 14,
   "node_timings": [
     {
       "node": "parse_submission",
-      "t_ms": 2
+      "t_ms": 1
     },
     {
       "node": "enrich_carrier",
-      "t_ms": 3
+      "t_ms": 2
     },
     {
       "node": "retrieve_context",
-      "t_ms": 10370
+      "t_ms": 7225
     },
     {
       "node": "analyze_loss_history",
-      "t_ms": 10525
+      "t_ms": 7273
     },
     {
       "node": "find_comparables",
-      "t_ms": 10526
+      "t_ms": 7274
     },
     {
       "node": "draft_memo",
-      "t_ms": 46821
+      "t_ms": 41992
     },
     {
       "node": "self_critique",
-      "t_ms": 48519
+      "t_ms": 43773
     },
     {
       "node": "retrieve_context",
-      "t_ms": 50847
+      "t_ms": 45939
     },
     {
       "node": "analyze_loss_history",
-      "t_ms": 50849
+      "t_ms": 45941
     },
     {
       "node": "find_comparables",
-      "t_ms": 50850
+      "t_ms": 45942
     },
     {
       "node": "draft_memo",
-      "t_ms": 86611
+      "t_ms": 78720
     },
     {
       "node": "self_critique",
-      "t_ms": 88348
+      "t_ms": 79918
     },
     {
       "node": "finalize",
-      "t_ms": 88349
+      "t_ms": 79919
     }
   ],
   "drafts": [
-    "To: Underwriting File\nFrom: Senior Underwriter\nDate: 2026-07-15\nRe: Triage Memo for Submission SUB-001: ABC Transport Inc\n\nThis memo summarizes my triage assessment of ABC Transport Inc.\n\n## Recommendation\n\nDecline.\n\nThe account's adverse loss history, including extremely high severity and a 3-year loss ratio of 151.5%, combined with a poor 24-month crash record, presents an unacceptable risk profile.\n\n## Risk drivers\n\n1.  **Adverse Loss History:** The account's 5-year loss summary shows a 3-year loss ratio of 151.5%. This is based on an assumed premium of $5,500 per power unit and must be disclosed. Average severity is exceptionally high at $115,378, and losses are trending upward by 3.6% over the last three years. We do not have carrier-generated loss runs to verify these figures.\n2.  **High Crash Frequency:** The carrier's SAFER profile shows 41 crashes in the last 24 months, including 2 fatal and 14 injury crashes. This history is a positive (risk-elevating) driver in our loss-frequency prediction model.\n3.  **Vehicle Maintenance:** The vehicle Out-of-Service (OOS) rate is 14.6%. While not extreme, it points to subpar maintenance practices and is a minor positive driver in our frequency model. The carrier's BASIC percentile scores for Vehicle Maintenance and other categories are not public, a result of the FAST Act of 2015 [5, 7].\n\n## Comparable accounts\n\nABC's historical loss ratio of 151.5% is significantly worse than any of the five comparable accounts from our book, which have loss ratios ranging from 0.91 to 1.07. We non-renewed or declined three of those five accounts. The only comparable account we bound, Liberty Auto Transport Co, had a loss ratio of 0.91. While ABC's vehicle OOS rate of 14.6% is better than most of the comparables, its bottom-line performance is disqualifying.\n\n## Open questions for the broker\n\nThough we are declining, the following questions would be necessary for any reconsideration:\n\n*   Provide official, carrier-generated loss runs for the past 5 years. The provided summary data is insufficient.\n*   What is the context for the 2 fatal and 14 injury crashes in the last 24 months? What specific post-loss corrective actions were implemented?\n*   What is the fleet's adoption rate of safety technology? The NTSB recommends lane departure prevention systems for newly manufactured commercial vehicles [4], and we need to know their stance on telematics, dash cams, and collision avoidance.\n\n## Producer-facing summary\n\nWe will be declining to quote ABC Transport Inc. at this time. The decision is driven by a history of severe losses, resulting in a three-year loss ratio over 150%, and a significant number of recent crashes, including two fatalities.\n\n```json\n{\n  \"disposition\": \"decline\",\n  \"confidence\": 0.95,\n  \"drivers\": [\n    \"adverse_loss_history\",\n    \"high_crash_frequency\",\n    \"vehicle_maintenance_concerns\"\n  ]\n}\n```",
-    "TO: Underwriting File\nFROM: Senior Underwriter, Commercial Auto\nDATE: 2024-08-12\nSUBJECT: Triage Memo for ABC Transport Inc (SUB-001)\n\n## Recommendation\n\nDecline.\n\nThe submission's adverse loss history, driven by high frequency and severity, presents an unacceptable risk profile. The estimated 3-year loss ratio of 151.5% [Loss History] is untenable.\n\n## Risk drivers\n\n*   **Profoundly Unprofitable Loss History:** The account's estimated 3-year loss ratio is 151.5%, based on an assumed premium of $5,500 per power unit [Loss History]. This history includes 2 fatal and 14 injury crashes in the last 24 months [SAFER]. Average severity is over $115,000 [Loss History]. This is not a sustainable risk for our book.\n*   **High Crash Frequency:** The carrier has accumulated 41 total crashes in the past 24 months [SAFER]. This historical rate of ~20 crashes per year is alarming and stands in stark contrast to our loss-frequency model's prediction of 3.7 claims [XGBoost v3-isotonic-2026-07-10]. The model appears to be under-weighting the crash history, making its output unreliable for this submission.\n*   **Significant Severity:** The SAFER profile documents 2 fatal crashes, 14 injury crashes, and 25 towaway crashes within a 24-month period [SAFER]. This indicates a pattern of severe incidents, not just minor fender-benders, which is consistent with the high average severity calculated in the loss history.\n\n## Comparable accounts\n\nOur book has limited appetite for accounts with this profile. Of five comparable large fleets, we only bound one (BOOK-042), which had a loss ratio of 0.91. The other four were declined, non-renewed, or lost to market with loss ratios between 0.94 and 1.07. ABC Transport's estimated loss ratio of 1.51 [Loss History] is significantly worse than any of these peers.\n\n## Open questions for the broker\n\nWhile the disposition is a decline, should this account be marketed to us again, the following information would be required for any reconsideration.\n\n*   **Carrier Loss Runs:** We have not been provided with carrier-generated loss runs. The provided loss history is a heuristic based on public data and an assumed premium. We require five years of currently valued, auditable loss runs to verify the account's performance.\n*   **Crash Details:** The SAFER profile shows 2 fatal and 14 injury crashes in the last 24 months [SAFER]. We need detailed accident reports, findings from any litigation, and documentation of post-incident corrective actions for all major events.\n*   **Safety Technology:** What is the fleet's adoption rate of safety technologies like telematics, dash cams, and Advanced Driver-Assistance Systems (ADAS)? The NTSB has specifically recommended lane departure prevention systems for commercial vehicles [4].\n*   **Internal Safety Metrics:** We recognize that BASIC percentile scores are no longer public information [5, 7]. Can the carrier provide internal safety scorecards or metrics used to monitor performance in key areas like Unsafe Driving and HOS Compliance?\n\n## Producer-facing summary\n\nWe are declining to offer a quotation for ABC Transport Inc. at this time. The decision is based on a significant history of severe and frequent losses, including 2 fatal and 14 injury crashes over the last 24 months [SAFER], resulting in a highly unprofitable estimated loss ratio.\n\n```json\n{\n  \"disposition\": \"decline\",\n  \"confidence\": 0.95,\n  \"drivers\": [\n    \"adverse_loss_history\",\n    \"high_crash_frequency\",\n    \"fatal_and_injury_crashes\"\n  ]\n}\n```"
+    "TO: Underwriting File\nFROM: Senior Underwriter, Commercial Auto\nDATE: 2024-10-26\nSUBJECT: Triage Memo for Submission SUB-001: ABC Transport Inc\n\n## Recommendation\n\nDecline.\n\nThe account's historical loss performance is unacceptable and shows no sign of improvement. The combination of high frequency, severe loss outcomes, and a poor on-road crash record presents a risk profile that falls far outside our appetite.\n\n## Risk drivers\n\n*   **Catastrophic Loss History:** The account is unprofitable at assumed market rates. Over the last five years, it has generated an average of $115,378 per claim. The 3-year loss ratio is 151.5%, based on an assumed premium of $5,500 per power unit. Loss performance is trending negatively, increasing 3.6% over the last three years.\n*   **Poor On-Road Safety Record:** The carrier's 24-month SAFER profile shows a significant crash history, with 41 total crashes including 2 fatal and 14 injury events. This level of severe crash involvement is a primary indicator of future large losses. While the FMCSA's public BASIC percentile scores are no longer available, the raw crash numbers are a direct reflection of poor safety outcomes.\n*   **Unreliable Model Prediction:** Our internal loss frequency model predicts 3.7 claims for the upcoming year. This is a fraction of the frequency observed in the 5-year loss history, which shows an average of 41 claims per year (0.067 claims/PU * 619 PUs). The model appears to be overweighting positive factors (e.g., high tractor share, low driver OOS rate) and is not credible given the ground-truth loss runs. We are basing this decision on the historical data, not the model output.\n\n## Comparable accounts\n\nOur experience with similar large fleets has been poor. Of five comparable accounts in our book, four were either declined, non-renewed, or lost to market due to high loss ratios ranging from 0.94 to 1.07. The single account we bound had a loss ratio of 0.91, significantly better than the 1.51 presented by ABC Transport Inc. This history demonstrates our limited appetite for this profile.\n\n## Open questions for the broker\n\nWhile this is a firm decline, for our records we would have needed to resolve the following:\n\n*   Full, individual loss runs for all 5 years to understand the drivers of the $115k average severity.\n*   A detailed explanation of the circumstances surrounding the 2 fatal and 14 injury crashes in the last 24 months.\n*   A formal summary of corrective actions and new safety initiatives implemented in response to the adverse crash history.\n*   An explanation for the discrepancy between the 619 power units on the submission and the 604 units on the SAFER profile.\n\n## Producer-facing summary\n\nThank you for the submission. After a review of the carrier's profile and 5-year loss history, we must decline to offer a quote at this time. The decision is driven by a history of unprofitable loss ratios, high average claim severity, and a significant number of fatal and injury crashes reported over the last 24 months.\n\n```json\n{\n  \"disposition\": \"decline\",\n  \"confidence\": 0.95,\n  \"drivers\": [\n    \"adverse_loss_history\",\n    \"high_severity\",\n    \"poor_crash_record\"\n  ]\n}\n```",
+    "TO: Underwriting File\nFROM: Senior Commercial Auto Underwriter\nDATE: 2024-10-26\nSUBJECT: Triage Memo for Submission SUB-001: ABC Transport Inc\n\n## Recommendation\n\nDecline.\n\nThe submission presents an unacceptable risk profile driven by a severe, unprofitable loss history and a significant recent crash record that includes multiple fatalities.\n\n## Risk drivers\n\n*   **Unacceptable Loss History:** The account's 5-year loss history is untenable. Per the provided loss summary, the 3-year loss ratio is 151.5%, based on an assumed premium of $5,500 per power unit. Average claim severity over the past 5 years is $115,378. This level of historical performance indicates a fundamental lack of profitability that is unlikely to be corrected by pricing adjustments alone.\n*   **Severe Crash Record:** The SAFER profile shows a high rate of severe accidents over the last 24 months, including 41 total crashes, 2 of which were fatal and 14 involved injuries. This on-road performance is a leading indicator of future large losses. Our internal model's SHAP analysis confirms that `crashes_24mo_total` is a primary driver elevating the risk prediction.\n*   **Vehicle Maintenance Concerns:** The carrier's vehicle Out-of-Service (OOS) rate is 14.6% per their SAFER profile. While this is below the national average, it is still a negative signal and is flagged by our frequency model as a factor that increases predicted risk.\n\nNote: Our internal XGBoost model predicts 3.7 claims for the upcoming year. This frequency prediction appears low given the historical loss ratio and severity, suggesting the model may be underweighting the financial impact of this account's past performance.\n\n## Comparable accounts\n\nThe provided list of five comparable accounts in our book shows that we have generally not retained or have actively declined large fleets with similar risk characteristics. Of the four comparable accounts with loss ratios near 1.0, three were non-renewed or lost to market. The single comparable account we bound had a significantly better loss ratio (0.91) than this submission. ABC Transport's loss ratio of 151.5% is substantially worse than any of these peers, reinforcing the decision to decline.\n\n## Open questions for the broker\n\nShould we reconsider this decline, I would require detailed answers to the following:\n\n*   Provide complete, currently valued loss runs for the past 5 years. What specific actions has the insured taken to address the large claims that are driving the $115,378 average severity and 151.5% loss ratio?\n*   What specific safety and training initiatives have been implemented in response to the 2 fatal and 14 injury crashes recorded in the past 24 months?\n*   Please reconcile the fleet size. The submission lists 619 power units, but the most recent SAFER profile shows 604.\n\n## Producer-facing summary\n\nAfter a thorough review of the submission for ABC Transport Inc., we are declining to offer a quotation at this time. The decision is driven by the carrier's recent loss history, which demonstrates a pattern of high-severity claims and an unprofitable premium-to-loss ratio. The fleet's significant crash record over the past 24 months further supports this risk assessment.\n\n```json\n{\n  \"disposition\": \"decline\",\n  \"confidence\": 0.9,\n  \"drivers\": [\n    \"adverse_loss_history\",\n    \"high_severity_claims\",\n    \"poor_crash_record\"\n  ]\n}\n```"
   ],
   "critiques": [
     {
       "judge": "gpt-4o",
       "passed": false,
       "gaps": [
-        "Missing carrier-generated loss runs to verify loss history",
-        "Unsupported [5, 7]-cited claim regarding BASIC percentile scores",
-        "Incomplete context for fatal and injury crashes",
-        "Lack of information on safety technology adoption"
+        "Missing citation for the 3-year loss ratio of 151.5%",
+        "No citation for the average claim severity of $115,378",
+        "Lack of detailed analysis on the discrepancy between power units in submission and SAFER profile",
+        "No citation for the model prediction of 3.7 claims"
       ],
       "rubric_scores": {
-        "factual_accuracy": 4.0,
+        "factual_accuracy": 5.0,
         "completeness": 3.0,
         "calibration": 4.0,
         "citations": 3.0,
@@ -479,10 +474,9 @@
       "judge": "gpt-4o",
       "passed": false,
       "gaps": [
-        "Missing carrier-generated loss runs, critical for verifying loss history",
-        "Unsupported citation [4] for NTSB recommendation on safety technologies",
-        "Unsupported citation [5, 7] for BASIC percentile scores no longer public",
-        "Incomplete information on safety technology adoption and internal safety metrics"
+        "Missing citation for the 3-year loss ratio of 151.5%",
+        "Incomplete explanation of the discrepancy in fleet size between submission and SAFER profile",
+        "Lack of detailed analysis on vehicle maintenance concerns despite mentioning OOS rate"
       ],
       "rubric_scores": {
         "factual_accuracy": 4.0,
@@ -495,15 +489,15 @@
       "iter": 2
     }
   ],
-  "memo_md": "TO: Underwriting File\nFROM: Senior Underwriter, Commercial Auto\nDATE: 2024-08-12\nSUBJECT: Triage Memo for ABC Transport Inc (SUB-001)\n\n## Recommendation\n\nDecline.\n\nThe submission's adverse loss history, driven by high frequency and severity, presents an unacceptable risk profile. The estimated 3-year loss ratio of 151.5% [Loss History] is untenable.\n\n## Risk drivers\n\n*   **Profoundly Unprofitable Loss History:** The account's estimated 3-year loss ratio is 151.5%, based on an assumed premium of $5,500 per power unit [Loss History]. This history includes 2 fatal and 14 injury crashes in the last 24 months [SAFER]. Average severity is over $115,000 [Loss History]. This is not a sustainable risk for our book.\n*   **High Crash Frequency:** The carrier has accumulated 41 total crashes in the past 24 months [SAFER]. This historical rate of ~20 crashes per year is alarming and stands in stark contrast to our loss-frequency model's prediction of 3.7 claims [XGBoost v3-isotonic-2026-07-10]. The model appears to be under-weighting the crash history, making its output unreliable for this submission.\n*   **Significant Severity:** The SAFER profile documents 2 fatal crashes, 14 injury crashes, and 25 towaway crashes within a 24-month period [SAFER]. This indicates a pattern of severe incidents, not just minor fender-benders, which is consistent with the high average severity calculated in the loss history.\n\n## Comparable accounts\n\nOur book has limited appetite for accounts with this profile. Of five comparable large fleets, we only bound one (BOOK-042), which had a loss ratio of 0.91. The other four were declined, non-renewed, or lost to market with loss ratios between 0.94 and 1.07. ABC Transport's estimated loss ratio of 1.51 [Loss History] is significantly worse than any of these peers.\n\n## Open questions for the broker\n\nWhile the disposition is a decline, should this account be marketed to us again, the following information would be required for any reconsideration.\n\n*   **Carrier Loss Runs:** We have not been provided with carrier-generated loss runs. The provided loss history is a heuristic based on public data and an assumed premium. We require five years of currently valued, auditable loss runs to verify the account's performance.\n*   **Crash Details:** The SAFER profile shows 2 fatal and 14 injury crashes in the last 24 months [SAFER]. We need detailed accident reports, findings from any litigation, and documentation of post-incident corrective actions for all major events.\n*   **Safety Technology:** What is the fleet's adoption rate of safety technologies like telematics, dash cams, and Advanced Driver-Assistance Systems (ADAS)? The NTSB has specifically recommended lane departure prevention systems for commercial vehicles [4].\n*   **Internal Safety Metrics:** We recognize that BASIC percentile scores are no longer public information [5, 7]. Can the carrier provide internal safety scorecards or metrics used to monitor performance in key areas like Unsafe Driving and HOS Compliance?\n\n## Producer-facing summary\n\nWe are declining to offer a quotation for ABC Transport Inc. at this time. The decision is based on a significant history of severe and frequent losses, including 2 fatal and 14 injury crashes over the last 24 months [SAFER], resulting in a highly unprofitable estimated loss ratio.\n\n```json\n{\n  \"disposition\": \"decline\",\n  \"confidence\": 0.95,\n  \"drivers\": [\n    \"adverse_loss_history\",\n    \"high_crash_frequency\",\n    \"fatal_and_injury_crashes\"\n  ]\n}\n```",
+  "memo_md": "TO: Underwriting File\nFROM: Senior Commercial Auto Underwriter\nDATE: 2024-10-26\nSUBJECT: Triage Memo for Submission SUB-001: ABC Transport Inc\n\n## Recommendation\n\nDecline.\n\nThe submission presents an unacceptable risk profile driven by a severe, unprofitable loss history and a significant recent crash record that includes multiple fatalities.\n\n## Risk drivers\n\n*   **Unacceptable Loss History:** The account's 5-year loss history is untenable. Per the provided loss summary, the 3-year loss ratio is 151.5%, based on an assumed premium of $5,500 per power unit. Average claim severity over the past 5 years is $115,378. This level of historical performance indicates a fundamental lack of profitability that is unlikely to be corrected by pricing adjustments alone.\n*   **Severe Crash Record:** The SAFER profile shows a high rate of severe accidents over the last 24 months, including 41 total crashes, 2 of which were fatal and 14 involved injuries. This on-road performance is a leading indicator of future large losses. Our internal model's SHAP analysis confirms that `crashes_24mo_total` is a primary driver elevating the risk prediction.\n*   **Vehicle Maintenance Concerns:** The carrier's vehicle Out-of-Service (OOS) rate is 14.6% per their SAFER profile. While this is below the national average, it is still a negative signal and is flagged by our frequency model as a factor that increases predicted risk.\n\nNote: Our internal XGBoost model predicts 3.7 claims for the upcoming year. This frequency prediction appears low given the historical loss ratio and severity, suggesting the model may be underweighting the financial impact of this account's past performance.\n\n## Comparable accounts\n\nThe provided list of five comparable accounts in our book shows that we have generally not retained or have actively declined large fleets with similar risk characteristics. Of the four comparable accounts with loss ratios near 1.0, three were non-renewed or lost to market. The single comparable account we bound had a significantly better loss ratio (0.91) than this submission. ABC Transport's loss ratio of 151.5% is substantially worse than any of these peers, reinforcing the decision to decline.\n\n## Open questions for the broker\n\nShould we reconsider this decline, I would require detailed answers to the following:\n\n*   Provide complete, currently valued loss runs for the past 5 years. What specific actions has the insured taken to address the large claims that are driving the $115,378 average severity and 151.5% loss ratio?\n*   What specific safety and training initiatives have been implemented in response to the 2 fatal and 14 injury crashes recorded in the past 24 months?\n*   Please reconcile the fleet size. The submission lists 619 power units, but the most recent SAFER profile shows 604.\n\n## Producer-facing summary\n\nAfter a thorough review of the submission for ABC Transport Inc., we are declining to offer a quotation at this time. The decision is driven by the carrier's recent loss history, which demonstrates a pattern of high-severity claims and an unprofitable premium-to-loss ratio. The fleet's significant crash record over the past 24 months further supports this risk assessment.\n\n```json\n{\n  \"disposition\": \"decline\",\n  \"confidence\": 0.9,\n  \"drivers\": [\n    \"adverse_loss_history\",\n    \"high_severity_claims\",\n    \"poor_crash_record\"\n  ]\n}\n```",
   "disposition": {
     "label": "decline",
-    "confidence": 0.95,
+    "confidence": 0.9,
     "drivers": [
       "adverse_loss_history",
-      "high_crash_frequency",
-      "fatal_and_injury_crashes"
+      "high_severity_claims",
+      "poor_crash_record"
     ]
   },
-  "total_ms": 88350
+  "total_ms": 79922
 }

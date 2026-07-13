@@ -22,6 +22,8 @@ if everything fails, the script exits loudly with a nonzero status.
 
 from __future__ import annotations
 
+import argparse
+import hashlib
 import io
 import json
 import logging
@@ -32,8 +34,8 @@ from pathlib import Path
 import httpx
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from app.config import settings  # noqa: E402
-from app.rag.content_gate import validate_document  # noqa: E402
+from app.config import settings
+from app.rag.content_gate import validate_document
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("02_download_ntsb")
@@ -138,7 +140,9 @@ def _narrative_from_case(case: dict) -> tuple[str, str] | None:
         or case.get("NtsbNo")
         or case.get("Mkey")
         or case.get("cm_mkey")
-        or abs(hash(text)) % 10**8
+        # Python's built-in hash is salted per process, which made fallback
+        # ids drift across identical ingestion runs.
+        or hashlib.sha256(text.encode()).hexdigest()[:12]
     ).replace("/", "-")
     return f"ntsb-carol-{case_id}".lower(), text
 
@@ -156,7 +160,6 @@ def ingest_carol(seen: set[str]) -> int:
             continue
         doc_id, text = got
         if (OUT_DIR / f"{doc_id}.txt").exists():
-            saved += 1
             continue
         if _write(doc_id, text, {"source": "carol", "id": doc_id}, seen):
             saved += 1
@@ -186,7 +189,6 @@ def ingest_report_pdfs(seen: set[str]) -> int:
     for s in seeds:
         out = OUT_DIR / f"{s['id']}.txt"
         if out.exists():
-            saved += 1
             continue
         try:
             r = httpx.get(s["url"], headers=UA, timeout=60, follow_redirects=True)
@@ -204,20 +206,49 @@ def ingest_report_pdfs(seen: set[str]) -> int:
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--existing-only",
+        "--offline",
+        action="store_true",
+        dest="existing_only",
+        help=(
+            "Validate the local NTSB corpus without making network requests; "
+            "succeed when at least one content-gated document exists."
+        ),
+    )
+    args = parser.parse_args()
+
     # Purge legacy junk: any existing doc that fails the gate is removed so
     # a rebuilt index can't inherit the old navigation menus.
     seen: set[str] = set()
+    existing = 0
     for txt in sorted(OUT_DIR.glob("*.txt")):
         gate = validate_document(txt.read_text(errors="ignore"), seen_fingerprints=seen, **GATE_KWARGS)
         if not gate.ok:
             log.warning("purging legacy junk %s (%s)", txt.name, gate.reason)
             txt.unlink(missing_ok=True)
             txt.with_suffix(".meta.json").unlink(missing_ok=True)
+        else:
+            existing += 1
 
-    n = ingest_carol(seen)
-    n += ingest_report_pdfs(seen)
-    log.info("done · %d validated NTSB documents on disk", n)
-    if n == 0:
+    if args.existing_only:
+        if existing:
+            log.info("offline validation complete · %d valid NTSB documents", existing)
+            return 0
+        log.error("offline validation found no valid NTSB documents in %s", OUT_DIR)
+        return 1
+
+    added = ingest_carol(seen)
+    added += ingest_report_pdfs(seen)
+    total = existing + added
+    log.info(
+        "done · %d validated NTSB documents on disk (%d existing, %d added)",
+        total,
+        existing,
+        added,
+    )
+    if total == 0:
         log.error(
             "ZERO valid NTSB documents ingested. The corpus would be empty; "
             "refusing to pretend otherwise. Check network access, or update "

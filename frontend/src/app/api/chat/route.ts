@@ -10,9 +10,10 @@ export const dynamic = "force-dynamic";
 // your plan's maximum.
 export const maxDuration = 300;
 
-const BACKEND_URL = process.env.BACKEND_URL;
+const BACKEND_URL = process.env.BACKEND_URL?.trim().replace(/\/+$/, "");
 const HMAC_SECRET = process.env.HMAC_SECRET;
-const RATE = parseInt(process.env.RATE_LIMIT_PER_HOUR ?? "20", 10);
+const configuredRate = Number.parseInt(process.env.RATE_LIMIT_PER_HOUR ?? "20", 10);
+const RATE = Number.isFinite(configuredRate) && configuredRate > 0 ? configuredRate : 20;
 
 // Proxy-level rate limiter. In-memory and therefore PER SERVERLESS INSTANCE:
 // it resets on cold starts and is not shared across instances. It exists as
@@ -32,10 +33,20 @@ function rateLimit(ip: string): { allowed: boolean; remaining: number } {
 }
 
 export async function POST(req: NextRequest) {
+  // Recruiter walkthroughs can request the clearly labeled recorded trace
+  // even when a live backend is configured. This keeps the landing CTA
+  // deterministic, instant, and free of accidental model spend.
+  if (req.nextUrl.searchParams.get("replay") === "1") {
+    return demoStream();
+  }
+
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "anon";
   const rl = rateLimit(ip);
   if (!rl.allowed) {
-    return new Response("Rate limit hit. Try again in an hour.", { status: 429 });
+    return Response.json(
+      { error: "Rate limit hit. Try again in an hour." },
+      { status: 429, headers: { "retry-after": "3600" } },
+    );
   }
 
   const body = await req.text();
@@ -52,19 +63,54 @@ export async function POST(req: NextRequest) {
     ? crypto.createHmac("sha256", HMAC_SECRET).update(ts + body).digest("hex")
     : "";
 
-  const upstream = await fetch(`${BACKEND_URL}/chat`, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      "x-hartford-ts": ts,
-      "x-hartford-sig": sig,
-      accept: "text/event-stream",
-    },
-    body,
-  });
+  let chatUrl: URL;
+  try {
+    chatUrl = new URL(`${BACKEND_URL}/chat`);
+    if (chatUrl.protocol !== "http:" && chatUrl.protocol !== "https:") throw new Error("unsupported protocol");
+  } catch {
+    return Response.json(
+      { error: "Server configuration error: BACKEND_URL must be an http(s) URL." },
+      { status: 503 },
+    );
+  }
+
+  let upstream: Response;
+  try {
+    upstream = await fetch(chatUrl, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-hartford-ts": ts,
+        "x-hartford-sig": sig,
+        accept: "text/event-stream",
+      },
+      body,
+      cache: "no-store",
+      signal: req.signal,
+    });
+  } catch (error: unknown) {
+    const detail = error instanceof Error ? error.message : String(error);
+    return Response.json(
+      { error: "The chat backend could not be reached.", detail },
+      {
+        status: 502,
+        headers: { "x-hartford-ratelimit-remaining": String(rl.remaining) },
+      },
+    );
+  }
 
   if (!upstream.ok || !upstream.body) {
-    return new Response(`Upstream error: ${upstream.status}`, { status: 502 });
+    const detail = (await upstream.text()).slice(0, 2_000);
+    return Response.json(
+      { error: `Chat backend returned HTTP ${upstream.status}.`, detail },
+      {
+        status: upstream.status >= 400 && upstream.status < 600 ? upstream.status : 502,
+        headers: {
+          "x-hartford-ratelimit-remaining":
+            upstream.headers.get("x-hartford-ratelimit-remaining") ?? String(rl.remaining),
+        },
+      },
+    );
   }
 
   return new Response(upstream.body, {

@@ -31,27 +31,57 @@ export async function* parseSSE(
   const reader = stream.getReader();
   const decoder = new TextDecoder();
   let buf = "";
-  while (true) {
-    const { value, done } = await reader.read();
-    if (done) break;
-    buf += decoder.decode(value, { stream: true });
-    let idx;
-    while ((idx = buf.indexOf("\n\n")) !== -1) {
-      const chunk = buf.slice(0, idx);
-      buf = buf.slice(idx + 2);
-      const ev = parseChunk(chunk);
+  try {
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) {
+        // Flush a possibly buffered multi-byte UTF-8 character.
+        buf += decoder.decode();
+        break;
+      }
+      buf += decoder.decode(value, { stream: true });
+
+      // The SSE specification permits CRLF, LF, and CR line endings.
+      // sse-starlette emits CRLF by default, so searching only for `\n\n`
+      // silently swallowed every live backend event.
+      let boundary = findEventBoundary(buf);
+      while (boundary) {
+        const chunk = buf.slice(0, boundary.index);
+        buf = buf.slice(boundary.index + boundary.length);
+        const ev = parseChunk(chunk);
+        if (ev) yield ev;
+        boundary = findEventBoundary(buf);
+      }
+    }
+
+    // Be tolerant of a server that closes after a final event without a
+    // trailing blank line.
+    if (buf.trim()) {
+      const ev = parseChunk(buf);
       if (ev) yield ev;
     }
+  } finally {
+    reader.releaseLock();
   }
+}
+
+function findEventBoundary(value: string): { index: number; length: number } | null {
+  const match = /\r\n\r\n|\n\n|\r\r/.exec(value);
+  return match ? { index: match.index, length: match[0].length } : null;
 }
 
 function parseChunk(chunk: string): ChatEvent | null {
   let event = "message";
-  let data = "";
-  for (const line of chunk.split("\n")) {
+  const dataLines: string[] = [];
+  for (const line of chunk.split(/\r\n|\n|\r/)) {
+    if (!line || line.startsWith(":")) continue;
     if (line.startsWith("event:")) event = line.slice(6).trim();
-    else if (line.startsWith("data:")) data += line.slice(5).trim();
+    else if (line.startsWith("data:")) {
+      const value = line.slice(5);
+      dataLines.push(value.startsWith(" ") ? value.slice(1) : value);
+    }
   }
+  const data = dataLines.join("\n");
   if (!data) return null;
   try {
     const obj = JSON.parse(data);

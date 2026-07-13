@@ -45,15 +45,16 @@ def split_stream_tokens(text: str) -> list[str]:
 @router.post("/chat")
 async def chat(request: Request):
     await verify_hmac(request)
-    body = await request.json()
     try:
+        body = await request.json()
         req = ChatRequest.model_validate(body)
     except Exception as e:
-        raise HTTPException(status_code=422, detail=f"invalid request: {e}")
+        raise HTTPException(status_code=422, detail=f"invalid request: {e}") from e
 
     graph = request.app.state.graph
     run_id = uuid.uuid4().hex
     t0 = time.time()
+    log.info("chat run %s START · submission=%s · msg=%r", run_id, req.submission_id, req.message[:80])
 
     async def event_stream():
         seen_calls: set[str] = set()
@@ -65,6 +66,15 @@ async def chat(request: Request):
         final_memo = ""
 
         try:
+            # The server binds immediately while model warmup runs in an
+            # executor, but the first graph run must not race the same lazy
+            # model initialization. EventSourceResponse has already opened
+            # the SSE response here, and its heartbeat task keeps it alive.
+            warmup = getattr(request.app.state, "model_warmup", None)
+            if warmup is not None and not warmup.done():
+                log.info("chat run %s waiting for retrieval model warmup", run_id)
+                await asyncio.shield(warmup)
+
             async for event in graph.astream(
                 {
                     "submission_id": req.submission_id,
@@ -91,6 +101,7 @@ async def chat(request: Request):
                                 "event": "node_exit",
                                 "data": json.dumps({"node": last_node, "t_ms": int((time.time() - t0) * 1000)}),
                             }
+                        log.info("chat run %s node=%s t=%.1fs", run_id, node_name, time.time() - t0)
                         yield {
                             "event": "node_enter",
                             "data": json.dumps({"node": node_name, "t_ms": int((time.time() - t0) * 1000)}),
@@ -181,12 +192,23 @@ async def chat(request: Request):
                     "event": "node_exit",
                     "data": json.dumps({"node": last_node, "t_ms": int((time.time() - t0) * 1000)}),
                 }
+            log.info("chat run %s DONE in %.1fs · memo_chars=%d", run_id, time.time() - t0, len(final_memo))
             yield {
                 "event": "final",
                 "data": json.dumps({"memo": final_memo, "run_id": run_id}),
             }
         except Exception as e:
-            log.exception("chat stream failed")
+            log.exception("chat run %s FAILED after %.1fs", run_id, time.time() - t0)
             yield {"event": "error", "data": json.dumps({"message": str(e)})}
 
-    return EventSourceResponse(event_stream())
+    return EventSourceResponse(
+        event_stream(),
+        # Heartbeats keep Cloud Run, reverse proxies, and browsers from
+        # considering a long LLM/tool step idle. They are SSE comments and are
+        # intentionally ignored by the frontend parser.
+        ping=10,
+        headers={
+            "Cache-Control": "no-cache, no-transform",
+            "X-Accel-Buffering": "no",
+        },
+    )

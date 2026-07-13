@@ -7,7 +7,7 @@ A live, deployed demo built for The Hartford Data Scientist (GenAI) interview. M
 
 ## Honesty contract
 
-Everything on the site is either real pipeline output or explicitly labeled. Each visualization carries a provenance badge: `live pipeline data`, `pending` (with the exact command that generates it), or `illustrative` (concept walkthroughs, labeled as such). Eval tracks that have not run show a pending state with the reason; no placeholder numbers exist anywhere in the codebase. The XGBoost tool labels its own predictions (`xgboost` vs `heuristic_fallback`) and the memo prompt refuses to present a heuristic as a model output.
+Everything on the site is either real pipeline output or explicitly labeled. Each visualization carries a provenance badge: `live pipeline data`, `pending` (with the exact command that generates it), or `illustrative` (concept walkthroughs, labeled as such). Part 05 also ships a deterministic no-model fallback derived from a prior real BM25/dense/RRF export; it is labeled `illustrative` and is replaced by script 08 when a live index is available. Eval tracks that have not run show a pending state with the reason. The XGBoost tool labels its own predictions (`xgboost` vs `heuristic_fallback`) and the memo prompt refuses to present a heuristic as a model output.
 
 ## What's here
 
@@ -28,6 +28,10 @@ gcloud auth application-default login   # Vertex AI credentials
 cd backend
 uv sync
 
+# Zero-network review: install/repair strict Part 05 retrieval JSON now.
+# This needs no API keys, model weights, Chroma index, or Python packages.
+./scripts/run_pipeline.sh --viz-only
+
 # 2. Data pipeline — one command, ordered, content-validated
 #    (verifies carriers against FMCSA, ingests NTSB/SEC text through a
 #    content gate that REJECTS junk instead of indexing it, builds the
@@ -44,11 +48,32 @@ uv run uvicorn app.main:app --reload --port 8080
 
 # 4. Frontend
 cd ../frontend
-cp .env.local.example .env.local     # point BACKEND_URL at :8080
+cp .env.local.example .env.local     # defaults to http://127.0.0.1:8080
 pnpm install && pnpm dev
 ```
 
-Open http://localhost:3000/hartford.
+Open http://localhost:3000. To mirror the production subpath locally, set
+`NEXT_PUBLIC_BASE_PATH=/hartford`, restart Next.js, and open
+http://localhost:3000/hartford instead.
+
+`pnpm dev` and `pnpm build` first run a zero-dependency data sync. It copies
+the tracked backend exports into `frontend/public/data`, rejects browser-invalid
+JSON such as `NaN`, and installs the labeled Part 05 fallback when the live
+retrieval export is missing or invalid. To run that step directly:
+
+```bash
+cd frontend && pnpm run data:sync
+```
+
+The ingestion/index/export scripts resolve paths from their own locations, not
+the shell's working directory. From the repository root, their explicit `uv`
+forms are:
+
+```bash
+uv run --project backend python backend/scripts/02_download_ntsb.py --offline
+uv run --project backend python backend/scripts/04_build_index.py --bm25-only
+uv run --project backend python backend/scripts/08_export_viz_data.py --skip-umap
+```
 
 ## Tests
 

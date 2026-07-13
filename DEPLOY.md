@@ -61,7 +61,7 @@ gcloud artifacts repositories create uw-copilot \
   --repository-format=docker --location=$REGION
 ```
 
-Save `$HMAC` — you'll set it as `BACKEND_HMAC_KEY` in Vercel.
+Save `$HMAC` — you'll set it as `HMAC_SECRET` in Vercel.
 
 ## 2. Build & deploy the backend
 
@@ -77,7 +77,7 @@ Smoke test:
 
 ```bash
 SERVICE_URL=$(gcloud run services describe uw-copilot-backend --region=$REGION --format='value(status.url)')
-curl "$SERVICE_URL/healthz"
+curl "$SERVICE_URL/health"
 ```
 
 ## 3. Deploy the frontend to Vercel

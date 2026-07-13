@@ -3,8 +3,9 @@
 /**
  * HybridSearchBars — how BM25, dense retrieval, RRF fusion, and the
  * cross-encoder rerank each order the corpus for a golden query. Every
- * ranking comes from the REAL pipeline (retrieval_example.json, produced by
- * hybrid_search.search_stages in script 08). Pending until the index exists.
+ * ranking comes from retrieval_example.json. Script 08 prefers a live index;
+ * a clearly labeled deterministic seed derived from a real export keeps the
+ * interaction available during no-model reviews.
  */
 
 import { motion } from "framer-motion";
@@ -30,17 +31,21 @@ export function HybridSearchBars() {
   if (status === "missing" || !data?.queries?.length) {
     return (
       <PendingCard
-        title="Per-stage retrieval rankings not exported yet (the index must exist first)."
-        command="uv run python scripts/02_download_ntsb.py && ... 04_build_index.py && 08_export_viz_data.py"
+        title="Retrieval data sync did not complete. The no-model fallback can repair it."
+        command="cd frontend && pnpm run data:sync"
       />
     );
   }
 
   const q = data.queries[Math.min(qi, data.queries.length - 1)];
+  const isPipeline = data.provenance?.kind === "pipeline";
   const columns: { title: string; hits: RetrievalStageHit[] }[] = [
     { title: "BM25 (keyword)", hits: q.bm25 },
     { title: "Dense (bge embeddings)", hits: q.dense },
-    { title: "RRF + cross-encoder rerank", hits: q.reranked },
+    {
+      title: isPipeline ? "RRF + cross-encoder rerank" : "RRF (safe rerank fallback)",
+      hits: q.reranked,
+    },
   ];
   const rerankTop = new Set(q.reranked.slice(0, 3).map((h) => h.id));
 
@@ -48,9 +53,12 @@ export function HybridSearchBars() {
     <div className="card p-4">
       <div className="flex flex-wrap items-center gap-3">
         <div className="font-mono text-2xs uppercase tracking-[0.18em] text-ink-dim">
-          Hybrid retrieval · real per-stage rankings
+          Hybrid retrieval · per-stage rankings
         </div>
-        <DataBadge kind="live" />
+        <DataBadge
+          kind={isPipeline ? "live" : "illustrative"}
+          note={isPipeline ? undefined : "real-export-derived deterministic fallback"}
+        />
         {data.queries.length > 1 && (
           <div className="ml-auto flex items-center gap-1 rounded-md border border-border bg-bg-card p-1 text-xs">
             {data.queries.map((_, i) => (
@@ -109,8 +117,9 @@ export function HybridSearchBars() {
       <div className="mt-3 text-2xs text-ink-dim">
         Where the columns disagree is the whole argument for hybrid: BM25
         catches exact terminology, dense catches semantics, RRF fuses both,
-        and the cross-encoder reorders the fused pool with full query-passage
-        attention.
+        {isPipeline
+          ? "and the cross-encoder reorders the fused pool with full query-passage attention."
+          : "and RRF supplies a deterministic, finite fallback order when model weights are unavailable."}
       </div>
     </div>
   );
