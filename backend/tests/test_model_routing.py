@@ -135,6 +135,19 @@ def test_missing_structured_disposition_never_fabricates_a_quote():
         assert disposition.label == "data_insufficient" and disposition.confidence == 0
 
 
+def test_good_memo_with_missing_documents_still_requires_account_review(fake_llms, monkeypatch, tmp_path):
+    monkeypatch.setattr(critic, "openai_runtime_critique", AsyncMock(return_value={
+        "pass": True, "rubric_scores": SCORES, "gaps": [],
+        "missing_documents": ["verified carrier loss documents"],
+    }))
+    with _client(monkeypatch, tmp_path) as client:
+        events = _events(client.post("/chat", json={"submission_id": "SUB-001", "message": "Triage", "critique_provider": "openai"}))
+    judge = next(data for name, data in events if name == "critique_judge")
+    assert judge["passed"] is True
+    assert judge["missing_documents"] == ["verified carrier loss documents"]
+    assert events[-1][1]["review_status"] == "needs_review"
+
+
 def test_chroma_client_initialization_is_serialized(monkeypatch, tmp_path):
     import sys
     import time
