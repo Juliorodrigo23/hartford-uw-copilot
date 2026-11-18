@@ -53,7 +53,7 @@ steps:
       # host. Keep traffic gated on warm models with a six-minute allowance.
       - --startup-probe=httpGet.path=/ready,periodSeconds=10,timeoutSeconds=5,failureThreshold=36
       - --concurrency=10
-      - --timeout=300s
+      - --timeout=600s
       # min-instances=1 keeps one warm instance (no cold start + models
       # pre-loaded when a reviewer opens the demo). Costs a few tens of
       # $/month at 4Gi — dial back to 0 after the interview cycle.

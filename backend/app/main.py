@@ -187,7 +187,9 @@ def create_app() -> FastAPI:
         """One-stop audit of the running instance: what data shipped, whether
         the models are warm, and how long this container has been alive.
         Read-only; this is the first URL to check when chat misbehaves."""
+        from app.llm.evidence import PACKET_VERSION
         from app.llm.vertex_client import gemini_auth_mode
+        from app.rag.hybrid_search import reference_documents
 
         out: dict = {
             "version": "0.2.0",
@@ -203,6 +205,8 @@ def create_app() -> FastAPI:
             "critique_provider": settings.critique_provider,
             "openai_judge_model": settings.openai_judge_model,
             "openai_configured": bool(settings.openai_api_key),
+            "packet_context_version": PACKET_VERSION,
+            "supplemental_reference_chunks": len(reference_documents()),
             "langsmith_configured": tracing_client() is not None,
             "langsmith_project": settings.langsmith_project if settings.langsmith_tracing else None,
             "vertex_transport": settings.vertex_api_transport,

@@ -84,6 +84,19 @@ for (const name of names.sort()) {
   }
 }
 
+// A measured snapshot travels with isolated frontend deployments. It is an
+// exported full benchmark, never simulated fallback scores.
+if (!names.includes("eval_results.json")) {
+  const snapshot = path.join(scriptDir, "eval_results.snapshot.json");
+  try {
+    const measured = parseStrictJson(await fs.readFile(snapshot, "utf8"), snapshot);
+    if (measured.schema_version !== 2 || measured.configuration?.scope !== "full" || measured.task_level?.status !== "ok" || measured.generation?.status !== "ok" || !Number.isInteger(measured.task_level?.n_expected) || measured.task_level.n_expected < 1 || measured.task_level?.n_cases !== measured.task_level?.n_expected) throw new Error("Evaluation snapshot is not a complete measured run");
+    await atomicWriteJson("eval_results.json", measured);
+  } catch (error) {
+    if (error.code !== "ENOENT") throw error;
+  }
+}
+
 if (!retrievalInstalled) {
   const payload = validateRetrieval(
     parseStrictJson(await fs.readFile(retrievalSeed, "utf8"), retrievalSeed),

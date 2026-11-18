@@ -98,3 +98,11 @@ test("all saved packages include their full broker note and annual losses", () =
     assert.ok(submission.loss_run.every((y) => Number.isFinite(Number(y.incurred_usd)) && y.claims >= 0));
   }
 });
+
+
+test("SSE preserves broker-document follow-ups separately from memo-quality pass", async () => {
+  const events = await parse([encode('event: critique_judge\ndata: {"judge":"gpt-4o","passed":true,"gaps":[],"missing_documents":["verified carrier loss documents"]}\n\nevent: final\ndata: {"memo":"memo","run_id":"r","review_status":"needs_review"}\n\n')]);
+  assert.equal(events[0].passed, true);
+  assert.deepEqual(events[0].missingDocuments, ["verified carrier loss documents"]);
+  assert.equal(events[1].reviewStatus, "needs_review");
+});

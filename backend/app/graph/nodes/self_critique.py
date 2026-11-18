@@ -21,6 +21,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 
 from app.config import settings
 from app.graph.state import AgentState
+from app.llm.evidence import evidence_hash, evidence_json
 from app.llm.judge_client import openai_runtime_critique
 from app.llm.prompts.memo import CRITIQUE_PROMPT
 from app.llm.text import response_text
@@ -31,23 +32,7 @@ log = logging.getLogger(__name__)
 
 
 def _evidence_summary(state: AgentState) -> str:
-    bits: list[str] = []
-    safer = state.get("safer_profile")
-    if safer:
-        bits.append("SAFER · " + json.dumps(safer.model_dump(mode="json")))
-    s = state.get("loss_stats")
-    if s:
-        bits.append("LOSS · " + json.dumps(s.model_dump(mode="json"), default=str))
-    p = state.get("xgb_pred")
-    if p:
-        bits.append("XGB · " + json.dumps(p.model_dump(mode="json")))
-    cits = state.get("citations") or []
-    if cits:
-        bits.append("VALID CITATION REFS · " + ", ".join(c.ref for c in cits))
-        bits.extend(f"EVIDENCE {c.ref} ({c.doc_id}) · {c.snippet[:500]}" for c in cits[:15])
-    else:
-        bits.append("VALID CITATION REFS · none (any [n] in the memo is a critical gap)")
-    return "\n".join(bits)
+    return evidence_json(state)
 
 
 def _resolve_provider(state: AgentState) -> str:
@@ -163,4 +148,6 @@ async def self_critique(state: AgentState) -> AgentState:
         "critique_judge": judge_used,
         "critique_error": None,
         "critique_warning": warning,
+        "missing_documents": list(verdict.missing_documents),
+        "review_packet_hash": evidence_hash(state),
     }

@@ -83,27 +83,27 @@ The repository includes a captured end-to-end `SUB-001` trace. It is a reproduci
 
 The recorded outcome is illustrative decision support for a synthetic alias linked to a public carrier profile. It is not a real carrier decision.
 
-## Evaluation, including the misses
+## Versioned evidence evaluation
 
-`backend/scripts/07_run_evals.py` runs three independent tracks and records `ok` or `skipped` explicitly—missing results are never backfilled with invented values.
+`backend/scripts/07_run_evals.py` runs the v2 source-evidence benchmark once,
+reuses its outputs across metrics, and publishes linked LangSmith experiments.
+The frozen set has 20 synthetic packets (14 development and six carrier-disjoint
+holdout cases) plus 20 retrieval questions (18 answerable and two no-source checks).
 
-| Track | Latest tracked result | Scope |
-| --- | ---: | --- |
-| Retrieval | recall@10 **33.3%** · MRR **0.228** · nDCG@10 **0.210** | 10 golden questions |
-| Generation | **80%** pairwise win rate over the baseline | 5 cases, multi-judge runs |
-| Task level | red-flag recall **11.1%** · hallucination rate **20.0%** | 5 synthetic cases |
+References were checked against the source text and frozen account records by
+the coding agent. **Underwriter validation is pending.** Assertions measure
+factual evidence handling, not actuarially correct quote/decline decisions.
 
-The task-level sample is intentionally small and the misses are visible. These numbers are evidence for iteration, not production-readiness claims.
+The dashboard reports passage recall/MRR/nDCG, semantic assertion coverage,
+unsupported material claims, citation-ID validity, disposition JSON validity,
+completed/expected cases, and paired single-shot baseline results. Individual
+claims and grading reasons remain inspectable in LangSmith. Missing documents
+are separate from defects in a memo. Unrun component ablations are labeled as such.
 
-The ablation suite re-runs the agent as:
-
-- full system;
-- without self-critique;
-- without RAG;
-- without comparable-account search;
-- without the XGBoost loss-frequency tool.
-
-That makes it possible to test whether each component changes retrieval, red-flag recall, or hallucination behavior instead of assuming that a more complex graph is automatically better.
+The retired July draft-label/keyword scores are not directly comparable with v2.
+See [docs/evaluation.md](docs/evaluation.md) for definitions and limitations and
+the [live dashboard](https://uwcopilothartford.vercel.app/hartford/pipeline#evaluation)
+for the published measured run.
 
 ## Repository map
 
@@ -166,7 +166,7 @@ When the corpus, submissions, and model are already current, refresh from evalua
 
 ```bash
 cd backend
-uv run python scripts/07_run_evals.py --ablations
+uv run python scripts/07_run_evals.py
 uv run python scripts/08_export_viz_data.py --skip-umap
 uv run python scripts/09_capture_showcase.py --submission SUB-001
 ```

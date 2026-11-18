@@ -162,7 +162,7 @@ async def chat(request: Request):
                     judge = delta.get("critique_judge")
                     if judge and judge not in ("skipped",):
                         review_status = "unreviewed" if delta.get("critique_error") else (
-                            "passed" if delta.get("critique_pass") else "needs_review"
+                            "passed" if delta.get("critique_pass") and not delta.get("missing_documents") else "needs_review"
                         )
                         yield {
                             "event": "critique_judge",
@@ -174,6 +174,7 @@ async def chat(request: Request):
                                     "error": delta.get("critique_error"),
                                     "warning": delta.get("critique_warning"),
                                     "gaps": delta.get("critique_gaps") or [],
+                                    "missing_documents": delta.get("missing_documents") or [],
                                 }
                             ),
                         }

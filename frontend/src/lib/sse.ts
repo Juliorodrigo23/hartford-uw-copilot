@@ -21,7 +21,7 @@ export type ChatEvent =
   | { type: "node_exit"; node: string; t_ms: number }
   | { type: "model_route"; role: "draft" | "critique"; provider: string; model: string }
   | { type: "citation"; ref: string; docId: string; snippet: string }
-  | { type: "critique_judge"; judge: string; iter: number; passed: boolean; error: string | null; warning: string | null; gaps: string[] }
+  | { type: "critique_judge"; judge: string; iter: number; passed: boolean; error: string | null; warning: string | null; gaps: string[]; missingDocuments: string[] }
   | { type: "demo_notice"; message: string }
   | { type: "final"; memo: string; runId: string; reviewStatus?: "passed" | "unreviewed" | "needs_review" }
   | { type: "error"; message: string };
@@ -118,6 +118,7 @@ function parseChunk(chunk: string): ChatEvent | null {
           error: obj.error ?? null,
           warning: obj.warning ?? null,
           gaps: obj.gaps ?? [],
+          missingDocuments: obj.missing_documents ?? [],
         };
       case "demo_notice":
         return { type: "demo_notice", message: obj.message ?? "demo replay" };

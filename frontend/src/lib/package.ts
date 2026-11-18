@@ -22,6 +22,7 @@ export type PackageRun = {
     comparables?: Record<string, unknown>[]; tool_results?: unknown[];
     critique_judge?: string; critique_pass?: boolean; critique_error?: string | null;
     critique_warning?: string | null; critique_gaps?: string[]; rubric_scores?: Record<string, number>;
+    missing_documents?: string[]; draft_packet_hash?: string; review_packet_hash?: string;
   };
 };
 export type Disposition = { label: string; confidence: number; drivers: string[] };

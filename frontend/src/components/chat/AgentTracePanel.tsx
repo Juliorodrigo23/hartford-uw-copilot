@@ -27,7 +27,7 @@ export type TraceEvent =
   | { kind: "tool_call"; id: string; name: string; input: unknown }
   | { kind: "tool_result"; id: string; name: string; output: unknown; ms: number }
   | { kind: "citation"; ref: string; doc_id: string; snippet: string }
-  | { kind: "critique_judge"; judge: string; iter: number; passed?: boolean; error?: string | null; warning?: string | null; gaps?: string[] };
+  | { kind: "critique_judge"; judge: string; iter: number; passed?: boolean; error?: string | null; warning?: string | null; gaps?: string[]; missingDocuments?: string[] };
 
 export function AgentTracePanel({
   events,
@@ -85,6 +85,7 @@ export function AgentTracePanel({
             </span>
           )}
           {lastJudge.warning && <span>{lastJudge.warning}</span>}
+          {!!lastJudge.missingDocuments?.length && <span className="text-2xs opacity-90">Broker documents still required: {lastJudge.missingDocuments.join("; ")}</span>}
           {!lastJudge.error && (lastJudge.gaps?.length ?? 0) > 0 && (
             <span className="text-2xs opacity-90">gaps: {lastJudge.gaps!.join("; ")}</span>
           )}

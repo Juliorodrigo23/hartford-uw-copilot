@@ -88,7 +88,7 @@ export default function PipelinePage() {
               { term: "Agent", def: "an LLM that can also call tools and loop, not just answer in one shot." },
               { term: "RAG", def: "retrieval-augmented generation — fetching relevant documents before the LLM writes." },
               { term: "Vertex AI", def: "Google Cloud's hosted-LLM service. We use it for the Gemini model family." },
-              { term: "LLM-as-a-judge", def: "using a second AI to grade the first AI's answers against a rubric — like a teacher marking essays. We use a judge from a DIFFERENT vendor so it can't be biased toward its own style." },
+              { term: "LLM-as-a-judge", def: "using a second AI to grade the first AI's answers against a rubric — like a teacher marking essays. We use a judge from a DIFFERENT vendor to reduce self-preference; human checks are still needed." },
               { term: "Ablation", def: "turning one component off and re-measuring, to prove what each part contributes. If scores don't drop, the component wasn't earning its keep." },
             ]}
           />
@@ -186,7 +186,7 @@ export default function PipelinePage() {
                   <li>· <span className="text-ink">NTSB</span> — long-form narrative crash investigations (curated highway-mode set)</li>
                   <li>· <span className="text-ink">NHTSA FARS</span> — fatal-crash counts by state (the map above)</li>
                   <li>· <span className="text-ink">SEC EDGAR</span> — 10-K Item 1A risk factors for 7 public truckers (Werner, Knight-Swift, JB Hunt, Schneider, Heartland, US Xpress, Old Dominion), up to 5 filings each</li>
-                  <li>· <span className="text-ink">Industry docs + ISO CA coverage forms</span> — pricing and coverage-language grounding</li>
+                  <li>· <span className="text-ink">FMCSA reference excerpts; licensed policy forms are absent</span> — pricing and coverage-language grounding</li>
                 </ul>
               </div>
             }
@@ -296,7 +296,7 @@ export default function PipelinePage() {
                   Why bge-large-en-v1.5 over OpenAI embeddings
                 </div>
                 <ul className="mt-3 space-y-2 text-ink-muted">
-                  <li>· On-prem story: an insurer can run this entirely inside their VPC. Submissions never leave.</li>
+                  <li>· Embedding deployment: the local embedding model can run inside an insurer’s VPC. Generation and tracing use the separately configured external services.</li>
                   <li>· Cost: 0¢ at inference time vs ~$0.13/1M tokens. At 200 carriers × 200 docs × 800 tokens, that's a real number.</li>
                   <li>· Quality: top-10 on MTEB retrieval; for our domain we're not sensitive to the gap.</li>
                   <li>· Failure mode: if quality regresses on long narratives, we have a fallback to <code>text-embedding-3-large</code> behind a feature flag.</li>
@@ -579,72 +579,21 @@ export default function PipelinePage() {
 
         {/* 10. Evaluation */}
         <PipeSection
-          id="evaluation"
-          number={10}
-          eyebrow="Evaluation"
-          title="Three independent tracks, ablated"
-          lede="Most demos stop at 'it works for this one happy-path query'. The differentiator on this team is going to be the eval harness. We grade retrieval (recall@k, MRR, nDCG), generation (cross-family LLM-as-judge), and end-to-end task quality (red-flag recall on hand-curated ground-truth memos), then ablate every major component by re-running the real agent with each one disabled."
+          id="evaluation" number={10} eyebrow="Evaluation"
+          title="A frozen evidence benchmark and paired experiments"
+          lede="We evaluate source-passage retrieval, memo evidence handling, and a controlled single-shot baseline on versioned references. Twenty synthetic packets include six carrier-disjoint holdout cases. References were checked against source evidence by the coding agent; underwriter validation is pending."
         >
           <PlainEnglish>
-            <p>
-              How do you know an AI is any good? You grade it. Three independent ways:
-            </p>
-            <p>
-              <strong>1. Retrieval</strong> — When we ask a question, do the right
-              documents come back? Numbers like &ldquo;recall@10&rdquo; mean &ldquo;of
-              the 10 we fetched, what fraction were the ones the question wanted.&rdquo;
-            </p>
-            <p>
-              <strong>2. Memo quality</strong> — A different AI (GPT-4o, from a different
-              vendor than our writer) reads each memo and scores it. We use a different
-              vendor on purpose — an AI grading itself is biased. Then we compare against
-              a baseline (just an LLM, no agent) — we want our system to win.
-            </p>
-            <p>
-              <strong>3. Task-level</strong> — For a hand-curated set of applications I
-              wrote down the expected answer first: which red flags MUST appear, and which
-              claims must NOT. The AI&apos;s memos are checked against that: did it spot
-              the same red flags? Did it claim things the data doesn&apos;t support?
-            </p>
-            <p>
-              <strong>And ablations</strong> — turn off each major component (RAG, the
-              critique loop, the small ML model) and rerun the whole eval. The drop tells
-              you what each component is worth. If turning a component <em>off</em>
-              didn&apos;t hurt scores, you don&apos;t need it.
-            </p>
+            <p><strong>Retrieval:</strong> recall@10 is the fraction of specified relevant passages recovered among the first ten results. Separate no-source checks test whether unavailable policy forms produce no evidence.</p>
+            <p><strong>Memo quality:</strong> GPT-4o grades factual assertions against the full packet and records its reasons. Code checks citation IDs and disposition JSON. A valid citation ID alone does not establish that a claim is supported.</p>
+            <p><strong>Comparison:</strong> the baseline receives the same complete raw account packet in one call. The agent adds scoped retrieval, analytical tools and critique. Both variants use the same frozen cases and grading criteria.</p>
+            <p><strong>Review status:</strong> a correctly disclosed missing document is an underwriting follow-up. It does not automatically make a memo defective, and a good memo does not authorize a quote.</p>
           </PlainEnglish>
           <EvalDashboard />
           <AblationTable />
-          <ProseRow
-            side={
-              <CodeBlock
-                fileName={SNIPPETS.llm_judge.file}
-                lang={SNIPPETS.llm_judge.lang}
-                code={SNIPPETS.llm_judge.code}
-                highlight={[23, 28, 36]}
-                caption={
-                  <>
-                    Cross-family judging (Gemini generates, GPT-4o evaluates) is the cheap fix for
-                    the well-documented self-judging bias.
-                  </>
-                }
-              />
-            }
-          >
-            <p>
-              Every number on this dashboard comes from an actual eval run; tracks that
-              haven't run yet say so instead of showing placeholders. The two metrics to
-              scrutinize are the <em>hallucination count</em> (forbidden claims that slip
-              past the critique loop) and the ablation deltas (a component whose removal
-              doesn't move red-flag recall isn't earning its latency). I'd rather show
-              real numbers with warts than tune the harness to a perfect demo — an eval
-              that always says "we're good" is worse than no eval.
-            </p>
-            <Note kind="warn">
-              An eval harness that always says "we're good" is more dangerous than no harness.
-              The columns above where the agent loses to baseline are the conversation I want
-              to have with the team.
-            </Note>
+          <ProseRow side={<CodeBlock fileName={SNIPPETS.llm_judge.file} lang={SNIPPETS.llm_judge.lang} code={SNIPPETS.llm_judge.code} caption={<>The evaluator receives the complete evidence and frozen assertions, then validates its structured judgments.</>} />}>
+            <p>The dashboard includes completed and expected case counts, individual trace links, development and holdout results, and fingerprints for the source data and code. Failed calls remain visible. The July draft-label and keyword scores use a different methodology and are not directly comparable.</p>
+            <Note kind="warn">These are synthetic evidence-handling tests with agent-reviewed references. Expert validation and a larger independent sample are still needed. The runtime reviewer and benchmark evaluator use the same OpenAI model, so human review is important for detecting shared judge bias. Individual component ablations were not rerun.</Note>
           </ProseRow>
         </PipeSection>
 
@@ -664,8 +613,8 @@ export default function PipelinePage() {
             />
             <NextItem
               n={2}
-              title="Counterfactual eval"
-              body="Currently we evaluate against ground-truth memos I wrote. Real production needs A/B against underwriters: same submission, agent-only memo vs underwriter-only memo, blind-rated by a senior. That's the only eval that survives contact with management. I'd budget two weeks with the team for the labeling protocol alone."
+              title="Underwriter validation"
+              body="The current reference assertions were checked against frozen synthetic packets by the coding agent; underwriter confirmation is pending. Real production needs A/B against underwriters: same submission, agent-only memo vs underwriter-only memo, blind-rated by a senior. That's the only eval that survives contact with management. I'd budget two weeks with the team for the labeling protocol alone."
             />
             <NextItem
               n={3}

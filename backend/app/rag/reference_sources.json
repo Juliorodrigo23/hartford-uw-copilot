@@ -1,0 +1,87 @@
+{
+  "version": "fmcsa-public-excerpts-2026-11-18",
+  "review_status": "agent_source_checked; applicability and underwriter review pending",
+  "scope": "Public regulatory reference excerpts, not policy forms or account-specific evidence.",
+  "docs": [
+    {
+      "id": "fmcsa-insurance-overview#chunk-0",
+      "source": "industry",
+      "title": "FMCSA insurance filing and operating authority",
+      "url": "https://www.fmcsa.dot.gov/registration/insurance-filing-requirements",
+      "retrieved_at": "2026-11-18",
+      "license": "US federal government reference excerpt",
+      "text": "FMCSA insurance filing and operating authority\nFMCSA will not grant operating authority registration until the registrant has in effect the minimum levels of financial responsibility on file with FMCSA. Insurance requirements vary depending on the entity type (motor carrier, broker, freight forwarder) and the entity’s type of operating authority(s), type of cargo, and vehicle type(s). Once operating authority is granted, entities are required to maintain proof of insurance and designation of agents for process on file with FMCSA to avoid revocation proceedings.",
+      "content_sha256": "62b84fee9c3d75e28d0e37c61eef2c062db054bf98b747e585e488226cfa9c51"
+    },
+    {
+      "id": "fmcsa-insurance-identity#chunk-0",
+      "source": "industry",
+      "title": "FMCSA insurance filings: exact identity and ongoing monitoring",
+      "url": "https://www.fmcsa.dot.gov/registration/insurance-filing-requirements",
+      "retrieved_at": "2026-11-18",
+      "license": "US federal government reference excerpt",
+      "text": "FMCSA insurance filings: exact identity and ongoing monitoring\nRegistered entities are cautioned to ensure that the name and address of their business as set out in all pre-registration filings, such as secretary of state, match exactly the name and address provided in their application for operating authority filings. Any deviation results in the delay of granting of the authority. It is the entity’s responsibility to monitor and maintain filings up to date and on file.",
+      "content_sha256": "39a53b2e157576b5c641dfaa7e7883aa495a82e09d91a829eab5b4f0d3ec4497"
+    },
+    {
+      "id": "fmcsa-hos-driving#chunk-0",
+      "source": "industry",
+      "title": "FMCSA hours of service: property-carrying drivers, driving window",
+      "url": "https://www.fmcsa.dot.gov/regulations/hours-service/summary-hours-service-regulations",
+      "retrieved_at": "2026-11-18",
+      "license": "US federal government reference excerpt",
+      "text": "FMCSA hours of service: property-carrying drivers, driving window\n11-Hour Driving Limit: May drive a maximum of 11 hours after 10 consecutive hours off duty. 14-Hour Limit: May not drive beyond the 14th consecutive hour after coming on duty, following 10 consecutive hours off duty. Off-duty time does not extend the 14-hour period.",
+      "content_sha256": "39480a0bdd1f0966ffbfd5648f667511f8ff364de2bbbb1e8e2fa3b60d4d0ea3"
+    },
+    {
+      "id": "fmcsa-hos-break#chunk-0",
+      "source": "industry",
+      "title": "FMCSA hours of service: property-carrying drivers, 30-minute driving break",
+      "url": "https://www.fmcsa.dot.gov/regulations/hours-service/summary-hours-service-regulations",
+      "retrieved_at": "2026-11-18",
+      "license": "US federal government reference excerpt",
+      "text": "FMCSA hours of service: property-carrying drivers, 30-minute driving break\nDrivers must take a 30-minute break when they have driven for a period of 8 cumulative hours without at least a 30-minute interruption. The break may be satisfied by any non-driving period of 30 consecutive minutes (i.e., on-duty not driving, off-duty, sleeper berth, or any combination of these taken consecutively).",
+      "content_sha256": "930cac056f7a15a15f5774415b81e20820c3bb9f4b562b343017b3205c0c403a"
+    },
+    {
+      "id": "fmcsa-hos-weekly#chunk-0",
+      "source": "industry",
+      "title": "FMCSA hours of service: property-carrying drivers, weekly limit and restart",
+      "url": "https://www.fmcsa.dot.gov/regulations/hours-service/summary-hours-service-regulations",
+      "retrieved_at": "2026-11-18",
+      "license": "US federal government reference excerpt",
+      "text": "FMCSA hours of service: property-carrying drivers, weekly limit and restart\nMay not drive after 60/70 hours on duty in 7/8 consecutive days. A driver may restart a 7/8 consecutive day period after taking 34 or more consecutive hours off duty.",
+      "content_sha256": "c90a84d0c2a1bf641b83881254205c1461409f7c953aae3e08db7cd78e14d2e8"
+    },
+    {
+      "id": "fmcsa-csa-privacy#chunk-0",
+      "source": "industry",
+      "title": "FMCSA SMS data: non-public BASIC information",
+      "url": "https://csa.fmcsa.dot.gov/HelpCenter/GetFAQsPage",
+      "retrieved_at": "2026-11-18",
+      "license": "US federal government reference excerpt",
+      "text": "FMCSA SMS data: non-public BASIC information\nWhen motor carriers sign in, they will be able to see additional data: Hazardous Materials (HM) Compliance BASIC percentile rank; Crash Indicator BASIC percentile rank; Driver names and other privacy-related material from individual inspection results.",
+      "content_sha256": "12ce44f0cdbc8a68a77560eddc1de37b34f49cae7a5f4d818305d31c34ca53de"
+    },
+    {
+      "id": "fmcsa-csa-ratings#chunk-0",
+      "source": "industry",
+      "title": "FMCSA SMS percentiles versus safety ratings",
+      "url": "https://csa.fmcsa.dot.gov/HelpCenter/GetFAQsPage",
+      "retrieved_at": "2026-11-18",
+      "license": "US federal government reference excerpt",
+      "text": "FMCSA SMS percentiles versus safety ratings\nThe purpose of the Safety Measurement System (SMS) is to identify carriers for intervention, to assist the Agency in using its limited resources to investigate those carriers with the greatest rate of non-compliance and crash risk. The SMS percentile rankings reflect a carrier’s performance relative to other carriers at a point in time and are not a federal safety fitness rating.",
+      "content_sha256": "7df3c827a3b3e081d764ddf93768f21ffc0a144fcaa04a62ab07a50493258f3b"
+    },
+    {
+      "id": "fmcsa-crash-fault#chunk-0",
+      "source": "industry",
+      "title": "FMCSA crash involvement does not establish fault",
+      "url": "https://csa.fmcsa.dot.gov/HelpCenter/GetFAQsPage",
+      "retrieved_at": "2026-11-18",
+      "license": "US federal government reference excerpt",
+      "text": "FMCSA crash involvement does not establish fault\nState-reported crash data are used to calculate the Crash Indicator measure of relative crash involvement. State-reported crash data do not have information regarding fault. The caveat states, “The list of crashes represent a motor carrier’s involvement in reportable crashes regardless of the carrier’s or driver’s role in the crash.”",
+      "content_sha256": "d2650213182bfb92a001d76d8aab29c08fedc108f6a5b5fac084f7aaa637dd4b"
+    }
+  ]
+}

@@ -192,11 +192,12 @@ export function CalibrationCurve() {
 
   return (
     <div className="card overflow-hidden">
+      <p className="border-b border-border p-3 text-xs text-amber-300">Base-model predictions are out of fold, but the calibrated curve is evaluated on the rows used to fit the calibrator. Treat it as an optimistic diagnostic until independent calibration evaluation is completed.</p>
       <div className="flex items-center gap-3 border-b border-border p-3">
         <div className="font-mono text-2xs uppercase tracking-[0.18em] text-ink-dim">
-          Reliability diagram · out-of-fold · raw vs isotonic-calibrated
+          Historical reliability diagnostic · raw vs isotonic-calibrated
         </div>
-        <DataBadge kind="live" note={data.version} />
+        <DataBadge kind="live" note={`${data.version} · historical synthetic training export`} />
       </div>
       <svg ref={ref} className="h-[380px] w-full" />
     </div>

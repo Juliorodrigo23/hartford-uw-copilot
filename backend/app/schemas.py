@@ -151,6 +151,7 @@ class CritiqueVerdict(BaseModel):
     pass_: bool = Field(alias="pass")
     rubric_scores: dict[str, Annotated[float, Field(ge=1, le=5, allow_inf_nan=False)]] = Field(min_length=1)
     gaps: list[str] = Field(default_factory=list)
+    missing_documents: list[str] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def enforce_rubric(self) -> CritiqueVerdict:

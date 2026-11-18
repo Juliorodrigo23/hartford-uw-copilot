@@ -22,53 +22,37 @@ export function dataPath(name: string) {
 // status; a skipped track has a reason and NO metrics.
 // ---------------------------------------------------------------------------
 
-export type TrackStatus = "ok" | "skipped";
-
+export type TrackStatus = "ok" | "skipped" | "partial";
 export type RetrievalTrack = {
-  status: TrackStatus;
-  reason?: string;
-  recall_at_5?: number;
-  recall_at_10?: number;
-  mrr?: number;
-  ndcg_at_10?: number;
-  by_corpus?: { corpus: string; recall_at_10: number; n: number }[];
-  n_questions?: number;
+  status: TrackStatus; reason?: string; method?: string;
+  recall_at_5?: number | null; recall_at_10?: number | null; mrr?: number | null; ndcg_at_10?: number | null;
+  n_questions?: number; n_answerable?: number; n_no_evidence?: number; abstention_accuracy?: number | null;
+  by_corpus?: { corpus: string; recall_at_10: number | null; n: number }[];
+  by_split?: Record<string, {n: number; recall_at_10: number | null}>;
+  per_question?: {id: string; query: string; split: string; corpus: string; recall_at_10?: number; abstention_correct?: boolean; retrieved_ids: string[]; reference_ids: string[]}[];
 };
-
 export type GenerationTrack = {
-  status: TrackStatus;
-  reason?: string;
-  rubric?: { dimension: string; agent: number; baseline: number }[];
-  pairwise_winrate_vs_baseline?: number;
-  judge_iqr?: number;
-  n_cases?: number;
+  status: TrackStatus; reason?: string; n_cases?: number;
+  rubric?: {dimension: string; agent: number | null; baseline: number | null}[];
+  baseline_description?: string; note?: string;
 };
-
 export type TaskLevelTrack = {
-  status: TrackStatus;
-  reason?: string;
-  redflag_recall?: number;
-  hallucination_rate?: number;
-  n_cases?: number;
-  per_submission?: { id: string; redflags_caught: number; redflags_missed: number; hallucinations: number }[];
+  status: TrackStatus; n_cases?: number; n_expected?: number; method?: string;
+  assertion_recall?: number | null; assertions_met?: number; assertions_total?: number;
+  unsupported_claim_rate?: number | null; unsupported_claims?: number; claims_checked?: number;
+  citation_validity?: number | null; references_used?: number; format_validity?: number | null; completion_rate?: number | null;
+  latency_p50_s?: number | null;
+  failures?: {id: string; error_type: string}[];
+  by_split?: Record<string, TaskLevelTrack>;
+  per_submission?: {id: string; split: string; run_id: string; trace_url?: string; assertion_recall: number; assertions_met: number; assertions_total: number; unsupported_claim_rate: number; unsupported_claims: number; claims_checked: number; review_status: string}[];
 };
-
-export type AblationRow = {
-  name: string;
-  status: TrackStatus;
-  reason?: string;
-  retrieval_recall_at_10?: number | null;
-  redflag_recall?: number;
-  hallucination_rate?: number;
-  n_cases?: number;
-};
-
 export type EvalResults = {
-  generated_at?: string;
-  retrieval: RetrievalTrack;
-  generation: GenerationTrack;
-  task_level: TaskLevelTrack;
-  ablations: { status: TrackStatus; reason?: string; rows?: AblationRow[] };
+  schema_version?: number; generated_at?: string; evaluation_key?: string;
+  benchmark?: {version: string; review_status: string; limitations: string[]; n_task_cases: number; n_retrieval_questions: number; splits: Record<string, number>; corpus_counts: Record<string, number>; task_sha256: string; retrieval_sha256: string; corpus_sha256: string};
+  configuration?: {generator: string; reviewer: string; grader: string; code_sha256: string; scope: string; baseline: string};
+  retrieval: RetrievalTrack; generation: GenerationTrack; task_level: TaskLevelTrack; baseline?: TaskLevelTrack;
+  ablations: {status: TrackStatus; reason?: string};
+  langsmith?: {dataset_url: string; dataset_id: string; retrieval_dataset_url?: string; experiments: Record<string, {id: string; name: string}>} | null;
 };
 
 // ---------------------------------------------------------------------------

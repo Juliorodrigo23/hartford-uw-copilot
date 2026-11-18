@@ -23,6 +23,7 @@ from typing import Any
 from openai import AsyncOpenAI, OpenAI
 
 from app.config import settings
+from app.llm.prompts.memo import CRITIQUE_PROMPT
 from app.observability.tracing import trace_openai
 
 log = logging.getLogger(__name__)
@@ -179,12 +180,12 @@ async def openai_runtime_critique(memo: str, evidence: str) -> dict[str, Any] | 
                 temperature=0.0,
                 messages=[
                     {"role": "system", "content": RUNTIME_CRITIQUE_SYSTEM},
-                    {"role": "user", "content": RUNTIME_CRITIQUE_PROMPT.format(
-                        memo=memo[:16000], evidence=evidence[:10000]
+                    {"role": "user", "content": CRITIQUE_PROMPT.format(
+                        memo=memo, evidence=evidence
                     )},
                 ],
-                max_tokens=1000,
-                timeout=30,
+                max_tokens=1800,
+                timeout=60,
             )
         text = r.choices[0].message.content or "{}"
         return json.loads(text)

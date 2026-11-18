@@ -227,7 +227,7 @@ export default function ChatPage() {
           } else if (ev.type === "critique_judge") {
             setTrace((t) => [
               ...t,
-              { kind: "critique_judge", judge: ev.judge, iter: ev.iter, passed: ev.passed, error: ev.error, warning: ev.warning, gaps: ev.gaps },
+              { kind: "critique_judge", judge: ev.judge, iter: ev.iter, passed: ev.passed, error: ev.error, warning: ev.warning, gaps: ev.gaps, missingDocuments: ev.missingDocuments },
             ]);
           } else if (ev.type === "redraft") {
             // The critique loop produced a new draft: clear the streamed

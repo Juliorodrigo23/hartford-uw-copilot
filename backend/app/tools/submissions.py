@@ -60,3 +60,14 @@ def load_submission(sub_id: str) -> Submission | None:
 
 def list_submissions() -> list[Submission]:
     return list(_all().values())
+
+
+def source_snapshot(sub: Submission) -> dict | None:
+    """Preserve the complete original public snapshot for this exact packet."""
+    if not SUB_PATH.exists():
+        return None
+    raw = json.loads(SUB_PATH.read_text())
+    for row in raw.get("submissions", []):
+        if row.get("id") == sub.id and str(row.get("dot_number")) == sub.dot_number and row.get("fleet_size") == sub.fleet_size:
+            return row.get("_safer_snapshot")
+    return None

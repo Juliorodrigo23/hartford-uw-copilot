@@ -3,3 +3,4 @@
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE}
 COPY backend/app /app/backend/app
+COPY backend/scripts/07_run_evals.py /app/backend/scripts/07_run_evals.py

@@ -9,6 +9,7 @@ import logging
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from app.graph.state import AgentState
+from app.llm.evidence import evidence_hash, evidence_json
 from app.llm.prompts.memo import MEMO_SYSTEM, MEMO_TEMPLATE
 from app.llm.text import response_text
 from app.llm.vertex_client import gemini
@@ -98,6 +99,7 @@ async def draft_memo(state: AgentState) -> AgentState:
         states=", ".join(sub.states_of_operation) or "—",
         commodity=sub.commodity,
         effective_date=sub.effective_date.isoformat(),
+        full_package=evidence_json(state),
         safer=_format_safer(state),
         loss_stats=_format_loss(state),
         xgb_pred=pred,
@@ -116,7 +118,7 @@ async def draft_memo(state: AgentState) -> AgentState:
     )
     chunks: list[str] = []
     try:
-        llm = gemini(temperature=0.2)
+        llm = gemini(temperature=0.2, max_output_tokens=8192)
         async with asyncio.timeout(120):
             async for piece in llm.astream([
                 SystemMessage(content=MEMO_SYSTEM),
@@ -134,4 +136,4 @@ async def draft_memo(state: AgentState) -> AgentState:
             "Memo generation failed. No underwriting recommendation was produced. "
             "Please retry; if this persists, check the configured Gemini model and endpoint."
         ) from None
-    return {"memo_md": memo, "draft_iters": draft_iters}
+    return {"memo_md": memo, "draft_iters": draft_iters, "draft_packet_hash": evidence_hash(state)}
