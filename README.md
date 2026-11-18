@@ -100,6 +100,16 @@ completed/expected cases, and paired single-shot baseline results. Individual
 claims and grading reasons remain inspectable in LangSmith. Missing documents
 are separate from defects in a memo. Unrun component ablations are labeled as such.
 
+Latest measured Linux run (2026-11-18):
+
+| Metric | Agent | Single-shot baseline |
+| --- | ---: | ---: |
+| Reference assertion coverage | 131/131 | 131/131 |
+| Unsupported checked claims | 1/140 (0.7%) | 2/114 (1.8%) |
+| Completed cases | 20/20 | 20/20 |
+
+Retrieval recovered 16/18 specified supporting passages in the top ten and passed both no-source checks. Six carrier-disjoint holdout cases covered all reference assertions. These provisional factual tests do not establish underwriting accuracy or statistically robust superiority over the baseline.
+
 The retired July draft-label/keyword scores are not directly comparable with v2.
 See [docs/evaluation.md](docs/evaluation.md) for definitions and limitations and
 the [live dashboard](https://uwcopilothartford.vercel.app/hartford/pipeline#evaluation)
