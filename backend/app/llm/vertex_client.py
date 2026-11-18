@@ -23,7 +23,7 @@ def gemini(
     temperature: float = 0.1,
     max_output_tokens: int = 4096,
     streaming: bool = True,
-) -> "ChatVertexAI":
+) -> ChatVertexAI:
     """Return a configured ChatVertexAI instance.
 
     Authentication uses Application Default Credentials, which works locally
@@ -42,14 +42,15 @@ def gemini(
         # REST by default — see config.vertex_api_transport for the grpc/onnx
         # native-symbol clash this avoids.
         api_transport=settings.vertex_api_transport,
+        max_retries=1,
     )
 
 
 @lru_cache(maxsize=4)
-def cached_gemini(model: str, temperature: float) -> "ChatVertexAI":
+def cached_gemini(model: str, temperature: float) -> ChatVertexAI:
     return gemini(model=model, temperature=temperature, streaming=False)
 
 
-def gemini_fast() -> "ChatVertexAI":
+def gemini_fast() -> ChatVertexAI:
     """Cheap structured-extraction calls (parse_submission, self_critique)."""
     return cached_gemini(settings.vertex_fast_model, 0.0)

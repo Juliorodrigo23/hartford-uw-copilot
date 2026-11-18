@@ -52,7 +52,7 @@ gcloud projects add-iam-policy-binding "$PROJECT_ID" \
 HMAC=$(openssl rand -hex 32)
 echo -n "$HMAC" | gcloud secrets create hmac-secret --data-file=- --replication-policy=automatic
 
-# OpenAI key (LLM-as-judge in evals; the live agent does NOT need it)
+# OpenAI key (required for the cross-family live critic and generation evals)
 gcloud secrets create openai-api-key --replication-policy=automatic
 echo -n "sk-..." | gcloud secrets versions add openai-api-key --data-file=-
 
@@ -70,8 +70,19 @@ gcloud builds submit --config cloudbuild.yaml
 ```
 
 That builds the Docker image, pushes to Artifact Registry, and deploys to
-Cloud Run with `min-instances=0, max-instances=3`. Note the service URL it
+Cloud Run with `min=1, min-instances=1, max-instances=3`. Note the service URL it
 prints (e.g. `https://uw-copilot-backend-xyz-uc.a.run.app`).
+
+Cloud Run stays in `us-central1`; Gemini uses `GCP_LOCATION=global` independently.
+The current configured models are `gemini-3.8-flash` and `gemini-3.5-flash-lite`.
+The startup probe calls `/ready`, which returns 503 until retrieval is warm.
+Use `/health` for liveness and `/diag` for model names, location, index counts,
+and whether the OpenAI key is configured. `openai_configured` checks presence,
+not key validity; verify a live explicit OpenAI critique after rotation.
+
+For a source-only repair, `cloudbuild.hotfix.yaml` builds on a pinned deployed
+image and preserves its exact dependencies and data. Use it only when those
+dependencies and data remain appropriate; ordinary rebuilds use `cloudbuild.yaml`.
 
 Smoke test:
 
@@ -150,10 +161,9 @@ missing IAM permission on the service account.
 
 ## 6. Cost notes
 
-- Cloud Run @ min-instances=0: ~$0/month idle, ~$0.30 per warm-instance hour active.
-- Vertex AI Gemini 2.0 Pro: about $0.0035 / 1K input tokens, $0.011 / 1K output. Each triage is ~7K in / 1K out, so ~$0.04 per call.
-- Vercel hobby is free for the frontend.
-- For an interview window, set `--min-instances=1` (~$10–15 / month) so the first chat doesn't cold-start.
+- One minimum warm instance incurs ongoing idle billing. Check current Cloud Run and model pricing for your region, resource allocation, and usage.
+- Model inference is billed per request/token usage; the recorded walkthrough avoids model calls.
+- To deliberately return to scale-to-zero later, update both minimum settings and the deployment configuration so a later deployment does not restore hot start.
 
 ## 7. Operational tips
 

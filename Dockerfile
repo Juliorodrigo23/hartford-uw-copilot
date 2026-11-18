@@ -25,13 +25,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY backend/pyproject.toml /app/backend/
 COPY backend/uv.lock /app/backend/
 WORKDIR /app/backend
-RUN uv sync --frozen --no-dev --no-install-project \
- || uv sync --no-dev --no-install-project
+RUN uv sync --frozen --no-dev --no-install-project
 
 COPY backend/app /app/backend/app
 COPY backend/scripts /app/backend/scripts
 
-RUN uv sync --frozen --no-dev || uv sync --no-dev
+RUN uv sync --frozen --no-dev
 
 # Optionally bake the retrieval models into the image so the first query
 # never downloads ~1.4GB from HuggingFace at request time. Build with

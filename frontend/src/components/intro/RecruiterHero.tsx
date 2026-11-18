@@ -82,7 +82,7 @@ export function RecruiterHero() {
           </div>
 
           <div className="mt-7 flex flex-wrap gap-x-5 gap-y-2 font-mono text-2xs text-ink-dim">
-            <span className="flex items-center gap-1.5"><Sparkles size={12} /> Gemini 2.5 Pro</span>
+            <span className="flex items-center gap-1.5"><Sparkles size={12} /> Gemini 3.8 Flash</span>
             <span className="flex items-center gap-1.5"><GitBranch size={12} /> LangGraph + checkpoints</span>
             <span className="flex items-center gap-1.5"><SearchCheck size={12} /> hybrid RAG</span>
           </div>

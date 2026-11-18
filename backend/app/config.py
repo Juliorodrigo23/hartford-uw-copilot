@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from functools import lru_cache
 from pathlib import Path
+from typing import Literal
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -21,9 +22,9 @@ class Settings(BaseSettings):
 
     # GCP / Vertex
     gcp_project_id: str = Field(default="", alias="GCP_PROJECT_ID")
-    gcp_location: str = Field(default="us-central1", alias="GCP_LOCATION")
-    vertex_model: str = Field(default="gemini-2.5-pro", alias="VERTEX_MODEL")
-    vertex_fast_model: str = Field(default="gemini-2.5-flash", alias="VERTEX_FAST_MODEL")
+    gcp_location: str = Field(default="global", alias="GCP_LOCATION")
+    vertex_model: str = Field(default="gemini-3.8-flash", alias="VERTEX_MODEL")
+    vertex_fast_model: str = Field(default="gemini-3.5-flash-lite", alias="VERTEX_FAST_MODEL")
     # "rest" (default) avoids loading grpc alongside chromadb's onnxruntime:
     # the two ship conflicting native abseil/protobuf symbols and their
     # coexistence segfaults the process on macOS arm64 (observed as exit 139
@@ -43,7 +44,7 @@ class Settings(BaseSettings):
     # Runtime critique provider. "openai" → GPT-4o (cross-family, costs more,
     # avoids Gemini self-judging bias). "gemini" → Gemini 2.5 Flash (cheap,
     # default). "auto" → openai when a key is present, otherwise gemini.
-    critique_provider: str = Field(default="auto", alias="CRITIQUE_PROVIDER")
+    critique_provider: Literal["auto", "openai", "gemini"] = Field(default="auto", alias="CRITIQUE_PROVIDER")
 
     # Auth
     hmac_secret: str = Field(default="dev-only-replace-in-prod", alias="HMAC_SECRET")

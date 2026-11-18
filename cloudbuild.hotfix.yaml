@@ -1,0 +1,14 @@
+substitutions:
+  _BASE_IMAGE: us-central1-docker.pkg.dev/juliooo-uw-copilot/uw-copilot/backend@sha256:bfa512896453b2db4be8c16fa32bc60f0a3192379514826ae69f73cde0047560
+options:
+  logging: CLOUD_LOGGING_ONLY
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --build-arg=BASE_IMAGE=${_BASE_IMAGE}
+      - --file=Dockerfile.hotfix
+      - --tag=us-central1-docker.pkg.dev/$PROJECT_ID/uw-copilot/backend:repair-$BUILD_ID
+      - .
+images:
+  - us-central1-docker.pkg.dev/$PROJECT_ID/uw-copilot/backend:repair-$BUILD_ID

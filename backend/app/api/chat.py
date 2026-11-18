@@ -27,12 +27,14 @@ from fastapi import APIRouter, HTTPException, Request
 from sse_starlette.sse import EventSourceResponse
 
 from app.api.auth import verify_hmac
+from app.config import settings
+from app.graph.nodes.self_critique import _resolve_provider
 from app.schemas import ChatRequest, ToolCall
 
 router = APIRouter()
 log = logging.getLogger(__name__)
 
-_TOKEN_RE = re.compile(r"\S+\s*")
+_TOKEN_RE = re.compile(r"\s+|\S+\s*")
 
 
 def split_stream_tokens(text: str) -> list[str]:
@@ -64,6 +66,7 @@ async def chat(request: Request):
         streamed = ""          # exactly what has been sent as token events
         seen_draft = 0         # draft_iters already streamed
         final_memo = ""
+        review_status = "unreviewed"
 
         try:
             # The server binds immediately while model warmup runs in an
@@ -75,7 +78,7 @@ async def chat(request: Request):
                 log.info("chat run %s waiting for retrieval model warmup", run_id)
                 await asyncio.shield(warmup)
 
-            async for event in graph.astream(
+            async for mode, event in graph.astream(
                 {
                     "submission_id": req.submission_id,
                     "user_message": req.message,
@@ -89,24 +92,30 @@ async def chat(request: Request):
                     "critique_provider_override": req.critique_provider,
                 },
                 config={"configurable": {"thread_id": run_id}},
-                stream_mode="updates",
+                stream_mode=["updates", "debug"],
             ):
+                if mode == "debug":
+                    kind = event.get("type")
+                    payload = event.get("payload", {})
+                    node = payload.get("name")
+                    if kind in ("task", "task_result") and node:
+                        yield {
+                            "event": "node_enter" if kind == "task" else "node_exit",
+                            "data": json.dumps({"node": node, "t_ms": int((time.time() - t0) * 1000)}),
+                        }
+                        last_node = node if kind == "task" else None
+                        if kind == "task" and node in ("draft_memo", "self_critique"):
+                            provider = "gemini" if node == "draft_memo" else _resolve_provider({"critique_provider_override": req.critique_provider})
+                            model = settings.vertex_model if node == "draft_memo" else (
+                                settings.openai_judge_model if provider == "openai" else settings.vertex_fast_model
+                            )
+                            yield {"event": "model_route", "data": json.dumps({"role": "draft" if node == "draft_memo" else "critique", "provider": provider, "model": model})}
+                    continue
                 # `event` is { node_name: state_delta } in updates mode.
                 for node_name, delta in event.items():
                     if delta is None:
                         delta = {}
-                    if node_name != last_node:
-                        if last_node:
-                            yield {
-                                "event": "node_exit",
-                                "data": json.dumps({"node": last_node, "t_ms": int((time.time() - t0) * 1000)}),
-                            }
-                        log.info("chat run %s node=%s t=%.1fs", run_id, node_name, time.time() - t0)
-                        yield {
-                            "event": "node_enter",
-                            "data": json.dumps({"node": node_name, "t_ms": int((time.time() - t0) * 1000)}),
-                        }
-                        last_node = node_name
+                    log.info("chat run %s node=%s t=%.1fs", run_id, node_name, time.time() - t0)
 
                     # Tool calls
                     for tc in delta.get("tool_calls", []) or []:
@@ -151,6 +160,9 @@ async def chat(request: Request):
                     # unreviewed memo instead of hiding the outage.
                     judge = delta.get("critique_judge")
                     if judge and judge not in ("skipped",):
+                        review_status = "unreviewed" if delta.get("critique_error") else (
+                            "passed" if delta.get("critique_pass") else "needs_review"
+                        )
                         yield {
                             "event": "critique_judge",
                             "data": json.dumps(
@@ -159,6 +171,7 @@ async def chat(request: Request):
                                     "iter": delta.get("critique_iters", 0),
                                     "passed": bool(delta.get("critique_pass", True)),
                                     "error": delta.get("critique_error"),
+                                    "warning": delta.get("critique_warning"),
                                     "gaps": delta.get("critique_gaps") or [],
                                 }
                             ),
@@ -183,7 +196,6 @@ async def chat(request: Request):
                         if new:
                             for tok in split_stream_tokens(new):
                                 yield {"event": "token", "data": json.dumps({"text": tok})}
-                                await asyncio.sleep(0.004)
                             streamed += new
                         final_memo = md
 
@@ -195,11 +207,12 @@ async def chat(request: Request):
             log.info("chat run %s DONE in %.1fs · memo_chars=%d", run_id, time.time() - t0, len(final_memo))
             yield {
                 "event": "final",
-                "data": json.dumps({"memo": final_memo, "run_id": run_id}),
+                "data": json.dumps({"memo": final_memo, "run_id": run_id, "review_status": review_status}),
             }
         except Exception as e:
             log.exception("chat run %s FAILED after %.1fs", run_id, time.time() - t0)
-            yield {"event": "error", "data": json.dumps({"message": str(e)})}
+            message = str(e) if isinstance(e, RuntimeError) and str(e).startswith("Memo generation failed.") else "The analysis could not finish. Please retry."
+            yield {"event": "error", "data": json.dumps({"message": message, "run_id": run_id})}
 
     return EventSourceResponse(
         event_stream(),

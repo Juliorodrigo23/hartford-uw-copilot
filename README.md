@@ -14,7 +14,7 @@ An observable, evaluation-first commercial auto underwriting system. It turns a 
 | --- | --- |
 | Agent workflow | Nine typed LangGraph nodes, two conditional routers, a bounded repair loop, and durable SQLite checkpoints |
 | Retrieval | Chroma dense search with `BAAI/bge-large-en-v1.5` + BM25 + reciprocal rank fusion (`k=60`) + cross-encoder reranking from 50 candidates to 10 |
-| Generative AI | Gemini 2.5 Pro drafts the memo through Vertex AI; Gemini 2.5 Flash handles fast-model duties and provides the fallback critic |
+| Generative AI | Gemini 3.8 Flash drafts through Vertex AI's global endpoint; Gemini 3.5 Flash Lite handles parsing and optional critique |
 | Independent critique | GPT-4o critiques Gemini drafts when an OpenAI key is configured, reducing same-model judging bias |
 | Classical ML | XGBoost loss-frequency prediction with isotonic calibration and SHAP feature attribution |
 | Evidence and tools | FMCSA carrier enrichment, NTSB narratives, SEC 10-K risk factors, loss calculations, and comparable-account search |
@@ -32,7 +32,7 @@ flowchart LR
     B -->|DOT missing| X["Data insufficient"]
     C --> D["Analyze loss history<br/>XGBoost + SHAP"]
     D --> E["Find comparables"]
-    E --> F["Draft memo<br/>Gemini 2.5 Pro"]
+    E --> F["Draft memo<br/>Gemini 3.8 Flash"]
     F --> G["Self-critique<br/>GPT-4o or Gemini Flash"]
     G -->|evidence gaps and budget remains| C
     G -->|pass or loop limit| H["Finalize typed package"]
@@ -46,7 +46,9 @@ Gemini does not use a personal API key in this deployment. The backend calls Gem
 
 - Local development uses Google Application Default Credentials from `gcloud auth application-default login`.
 - Cloud Run uses its attached service account, which has the Vertex AI User role.
-- `OPENAI_API_KEY` is separate. It enables the cross-family GPT-4o critic and LLM-as-judge evaluation; if it is absent, runtime critique falls back to Gemini 2.5 Flash.
+- `OPENAI_API_KEY` is separate. It enables the cross-family GPT-4o critic and LLM-as-judge evaluation. In `auto` mode, an unavailable OpenAI judge triggers an announced Gemini 3.5 Flash Lite fallback. Explicit OpenAI/Gemini selections never substitute a different provider.
+- Cloud Run keeps one warm instance and gates startup on `/ready` until retrieval warmup finishes. This incurs ongoing idle-instance charges.
+- The saved sample run below predates the November 2026 model migration; its recorded timings and metrics are historical.
 
 ## Retrieval and evidence flow
 
@@ -86,9 +88,9 @@ The recorded outcome is illustrative decision support for a synthetic alias link
 
 | Track | Latest tracked result | Scope |
 | --- | ---: | --- |
-| Retrieval | recall@10 **40.0%** · MRR **0.199** · nDCG@10 **0.233** | 10 golden questions |
+| Retrieval | recall@10 **33.3%** · MRR **0.228** · nDCG@10 **0.210** | 10 golden questions |
 | Generation | **80%** pairwise win rate over the baseline | 5 cases, multi-judge runs |
-| Task level | red-flag recall **33.3%** · hallucination rate **20.0%** | 5 synthetic cases |
+| Task level | red-flag recall **11.1%** · hallucination rate **20.0%** | 5 synthetic cases |
 
 The task-level sample is intentionally small and the misses are visible. These numbers are evidence for iteration, not production-readiness claims.
 

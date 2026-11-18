@@ -17,6 +17,7 @@ from pathlib import Path
 from app.config import settings
 from app.graph.builder import get_graph
 from app.llm.judge_client import JudgeUnavailable, judge_memo, pairwise_compare
+from app.llm.text import response_text
 from app.tools.submissions import load_submission
 
 log = logging.getLogger(__name__)
@@ -66,7 +67,7 @@ async def _baseline_memo(submission_id: str) -> str:
     )
     llm = gemini(temperature=0.2, streaming=False)
     resp = await llm.ainvoke(prompt)
-    return resp.content if isinstance(resp.content, str) else str(resp.content)
+    return response_text(resp.content)
 
 
 async def evaluate_generation(n_runs_per_judge: int = 3) -> dict:

@@ -1,0 +1,5 @@
+# Preserve the exact deployed runtime and data for source-only repairs.
+# Full builds still use Dockerfile and cloudbuild.yaml.
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+COPY backend/app /app/backend/app

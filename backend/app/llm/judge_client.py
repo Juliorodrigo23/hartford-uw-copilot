@@ -164,29 +164,32 @@ EVIDENCE THE MEMO SHOULD ADDRESS:
 
 
 async def openai_runtime_critique(memo: str, evidence: str) -> dict[str, Any] | None:
-    """Cross-family critique at runtime. Returns None if OpenAI is not configured
-    or the call fails; the self_critique node falls back to the Gemini judge and
-    records the substitution.
+    """Return None when unconfigured, or raise JudgeUnavailable on failure.
+    The node permits an announced provider substitution only in auto mode.
     """
     if not settings.openai_api_key:
         return None
     try:
-        client = AsyncOpenAI(api_key=settings.openai_api_key)
-        r = await client.chat.completions.create(
-            model=settings.openai_judge_model,
-            response_format={"type": "json_object"},
-            temperature=0.0,
-            messages=[
-                {"role": "system", "content": RUNTIME_CRITIQUE_SYSTEM},
-                {"role": "user", "content": RUNTIME_CRITIQUE_PROMPT.format(
-                    memo=memo[:8000], evidence=evidence[:6000]
-                )},
-            ],
-            max_tokens=400,
-            timeout=30,
-        )
+        async with AsyncOpenAI(api_key=settings.openai_api_key, max_retries=0) as client:
+            r = await client.chat.completions.create(
+                model=settings.openai_judge_model,
+                response_format={"type": "json_object"},
+                temperature=0.0,
+                messages=[
+                    {"role": "system", "content": RUNTIME_CRITIQUE_SYSTEM},
+                    {"role": "user", "content": RUNTIME_CRITIQUE_PROMPT.format(
+                        memo=memo[:16000], evidence=evidence[:10000]
+                    )},
+                ],
+                max_tokens=1000,
+                timeout=30,
+            )
         text = r.choices[0].message.content or "{}"
         return json.loads(text)
     except Exception as e:
-        log.warning("openai runtime critique failed: %s", e)
-        return None
+        # Provider exception messages can include credential fragments. Keep
+        # the browser-safe failure useful without returning the raw response.
+        code = getattr(e, "status_code", None)
+        reason = f"HTTP {code}" if code else type(e).__name__
+        log.warning("OpenAI runtime critique failed (%s)", reason)
+        raise JudgeUnavailable(f"OpenAI critique unavailable ({reason})") from None

@@ -54,6 +54,7 @@ class AgentState(TypedDict, total=False):
     rubric_scores: dict[str, float]
     critique_judge: str  # "gpt-4o" | "gemini-2.5-flash" | "skipped" | "disabled"
     critique_error: str | None  # set when the judge errored and the gate passed open
+    critique_warning: str | None  # automatic provider substitution, with a valid verdict
     critique_provider_override: str | None  # "openai" | "gemini" | None
 
     # Tooling traces

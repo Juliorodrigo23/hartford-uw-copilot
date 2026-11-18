@@ -60,12 +60,12 @@ def _warm_models_blocking() -> None:
             from app.rag.embeddings import embed_query
 
             embed_query("warmup")
-            _reranker()
-            app_state["models_warm"] = True
-            log.info("retrieval models warm in %.1fs", _t.time() - t0)
         else:
             log.info("dense index empty — no models to warm (BM25-only mode)")
-            app_state["models_warm"] = True  # nothing to warm counts as warm
+        # BM25-only mode still reranks candidates; warm that path too.
+        _reranker()
+        app_state["models_warm"] = True
+        log.info("retrieval models warm in %.1fs", _t.time() - t0)
     except Exception as e:
         log.error("model warmup failed after %.1fs: %s", _t.time() - t0, e)
 
@@ -175,6 +175,12 @@ def create_app() -> FastAPI:
     def health() -> dict[str, str]:
         return {"status": "ok", "version": "0.2.0"}
 
+    @app.get("/ready")
+    def ready():
+        if settings.warm_rag_models and not app_state["models_warm"]:
+            return JSONResponse({"status": "warming"}, status_code=503)
+        return {"status": "ready"}
+
     @app.get("/diag")
     def diag() -> dict:
         """One-stop audit of the running instance: what data shipped, whether
@@ -186,14 +192,23 @@ def create_app() -> FastAPI:
             "models_warm": app_state["models_warm"],
             "model_warmup_enabled": settings.warm_rag_models,
             "vertex_model": settings.vertex_model,
+            "vertex_fast_model": settings.vertex_fast_model,
+            "vertex_location": settings.gcp_location,
+            "critique_provider": settings.critique_provider,
+            "openai_judge_model": settings.openai_judge_model,
+            "openai_configured": bool(settings.openai_api_key),
             "vertex_transport": settings.vertex_api_transport,
             "checkpoint_db_exists": settings.checkpoint_db.exists(),
         }
+        warmup = getattr(app.state, "model_warmup", None)
         try:
             from app.rag.hybrid_search import COLLECTIONS
             from app.rag.store import get_or_create
 
-            out["index_chunks"] = {name: get_or_create(name).count() for name in COLLECTIONS}
+            out["index_chunks"] = (
+                "warming" if warmup is not None and not warmup.done()
+                else {name: get_or_create(name).count() for name in COLLECTIONS}
+            )
         except Exception as e:
             out["index_chunks"] = f"error: {e}"
         try:

@@ -5,8 +5,9 @@ substitutions:
   _REGION: us-central1
   _REPO: uw-copilot
   _SERVICE: uw-copilot-backend
-  _VERTEX_MODEL: gemini-2.5-pro
-  _VERTEX_FAST_MODEL: gemini-2.5-flash
+  _VERTEX_LOCATION: global
+  _VERTEX_MODEL: gemini-3.8-flash
+  _VERTEX_FAST_MODEL: gemini-3.5-flash-lite
 
 options:
   logging: CLOUD_LOGGING_ONLY
@@ -46,15 +47,17 @@ steps:
       - --cpu=2
       # Full CPU during container start → faster model warmup on cold boot
       - --cpu-boost
+      - --startup-probe=httpGet.path=/ready,periodSeconds=10,timeoutSeconds=5,failureThreshold=24
       - --concurrency=10
       - --timeout=300s
       # min-instances=1 keeps one warm instance (no cold start + models
       # pre-loaded when a reviewer opens the demo). Costs a few tens of
       # $/month at 4Gi — dial back to 0 after the interview cycle.
       - --min-instances=1
+      - --min=1
       - --max-instances=3
       - --service-account=uw-copilot-runner@$PROJECT_ID.iam.gserviceaccount.com
-      - --set-env-vars=GCP_PROJECT_ID=$PROJECT_ID,GCP_LOCATION=${_REGION},VERTEX_MODEL=${_VERTEX_MODEL},VERTEX_FAST_MODEL=${_VERTEX_FAST_MODEL},ALLOW_UNSIGNED_DEV=false,CRITIQUE_PROVIDER=auto,WARM_RAG_MODELS=true
+      - --set-env-vars=GCP_PROJECT_ID=$PROJECT_ID,GCP_LOCATION=${_VERTEX_LOCATION},VERTEX_MODEL=${_VERTEX_MODEL},VERTEX_FAST_MODEL=${_VERTEX_FAST_MODEL},ALLOW_UNSIGNED_DEV=false,CRITIQUE_PROVIDER=auto,WARM_RAG_MODELS=true
       # HMAC for proxy auth, OpenAI key for cross-family runtime critique (CRITIQUE_PROVIDER=auto
       # uses GPT-4o when present, otherwise falls back to Gemini Flash).
       - --set-secrets=HMAC_SECRET=hmac-secret:latest,OPENAI_API_KEY=openai-api-key:latest

@@ -211,7 +211,7 @@ export default function PipelinePage() {
           number={3}
           eyebrow="Synthesizing the submission layer"
           title="30 ACORD-style submissions, each tied to a real carrier"
-          lede="Brokers don't send tidy JSON. They send a cover email plus an ACORD packet plus a 5-yr loss run plus a driver MVR summary. I script the synthesis with realistic broker tones and bind each synthesized packet to a real DOT so the SAFER tool returns a real safety profile during retrieval. The live agent itself uses Gemini 2.5 Pro for memo drafting and Gemini 2.5 Flash for parsing and self-critique."
+          lede="Brokers don't send tidy JSON. They send a cover email plus an ACORD packet plus a 5-yr loss run plus a driver MVR summary. I script the synthesis with realistic broker tones and bind each synthesized packet to a real DOT so the SAFER tool returns a real safety profile during retrieval. The live agent uses Gemini 3.8 Flash for drafting and Gemini 3.5 Flash Lite for parsing. OpenAI provides cross-family critique in auto mode when available; explicit judge choices are honored."
         >
           <PlainEnglish>
             <p>
