@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { Send, RotateCcw, Wand2, Scale, Radio } from "lucide-react";
 import { SubmissionPicker, type ChatSubmission } from "@/components/chat/SubmissionPicker";
 import { MessageStream, type Message } from "@/components/chat/MessageStream";
@@ -139,6 +140,7 @@ export default function ChatPage() {
   const [critique, setCritique] = useState<"auto" | "openai" | "gemini">("auto");
   const [demoNotice, setDemoNotice] = useState<string | null>(null);
   const [reviewNotice, setReviewNotice] = useState<string | null>(null);
+  const [completedRun, setCompletedRun] = useState<{ id: string; submission: string | null; recorded: boolean } | null>(null);
   const [runMode, setRunMode] = useState<RunMode>(null);
   const [demoSubmissionId, setDemoSubmissionId] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -166,6 +168,7 @@ export default function ChatPage() {
       setBusy(true);
       setDemoNotice(null);
       setReviewNotice(null);
+      setCompletedRun(null);
       setRunMode(recordedReplay ? "recorded" : "connecting");
       setInput("");
       const userMsg: Message = { role: "user", text };
@@ -234,6 +237,7 @@ export default function ChatPage() {
             updateLastByAppend(ev.text);
           } else if (ev.type === "final") {
             terminal = true;
+            setCompletedRun({ id: ev.runId, submission: submission?.id ?? null, recorded: recordedReplay || ev.runId.startsWith("demo-") });
             setReviewNotice(ev.reviewStatus === "unreviewed" ? "The memo is complete, but automated review was unavailable. Human review is required." : ev.reviewStatus === "needs_review" ? "The reviewer found unresolved gaps after the repair limit. Human review is required." : null);
             updateLast((prev) => ({ role: "assistant", text: ev.memo || prev.text, pending: false }));
             setActive(null);
@@ -320,6 +324,7 @@ export default function ChatPage() {
     setCitations([]);
     setDemoNotice(null);
     setReviewNotice(null);
+    setCompletedRun(null);
     setRunMode(null);
   }
 
@@ -351,6 +356,12 @@ export default function ChatPage() {
       </div>
 
       {reviewNotice && <div role="status" className="mb-4 rounded-md border border-warn-500/40 bg-warn-500/10 px-3 py-2 text-sm text-warn-400">{reviewNotice}</div>}
+      {completedRun && (
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-bg-panel px-4 py-3 text-sm">
+          <span className="text-ink-muted">Review the complete submission, evidence, and briefing memo.</span>
+          <Link className="btn-secondary" href={completedRun.recorded ? "/package?submission=SUB-001" : `/package?${new URLSearchParams({ ...(completedRun.submission ? { submission: completedRun.submission } : {}), run: completedRun.id })}`}>Open submission package →</Link>
+        </div>
+      )}
 
       {runMode && (
         <div

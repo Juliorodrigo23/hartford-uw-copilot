@@ -14,7 +14,7 @@ An observable, evaluation-first commercial auto underwriting system. It turns a 
 | --- | --- |
 | Agent workflow | Nine typed LangGraph nodes, two conditional routers, a bounded repair loop, and durable SQLite checkpoints |
 | Retrieval | Chroma dense search with `BAAI/bge-large-en-v1.5` + BM25 + reciprocal rank fusion (`k=60`) + cross-encoder reranking from 50 candidates to 10 |
-| Generative AI | Gemini 3.8 Flash drafts through Vertex AI's global endpoint; Gemini 3.5 Flash Lite handles parsing and optional critique |
+| Generative AI | Gemini 3.8 Flash drafts through the Google Gemini API; Gemini 3.5 Flash Lite handles parsing and optional critique |
 | Independent critique | GPT-4o critiques Gemini drafts when an OpenAI key is configured, reducing same-model judging bias |
 | Classical ML | XGBoost loss-frequency prediction with isotonic calibration and SHAP feature attribution |
 | Evidence and tools | FMCSA carrier enrichment, NTSB narratives, SEC 10-K risk factors, loss calculations, and comparable-account search |
@@ -42,10 +42,11 @@ flowchart LR
 
 ### Model authentication
 
-Gemini does not use a personal API key in this deployment. The backend calls Gemini through Google Vertex AI:
+The deployed Gemini calls use an API key stored in Google Secret Manager. Set `GEMINI_AUTH_MODE=api_key`, `GEMINI_API_BACKEND=developer`, and `GEMINI_API_KEY` for a Google AI Studio key. Vertex AI express keys are supported with `GEMINI_API_BACKEND=vertex`. API-key calls omit project/location and never fall back to ADC when a key is missing.
 
-- Local development uses Google Application Default Credentials from `gcloud auth application-default login`.
-- Cloud Run uses its attached service account, which has the Vertex AI User role.
+- `GEMINI_AUTH_MODE=adc` explicitly selects the Google Cloud credential/service-account path instead.
+- `GEMINI_AUTH_MODE=auto` prefers a configured API key, otherwise uses ADC.
+- Google API-key billing belongs to the project associated with that key.
 - `OPENAI_API_KEY` is separate. It enables the cross-family GPT-4o critic and LLM-as-judge evaluation. In `auto` mode, an unavailable OpenAI judge triggers an announced Gemini 3.5 Flash Lite fallback. Explicit OpenAI/Gemini selections never substitute a different provider.
 - Cloud Run keeps one warm instance and gates startup on `/ready` until retrieval warmup finishes. This incurs ongoing idle-instance charges.
 - The saved sample run below predates the November 2026 model migration; its recorded timings and metrics are historical.
@@ -127,14 +128,15 @@ frontend/
 ### Prerequisites
 
 - Python 3.11+, [uv](https://docs.astral.sh/uv/), Node.js, and pnpm
-- A Google Cloud project with Vertex AI enabled
+- A funded Gemini API key, or a Google Cloud project with Vertex AI enabled for ADC mode
 - Optional: an FMCSA web key for live carrier lookup
 - Optional: an OpenAI key for the GPT-4o critic and generation evaluation
 
 ```bash
 # Repository root
 cp .env.example .env
-gcloud auth application-default login
+# Fill GEMINI_API_KEY and optionally OPENAI_API_KEY in .env
+# For ADC mode instead: set GEMINI_AUTH_MODE=adc and run gcloud auth application-default login
 
 # Backend
 cd backend
@@ -211,3 +213,7 @@ See [DEPLOY.md](./DEPLOY.md) for environment variables, secret setup, signed pro
 - This portfolio system has not been validated for production insurance decisions.
 
 Built by [Julio Contreras](https://juliooo.com).
+
+## Submission package and underwriter briefing
+
+The **Submission package** navigation tab opens `/package`. Its views show the account briefing and complete memo, the full broker packet and analysis evidence, and the exact submission schema plus a clearly labeled individual-claim format reference. The saved packet contains annual loss aggregates; it does not contain fabricated individual claim files or missing ACORD/MVR attachments. Completed live runs link to `/package?run=<run_id>` and load their exact checkpoint through an authenticated server proxy. The recorded SUB-001 sample remains available without making model calls.

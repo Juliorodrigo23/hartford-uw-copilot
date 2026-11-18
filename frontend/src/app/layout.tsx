@@ -6,7 +6,7 @@ import { Footer } from "@/components/nav/Footer";
 export const metadata: Metadata = {
   title: "Commercial Insurance Agentic Analyzer — Julio Contreras",
   description:
-    "An end-to-end GenAI underwriting system: LangGraph on Vertex AI, hybrid RAG over real public carrier data, classical ML loss models, and a three-track evaluation harness.",
+    "An end-to-end GenAI underwriting system: LangGraph with Gemini and OpenAI, hybrid RAG over real public carrier data, classical ML loss models, and a three-track evaluation harness.",
   metadataBase: new URL("https://juliooo.com"),
   openGraph: {
     title: "Commercial Auto Underwriting Copilot",

@@ -94,3 +94,21 @@ if (!retrievalInstalled) {
 }
 
 console.log(`[data:sync] copied ${copied} strict export(s) into ${targetDir}`);
+
+// Full synthetic packets remain available in isolated frontend deployments.
+// The index used by the chat picker intentionally omits the broker email and
+// annual loss records, so it is not sufficient for the package viewer.
+let fullPackets;
+try {
+  fullPackets = await fs.readFile(path.join(repoRoot, "backend/data/synthesized/submissions.json"), "utf8");
+} catch (error) {
+  if (error.code !== "ENOENT") throw error;
+  fullPackets = await fs.readFile(path.join(scriptDir, "submissions.seed.json"), "utf8");
+}
+const packets = parseStrictJson(fullPackets, "full submission packets");
+if (!Array.isArray(packets.submissions) || !packets.submissions.length || packets.submissions.some((s) => !s.id || typeof s.broker_email !== "string" || !Array.isArray(s.loss_run))) {
+  throw new Error("Full submission packets are missing required fields");
+}
+await atomicWriteJson("submissions_full.json", { ...packets, provenance: { kind: "synthetic", note: "Synthetic submissions and losses linked to saved public SAFER snapshots." } });
+await atomicWriteJson("submission_schema.json", parseStrictJson(await fs.readFile(path.join(scriptDir, "submission.schema.json"), "utf8"), "submission schema"));
+console.log(`[data:sync] installed ${packets.submissions.length} complete synthetic packets and their input schema`);

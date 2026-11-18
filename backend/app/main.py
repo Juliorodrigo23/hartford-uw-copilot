@@ -186,12 +186,17 @@ def create_app() -> FastAPI:
         """One-stop audit of the running instance: what data shipped, whether
         the models are warm, and how long this container has been alive.
         Read-only; this is the first URL to check when chat misbehaves."""
+        from app.llm.vertex_client import gemini_auth_mode
+
         out: dict = {
             "version": "0.2.0",
             "uptime_s": round(time.time() - app_state["started_at"], 1),
             "models_warm": app_state["models_warm"],
             "model_warmup_enabled": settings.warm_rag_models,
             "vertex_model": settings.vertex_model,
+            "gemini_auth_mode": gemini_auth_mode(),
+            "gemini_api_backend": settings.gemini_api_backend,
+            "gemini_api_key_configured": bool(settings.gemini_api_key.get_secret_value()),
             "vertex_fast_model": settings.vertex_fast_model,
             "vertex_location": settings.gcp_location,
             "critique_provider": settings.critique_provider,

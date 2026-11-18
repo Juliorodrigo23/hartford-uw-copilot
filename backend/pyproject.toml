@@ -23,6 +23,7 @@ dependencies = [
   "langchain-core>=0.3.20",
   "langchain-google-vertexai>=2.0.7",
   # GCP
+  "google-genai>=1.73.1,<2",
   "google-cloud-aiplatform>=1.71",
   # OpenAI (LLM-as-judge)
   "openai>=1.55",

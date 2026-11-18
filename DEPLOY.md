@@ -15,7 +15,7 @@ gcloud auth login
 gcloud projects create juliooo-uw-copilot --set-as-default
 gcloud beta billing projects link juliooo-uw-copilot --billing-account=YOUR_BILLING_ACCT
 
-# Application Default Credentials for local dev
+# Optional ADC authentication (only for GEMINI_AUTH_MODE=adc)
 gcloud auth application-default login
 ```
 
@@ -52,6 +52,11 @@ gcloud projects add-iam-policy-binding "$PROJECT_ID" \
 HMAC=$(openssl rand -hex 32)
 echo -n "$HMAC" | gcloud secrets create hmac-secret --data-file=- --replication-policy=automatic
 
+# Model keys: keep values in private local files or enter via stdin, never Git.
+# Gemini Developer API key used by the default deployment
+gcloud secrets create gemini-api-key --replication-policy=automatic
+gcloud secrets versions add gemini-api-key --data-file=/path/to/private/google-key-file
+
 # OpenAI key (required for the cross-family live critic and generation evals)
 gcloud secrets create openai-api-key --replication-policy=automatic
 echo -n "sk-..." | gcloud secrets versions add openai-api-key --data-file=-
@@ -73,7 +78,7 @@ That builds the Docker image, pushes to Artifact Registry, and deploys to
 Cloud Run with `min=1, min-instances=1, max-instances=3`. Note the service URL it
 prints (e.g. `https://uw-copilot-backend-xyz-uc.a.run.app`).
 
-Cloud Run stays in `us-central1`; Gemini uses `GCP_LOCATION=global` independently.
+Cloud Run stays in `us-central1`. The default model path uses `GEMINI_AUTH_MODE=api_key` and `GEMINI_API_BACKEND=developer`, with `GEMINI_API_KEY=gemini-api-key:latest`. Set the same values locally to use an API key; no gcloud login is needed for inference. `GCP_LOCATION=global` applies to the alternate ADC/Vertex path, independently of the Cloud Run region.
 The current configured models are `gemini-3.8-flash` and `gemini-3.5-flash-lite`.
 The startup probe calls `/ready`, which returns 503 until retrieval is warm.
 Use `/health` for liveness and `/diag` for model names, location, index counts,
@@ -170,3 +175,7 @@ missing IAM permission on the service account.
 - Watch logs: `gcloud logging tail "resource.type=cloud_run_revision"`.
 - If SAFER scrapes get rate-limited, the cache in `data/raw/fmcsa/safer_cache/` keeps responses warm.
 - Re-run only what changed: `08_export_viz_data.py` is fast (< 1 min) once the index exists.
+
+## Optional FMCSA credential
+
+`FMCSA_WEBKEY` is optional. Verified cached profiles and public SAFER lookup remain available without it. If configured later, store the webKey in Secret Manager and mount it as `FMCSA_WEBKEY`; the model-key update does not require it. Do not place an FMCSA key in a frontend environment variable.

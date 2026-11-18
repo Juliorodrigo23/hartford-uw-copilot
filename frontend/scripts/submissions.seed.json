@@ -1,0 +1,2070 @@
+{
+  "submissions": [
+    {
+      "id": "SUB-001",
+      "carrier_name": "ABC Transport Inc",
+      "dot_number": "185040",
+      "safer_legal_name": "UNITED PETROLEUM TRANSPORTS INC",
+      "fleet_size": 619,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "WA",
+        "OR",
+        "ID",
+        "MT"
+      ],
+      "effective_date": "2026-08-10",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 39,
+          "incurred_usd": "4641489"
+        },
+        {
+          "year": 2022,
+          "claims": 40,
+          "incurred_usd": "3765388"
+        },
+        {
+          "year": 2023,
+          "claims": 41,
+          "incurred_usd": "4064455"
+        },
+        {
+          "year": 2024,
+          "claims": 43,
+          "incurred_usd": "5317122"
+        },
+        {
+          "year": 2025,
+          "claims": 44,
+          "incurred_usd": "6094700"
+        }
+      ],
+      "broker_email": "Team \u2014\n\nLooking for a Hartford quote on ABC Transport Inc (DOT 185040). They run 619 power units, mostly out of WA/MT corridors. 5-yr loss run attached, MVRs are clean for the most part. Renewal effective in 30 days. Producer is Mike at Lockton.\n\n\u2014J.",
+      "commodity": "general_freight",
+      "_safer_snapshot": {
+        "legal_name": "UNITED PETROLEUM TRANSPORTS INC",
+        "operating_status": "AUTHORIZED",
+        "power_units": 604,
+        "drivers": 712,
+        "crashes_24mo_total": 41,
+        "crashes_24mo_fatal": 2,
+        "crashes_24mo_injury": 14,
+        "crashes_24mo_towaway": 25,
+        "oos_rate_vehicle": 0.14613778705636743,
+        "oos_rate_driver": 0.008712487899322363,
+        "oos_rate_hazmat": null,
+        "basic_violations": {
+          "Unsafe Driving": "percentile Not Public",
+          "Hours-of-Service Compliance": "percentile Not Public",
+          "Driver Fitness": "percentile Not Public",
+          "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+          "Vehicle Maintenance": "percentile Not Public"
+        },
+        "raw_dot": "185040"
+      }
+    },
+    {
+      "id": "SUB-002",
+      "carrier_name": "Cascadia Freight Inc",
+      "dot_number": "171830",
+      "safer_legal_name": "KA BULK TRANSPORT LLC",
+      "fleet_size": 572,
+      "vehicle_mix": {
+        "tractor": 0.74,
+        "straight_truck": 0.06,
+        "trailer": 0.18,
+        "other": 0.02
+      },
+      "states_of_operation": [
+        "MS",
+        "AL",
+        "GA",
+        "FL"
+      ],
+      "effective_date": "2026-08-30",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 35,
+          "incurred_usd": "3125132"
+        },
+        {
+          "year": 2022,
+          "claims": 37,
+          "incurred_usd": "4490314"
+        },
+        {
+          "year": 2023,
+          "claims": 38,
+          "incurred_usd": "5025156"
+        },
+        {
+          "year": 2024,
+          "claims": 40,
+          "incurred_usd": "5326520"
+        },
+        {
+          "year": 2025,
+          "claims": 41,
+          "incurred_usd": "5413342"
+        }
+      ],
+      "broker_email": "New submission \u2014 Cascadia Freight Inc (171830). Solid mid-market account in the MS corridor. Fleet 572 PUs, general freight, no hazmat. Loss runs decent. Ready for your quote at the earliest.",
+      "commodity": "tank",
+      "_safer_snapshot": {
+        "legal_name": "KA BULK TRANSPORT LLC",
+        "operating_status": "AUTHORIZED",
+        "power_units": 581,
+        "drivers": 605,
+        "crashes_24mo_total": 0,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 0,
+        "crashes_24mo_towaway": 0,
+        "oos_rate_vehicle": 0.0,
+        "oos_rate_driver": 0.0,
+        "oos_rate_hazmat": null,
+        "basic_violations": {
+          "Unsafe Driving": "percentile Not Public",
+          "Hours-of-Service Compliance": "percentile Not Public",
+          "Driver Fitness": "percentile Not Public",
+          "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+          "Vehicle Maintenance": "percentile Not Public"
+        },
+        "raw_dot": "171830"
+      }
+    },
+    {
+      "id": "SUB-003",
+      "carrier_name": "Magnolia Tank Lines Inc",
+      "dot_number": "184405",
+      "safer_legal_name": "J & M TANK LINES INC",
+      "fleet_size": 445,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "WA",
+        "OR",
+        "ID",
+        "MT"
+      ],
+      "effective_date": "2026-08-08",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 13,
+          "incurred_usd": "1031994"
+        },
+        {
+          "year": 2022,
+          "claims": 14,
+          "incurred_usd": "1083890"
+        },
+        {
+          "year": 2023,
+          "claims": 14,
+          "incurred_usd": "1322763"
+        },
+        {
+          "year": 2024,
+          "claims": 15,
+          "incurred_usd": "1393069"
+        },
+        {
+          "year": 2025,
+          "claims": 15,
+          "incurred_usd": "1399475"
+        }
+      ],
+      "broker_email": "Hi \u2014 please see attached for Magnolia Tank Lines Inc, USDOT 184405. 445 units, 4 states (WA, OR, ID, MT). They came off ABC Insurance after a tough year on freq. Loss runs and MVRs in the packet. Need terms by Friday.\n\nThanks,\nProducer",
+      "commodity": "general_freight",
+      "_safer_snapshot": {
+        "legal_name": "J & M TANK LINES INC",
+        "operating_status": "AUTHORIZED",
+        "power_units": 438,
+        "drivers": 374,
+        "crashes_24mo_total": 28,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 11,
+        "crashes_24mo_towaway": 17,
+        "oos_rate_vehicle": 0.15979381443298968,
+        "oos_rate_driver": 0.008174386920980926,
+        "oos_rate_hazmat": null,
+        "basic_violations": {
+          "Unsafe Driving": "percentile Not Public",
+          "Hours-of-Service Compliance": "percentile Not Public",
+          "Driver Fitness": "percentile Not Public",
+          "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+          "Vehicle Maintenance": "percentile Not Public"
+        },
+        "raw_dot": "184405"
+      }
+    },
+    {
+      "id": "SUB-004",
+      "carrier_name": "Heartland LTL Inc",
+      "dot_number": "229047",
+      "safer_legal_name": "WILLIAMS TANK LINES LLC",
+      "fleet_size": 322,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "TN",
+        "KY",
+        "VA"
+      ],
+      "effective_date": "2026-08-30",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 10,
+          "incurred_usd": "895691"
+        },
+        {
+          "year": 2022,
+          "claims": 10,
+          "incurred_usd": "912905"
+        },
+        {
+          "year": 2023,
+          "claims": 10,
+          "incurred_usd": "816877"
+        },
+        {
+          "year": 2024,
+          "claims": 11,
+          "incurred_usd": "1083612"
+        },
+        {
+          "year": 2025,
+          "claims": 11,
+          "incurred_usd": "1106377"
+        }
+      ],
+      "broker_email": "New submission \u2014 Heartland LTL Inc (229047). Solid mid-market account in the TN corridor. Fleet 322 PUs, general freight, no hazmat. Loss runs decent. Ready for your quote at the earliest.",
+      "commodity": "general_freight",
+      "_safer_snapshot": {
+        "legal_name": "WILLIAMS TANK LINES LLC",
+        "operating_status": "AUTHORIZED",
+        "power_units": 316,
+        "drivers": 347,
+        "crashes_24mo_total": 16,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 7,
+        "crashes_24mo_towaway": 9,
+        "oos_rate_vehicle": 0.06484149855907781,
+        "oos_rate_driver": 0.003194888178913738,
+        "oos_rate_hazmat": null,
+        "basic_violations": {
+          "Unsafe Driving": "percentile Not Public",
+          "Hours-of-Service Compliance": "percentile Not Public",
+          "Driver Fitness": "percentile Not Public",
+          "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+          "Vehicle Maintenance": "percentile Not Public"
+        },
+        "raw_dot": "229047"
+      }
+    },
+    {
+      "id": "SUB-005",
+      "carrier_name": "Liberty Auto Transport Inc",
+      "dot_number": "890682",
+      "safer_legal_name": "ANDERSEN DISTRIBUTION INC",
+      "fleet_size": 265,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "NJ",
+        "PA",
+        "NY",
+        "CT"
+      ],
+      "effective_date": "2026-08-17",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 16,
+          "incurred_usd": "1751861"
+        },
+        {
+          "year": 2022,
+          "claims": 17,
+          "incurred_usd": "1597667"
+        },
+        {
+          "year": 2023,
+          "claims": 18,
+          "incurred_usd": "2073582"
+        },
+        {
+          "year": 2024,
+          "claims": 18,
+          "incurred_usd": "2476432"
+        },
+        {
+          "year": 2025,
+          "claims": 19,
+          "incurred_usd": "2736433"
+        }
+      ],
+      "broker_email": "Team \u2014\n\nLooking for a Hartford quote on Liberty Auto Transport Inc (DOT 890682). They run 265 power units, mostly out of NJ/CT corridors. 5-yr loss run attached, MVRs are clean for the most part. Renewal effective in 30 days. Producer is Mike at Lockton.\n\n\u2014J.",
+      "commodity": "hazmat",
+      "_safer_snapshot": {
+        "legal_name": "ANDERSEN DISTRIBUTION INC",
+        "operating_status": "AUTHORIZED",
+        "power_units": 267,
+        "drivers": 269,
+        "crashes_24mo_total": 11,
+        "crashes_24mo_fatal": 1,
+        "crashes_24mo_injury": 5,
+        "crashes_24mo_towaway": 5,
+        "oos_rate_vehicle": 0.16393442622950818,
+        "oos_rate_driver": 0.007272727272727273,
+        "oos_rate_hazmat": null,
+        "basic_violations": {
+          "Unsafe Driving": "percentile Not Public",
+          "Hours-of-Service Compliance": "percentile Not Public",
+          "Driver Fitness": "percentile Not Public",
+          "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+          "Vehicle Maintenance": "percentile Not Public"
+        },
+        "raw_dot": "890682"
+      }
+    },
+    {
+      "id": "SUB-006",
+      "carrier_name": "Hill Country Logistics Inc",
+      "dot_number": "1805208",
+      "safer_legal_name": "DEDICATED DELIVERY PROFESSIONALS INC",
+      "fleet_size": 93,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "WA",
+        "OR",
+        "ID",
+        "MT"
+      ],
+      "effective_date": "2026-08-16",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 6,
+          "incurred_usd": "618011"
+        },
+        {
+          "year": 2022,
+          "claims": 6,
+          "incurred_usd": "632142"
+        },
+        {
+          "year": 2023,
+          "claims": 6,
+          "incurred_usd": "760584"
+        },
+        {
+          "year": 2024,
+          "claims": 7,
+          "incurred_usd": "868138"
+        },
+        {
+          "year": 2025,
+          "claims": 7,
+          "incurred_usd": "929439"
+        }
+      ],
+      "broker_email": "New submission \u2014 Hill Country Logistics Inc (1805208). Solid mid-market account in the WA corridor. Fleet 93 PUs, general freight, no hazmat. Loss runs decent. Ready for your quote at the earliest.",
+      "commodity": "hazmat",
+      "_safer_snapshot": {
+        "legal_name": "DEDICATED DELIVERY PROFESSIONALS INC",
+        "operating_status": "AUTHORIZED",
+        "power_units": 91,
+        "drivers": 65,
+        "crashes_24mo_total": 1,
+        "crashes_24mo_fatal": 1,
+        "crashes_24mo_injury": 0,
+        "crashes_24mo_towaway": 0,
+        "oos_rate_vehicle": 0.11940298507462688,
+        "oos_rate_driver": 0.012195121951219513,
+        "oos_rate_hazmat": null,
+        "basic_violations": {
+          "Unsafe Driving": "percentile Not Public",
+          "Hours-of-Service Compliance": "percentile Not Public",
+          "Driver Fitness": "percentile Not Public",
+          "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+          "Vehicle Maintenance": "percentile Not Public"
+        },
+        "raw_dot": "1805208"
+      }
+    },
+    {
+      "id": "SUB-007",
+      "carrier_name": "Bayou Drayage Inc",
+      "dot_number": "1151662",
+      "safer_legal_name": "SO CAL PETROLEUM TRANSPORT INC",
+      "fleet_size": 85,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "TN",
+        "KY",
+        "VA"
+      ],
+      "effective_date": "2026-08-09",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 3,
+          "incurred_usd": "271874"
+        },
+        {
+          "year": 2022,
+          "claims": 3,
+          "incurred_usd": "271127"
+        },
+        {
+          "year": 2023,
+          "claims": 3,
+          "incurred_usd": "254968"
+        },
+        {
+          "year": 2024,
+          "claims": 3,
+          "incurred_usd": "303413"
+        },
+        {
+          "year": 2025,
+          "claims": 3,
+          "incurred_usd": "291821"
+        }
+      ],
+      "broker_email": "Hi \u2014 please see attached for Bayou Drayage Inc, USDOT 1151662. 85 units, 3 states (TN, KY, VA). They came off ABC Insurance after a tough year on freq. Loss runs and MVRs in the packet. Need terms by Friday.\n\nThanks,\nProducer",
+      "commodity": "general_freight",
+      "_safer_snapshot": {
+        "legal_name": "SO CAL PETROLEUM TRANSPORT INC",
+        "operating_status": "AUTHORIZED",
+        "power_units": 84,
+        "drivers": 196,
+        "crashes_24mo_total": 6,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 2,
+        "crashes_24mo_towaway": 4,
+        "oos_rate_vehicle": 0.028662420382165602,
+        "oos_rate_driver": 0.0,
+        "oos_rate_hazmat": null,
+        "basic_violations": {
+          "Unsafe Driving": "percentile Not Public",
+          "Hours-of-Service Compliance": "percentile Not Public",
+          "Driver Fitness": "percentile Not Public",
+          "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+          "Vehicle Maintenance": "percentile Not Public"
+        },
+        "raw_dot": "1151662"
+      }
+    },
+    {
+      "id": "SUB-008",
+      "carrier_name": "Sunbelt Carriers Inc",
+      "dot_number": "1606922",
+      "safer_legal_name": "BAILEY HEAVY EQUIPMENT HAULING INC",
+      "fleet_size": 73,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "TN",
+        "KY",
+        "VA"
+      ],
+      "effective_date": "2026-08-23",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 5,
+          "incurred_usd": "567023"
+        },
+        {
+          "year": 2022,
+          "claims": 5,
+          "incurred_usd": "537253"
+        },
+        {
+          "year": 2023,
+          "claims": 5,
+          "incurred_usd": "531941"
+        },
+        {
+          "year": 2024,
+          "claims": 5,
+          "incurred_usd": "593074"
+        },
+        {
+          "year": 2025,
+          "claims": 5,
+          "incurred_usd": "647293"
+        }
+      ],
+      "broker_email": "Team \u2014\n\nLooking for a Hartford quote on Sunbelt Carriers Inc (DOT 1606922). They run 73 power units, mostly out of TN/VA corridors. 5-yr loss run attached, MVRs are clean for the most part. Renewal effective in 30 days. Producer is Mike at Lockton.\n\n\u2014J.",
+      "commodity": "hazmat",
+      "_safer_snapshot": {
+        "legal_name": "BAILEY HEAVY EQUIPMENT HAULING INC",
+        "operating_status": "AUTHORIZED",
+        "power_units": 74,
+        "drivers": 76,
+        "crashes_24mo_total": 5,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 1,
+        "crashes_24mo_towaway": 4,
+        "oos_rate_vehicle": 0.0392156862745098,
+        "oos_rate_driver": 0.012048192771084338,
+        "oos_rate_hazmat": null,
+        "basic_violations": {
+          "Unsafe Driving": "percentile Not Public",
+          "Hours-of-Service Compliance": "percentile Not Public",
+          "Driver Fitness": "percentile Not Public",
+          "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+          "Vehicle Maintenance": "percentile Not Public"
+        },
+        "raw_dot": "1606922"
+      }
+    },
+    {
+      "id": "SUB-009",
+      "carrier_name": "Iron Range Freight Inc",
+      "dot_number": "1827085",
+      "safer_legal_name": "DELTA TANK LINES LLC",
+      "fleet_size": 72,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "IA",
+        "NE",
+        "MO",
+        "KS",
+        "IL",
+        "IN"
+      ],
+      "effective_date": "2026-08-08",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 2,
+          "incurred_usd": "156476"
+        },
+        {
+          "year": 2022,
+          "claims": 2,
+          "incurred_usd": "190458"
+        },
+        {
+          "year": 2023,
+          "claims": 2,
+          "incurred_usd": "171310"
+        },
+        {
+          "year": 2024,
+          "claims": 2,
+          "incurred_usd": "187335"
+        },
+        {
+          "year": 2025,
+          "claims": 2,
+          "incurred_usd": "211694"
+        }
+      ],
+      "broker_email": "Team \u2014\n\nLooking for a Hartford quote on Iron Range Freight Inc (DOT 1827085). They run 72 power units, mostly out of IA/IN corridors. 5-yr loss run attached, MVRs are clean for the most part. Renewal effective in 30 days. Producer is Mike at Lockton.\n\n\u2014J.",
+      "commodity": "general_freight",
+      "_safer_snapshot": {
+        "legal_name": "DELTA TANK LINES LLC",
+        "operating_status": "AUTHORIZED",
+        "power_units": 69,
+        "drivers": 47,
+        "crashes_24mo_total": 3,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 2,
+        "crashes_24mo_towaway": 1,
+        "oos_rate_vehicle": 0.041916167664670656,
+        "oos_rate_driver": 0.005649717514124294,
+        "oos_rate_hazmat": null,
+        "basic_violations": {
+          "Unsafe Driving": "percentile Not Public",
+          "Hours-of-Service Compliance": "percentile Not Public",
+          "Driver Fitness": "percentile Not Public",
+          "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+          "Vehicle Maintenance": "percentile Not Public"
+        },
+        "raw_dot": "1827085"
+      }
+    },
+    {
+      "id": "SUB-010",
+      "carrier_name": "Great Plains Express Inc",
+      "dot_number": "2193193",
+      "safer_legal_name": "P&T TRANSPORT LLC",
+      "fleet_size": 65,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "WA",
+        "OR",
+        "ID",
+        "MT"
+      ],
+      "effective_date": "2026-08-09",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 4,
+          "incurred_usd": "403276"
+        },
+        {
+          "year": 2022,
+          "claims": 4,
+          "incurred_usd": "401017"
+        },
+        {
+          "year": 2023,
+          "claims": 4,
+          "incurred_usd": "509965"
+        },
+        {
+          "year": 2024,
+          "claims": 5,
+          "incurred_usd": "672480"
+        },
+        {
+          "year": 2025,
+          "claims": 5,
+          "incurred_usd": "732800"
+        }
+      ],
+      "broker_email": "Team \u2014\n\nLooking for a Hartford quote on Great Plains Express Inc (DOT 2193193). They run 65 power units, mostly out of WA/MT corridors. 5-yr loss run attached, MVRs are clean for the most part. Renewal effective in 30 days. Producer is Mike at Lockton.\n\n\u2014J.",
+      "commodity": "general_freight",
+      "_safer_snapshot": {
+        "legal_name": "P&T TRANSPORT LLC",
+        "operating_status": "AUTHORIZED",
+        "power_units": 66,
+        "drivers": 77,
+        "crashes_24mo_total": 3,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 0,
+        "crashes_24mo_towaway": 3,
+        "oos_rate_vehicle": 0.12359550561797754,
+        "oos_rate_driver": 0.010791366906474819,
+        "oos_rate_hazmat": null,
+        "basic_violations": {
+          "Unsafe Driving": "percentile Not Public",
+          "Hours-of-Service Compliance": "percentile Not Public",
+          "Driver Fitness": "percentile Not Public",
+          "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+          "Vehicle Maintenance": "percentile Not Public"
+        },
+        "raw_dot": "2193193"
+      }
+    },
+    {
+      "id": "SUB-011",
+      "carrier_name": "Apex Refrigerated Inc",
+      "dot_number": "1285259",
+      "safer_legal_name": "VAN DYK TANK LINES INC",
+      "fleet_size": 65,
+      "vehicle_mix": {
+        "tractor": 0.74,
+        "straight_truck": 0.06,
+        "trailer": 0.18,
+        "other": 0.02
+      },
+      "states_of_operation": [
+        "MS",
+        "AL",
+        "GA",
+        "FL"
+      ],
+      "effective_date": "2026-08-18",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 4,
+          "incurred_usd": "347686"
+        },
+        {
+          "year": 2022,
+          "claims": 4,
+          "incurred_usd": "494279"
+        },
+        {
+          "year": 2023,
+          "claims": 4,
+          "incurred_usd": "501010"
+        },
+        {
+          "year": 2024,
+          "claims": 5,
+          "incurred_usd": "608107"
+        },
+        {
+          "year": 2025,
+          "claims": 5,
+          "incurred_usd": "536267"
+        }
+      ],
+      "broker_email": "New submission \u2014 Apex Refrigerated Inc (1285259). Solid mid-market account in the MS corridor. Fleet 65 PUs, general freight, no hazmat. Loss runs decent. Ready for your quote at the earliest.",
+      "commodity": "tank",
+      "_safer_snapshot": {
+        "legal_name": "VAN DYK TANK LINES INC",
+        "operating_status": "AUTHORIZED",
+        "power_units": 65,
+        "drivers": 102,
+        "crashes_24mo_total": 6,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 1,
+        "crashes_24mo_towaway": 5,
+        "oos_rate_vehicle": 0.15196078431372548,
+        "oos_rate_driver": 0.006944444444444444,
+        "oos_rate_hazmat": null,
+        "basic_violations": {
+          "Unsafe Driving": "percentile Not Public",
+          "Hours-of-Service Compliance": "percentile Not Public",
+          "Driver Fitness": "percentile Not Public",
+          "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+          "Vehicle Maintenance": "percentile Not Public"
+        },
+        "raw_dot": "1285259"
+      }
+    },
+    {
+      "id": "SUB-012",
+      "carrier_name": "Lone Star Tankers Inc",
+      "dot_number": "3436903",
+      "safer_legal_name": "247 FLEET TRANSPORT LLC",
+      "fleet_size": 63,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "TN",
+        "KY",
+        "VA"
+      ],
+      "effective_date": "2026-08-24",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 4,
+          "incurred_usd": "438144"
+        },
+        {
+          "year": 2022,
+          "claims": 4,
+          "incurred_usd": "487773"
+        },
+        {
+          "year": 2023,
+          "claims": 4,
+          "incurred_usd": "496055"
+        },
+        {
+          "year": 2024,
+          "claims": 4,
+          "incurred_usd": "508243"
+        },
+        {
+          "year": 2025,
+          "claims": 5,
+          "incurred_usd": "534088"
+        }
+      ],
+      "broker_email": "New submission \u2014 Lone Star Tankers Inc (3436903). Solid mid-market account in the TN corridor. Fleet 63 PUs, general freight, no hazmat. Loss runs decent. Ready for your quote at the earliest.",
+      "commodity": "general_freight",
+      "_safer_snapshot": {
+        "legal_name": "247 FLEET TRANSPORT LLC",
+        "operating_status": "AUTHORIZED",
+        "power_units": 61,
+        "drivers": 1,
+        "crashes_24mo_total": 0,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 0,
+        "crashes_24mo_towaway": 0,
+        "oos_rate_vehicle": 0.0,
+        "oos_rate_driver": 0.0,
+        "oos_rate_hazmat": null,
+        "basic_violations": {},
+        "raw_dot": "3436903"
+      }
+    },
+    {
+      "id": "SUB-013",
+      "carrier_name": "Northwest Reefer Inc",
+      "dot_number": "270666",
+      "safer_legal_name": "ALLIANCE TANK LINES LLC",
+      "fleet_size": 47,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "MN",
+        "WI",
+        "ND"
+      ],
+      "effective_date": "2026-08-12",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 3,
+          "incurred_usd": "288497"
+        },
+        {
+          "year": 2022,
+          "claims": 3,
+          "incurred_usd": "330125"
+        },
+        {
+          "year": 2023,
+          "claims": 3,
+          "incurred_usd": "304857"
+        },
+        {
+          "year": 2024,
+          "claims": 3,
+          "incurred_usd": "320174"
+        },
+        {
+          "year": 2025,
+          "claims": 3,
+          "incurred_usd": "336452"
+        }
+      ],
+      "broker_email": "Hi \u2014 please see attached for Northwest Reefer Inc, USDOT 270666. 47 units, 3 states (MN, WI, ND). They came off ABC Insurance after a tough year on freq. Loss runs and MVRs in the packet. Need terms by Friday.\n\nThanks,\nProducer",
+      "commodity": "hazmat",
+      "_safer_snapshot": {
+        "legal_name": "ALLIANCE TANK LINES LLC",
+        "operating_status": "AUTHORIZED",
+        "power_units": 47,
+        "drivers": 47,
+        "crashes_24mo_total": 5,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 1,
+        "crashes_24mo_towaway": 4,
+        "oos_rate_vehicle": 0.11971830985915492,
+        "oos_rate_driver": 0.012738853503184712,
+        "oos_rate_hazmat": null,
+        "basic_violations": {},
+        "raw_dot": "270666"
+      }
+    },
+    {
+      "id": "SUB-014",
+      "carrier_name": "Mid-Atlantic Hauling Inc",
+      "dot_number": "502396",
+      "safer_legal_name": "DOUBLE D DISTRIBUTION INC",
+      "fleet_size": 43,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "WA",
+        "OR",
+        "ID",
+        "MT"
+      ],
+      "effective_date": "2026-08-23",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 3,
+          "incurred_usd": "364269"
+        },
+        {
+          "year": 2022,
+          "claims": 3,
+          "incurred_usd": "348631"
+        },
+        {
+          "year": 2023,
+          "claims": 3,
+          "incurred_usd": "396786"
+        },
+        {
+          "year": 2024,
+          "claims": 3,
+          "incurred_usd": "310995"
+        },
+        {
+          "year": 2025,
+          "claims": 3,
+          "incurred_usd": "383970"
+        }
+      ],
+      "broker_email": "New submission \u2014 Mid-Atlantic Hauling Inc (502396). Solid mid-market account in the WA corridor. Fleet 43 PUs, general freight, no hazmat. Loss runs decent. Ready for your quote at the earliest.",
+      "commodity": "general_freight",
+      "_safer_snapshot": {
+        "legal_name": "DOUBLE D DISTRIBUTION INC",
+        "operating_status": "AUTHORIZED",
+        "power_units": 44,
+        "drivers": 40,
+        "crashes_24mo_total": 2,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 0,
+        "crashes_24mo_towaway": 2,
+        "oos_rate_vehicle": 0.20512820512820515,
+        "oos_rate_driver": 0.010869565217391304,
+        "oos_rate_hazmat": null,
+        "basic_violations": {
+          "Unsafe Driving": "percentile Not Public",
+          "Hours-of-Service Compliance": "percentile Not Public",
+          "Driver Fitness": "percentile Not Public",
+          "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+          "Vehicle Maintenance": "percentile Not Public"
+        },
+        "raw_dot": "502396"
+      }
+    },
+    {
+      "id": "SUB-015",
+      "carrier_name": "Coastal Cartage Inc",
+      "dot_number": "274904",
+      "safer_legal_name": "PS MARSTON ASSOCIATES LLC",
+      "fleet_size": 66,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "CA",
+        "NV",
+        "AZ"
+      ],
+      "effective_date": "2026-08-22",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 2,
+          "incurred_usd": "182339"
+        },
+        {
+          "year": 2022,
+          "claims": 2,
+          "incurred_usd": "155831"
+        },
+        {
+          "year": 2023,
+          "claims": 2,
+          "incurred_usd": "186852"
+        },
+        {
+          "year": 2024,
+          "claims": 2,
+          "incurred_usd": "189988"
+        },
+        {
+          "year": 2025,
+          "claims": 2,
+          "incurred_usd": "162057"
+        }
+      ],
+      "broker_email": "New submission \u2014 Coastal Cartage Inc (274904). Solid mid-market account in the CA corridor. Fleet 66 PUs, general freight, no hazmat. Loss runs decent. Ready for your quote at the earliest.",
+      "commodity": "general_freight",
+      "_safer_snapshot": {
+        "legal_name": "PS MARSTON ASSOCIATES LLC",
+        "operating_status": "AUTHORIZED",
+        "power_units": 65,
+        "drivers": 76,
+        "crashes_24mo_total": 1,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 1,
+        "crashes_24mo_towaway": 0,
+        "oos_rate_vehicle": 0.15384615384615385,
+        "oos_rate_driver": 0.0,
+        "oos_rate_hazmat": null,
+        "basic_violations": {
+          "Unsafe Driving": "percentile Not Public",
+          "Hours-of-Service Compliance": "percentile Not Public",
+          "Driver Fitness": "percentile Not Public",
+          "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+          "Vehicle Maintenance": "percentile Not Public"
+        },
+        "raw_dot": "274904"
+      }
+    },
+    {
+      "id": "SUB-016",
+      "carrier_name": "Frontier Distribution Inc",
+      "dot_number": "185040",
+      "safer_legal_name": "UNITED PETROLEUM TRANSPORTS INC",
+      "fleet_size": 576,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "MS",
+        "AL",
+        "GA",
+        "FL"
+      ],
+      "effective_date": "2026-08-23",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 35,
+          "incurred_usd": "3360374"
+        },
+        {
+          "year": 2022,
+          "claims": 37,
+          "incurred_usd": "4622662"
+        },
+        {
+          "year": 2023,
+          "claims": 39,
+          "incurred_usd": "4078184"
+        },
+        {
+          "year": 2024,
+          "claims": 40,
+          "incurred_usd": "5491576"
+        },
+        {
+          "year": 2025,
+          "claims": 41,
+          "incurred_usd": "4667875"
+        }
+      ],
+      "broker_email": "Team \u2014\n\nLooking for a Hartford quote on Frontier Distribution Inc (DOT 185040). They run 576 power units, mostly out of MS/FL corridors. 5-yr loss run attached, MVRs are clean for the most part. Renewal effective in 30 days. Producer is Mike at Lockton.\n\n\u2014J.",
+      "commodity": "hazmat",
+      "_safer_snapshot": {
+        "legal_name": "UNITED PETROLEUM TRANSPORTS INC",
+        "operating_status": "AUTHORIZED",
+        "power_units": 604,
+        "drivers": 712,
+        "crashes_24mo_total": 41,
+        "crashes_24mo_fatal": 2,
+        "crashes_24mo_injury": 14,
+        "crashes_24mo_towaway": 25,
+        "oos_rate_vehicle": 0.14613778705636743,
+        "oos_rate_driver": 0.008712487899322363,
+        "oos_rate_hazmat": null,
+        "basic_violations": {
+          "Unsafe Driving": "percentile Not Public",
+          "Hours-of-Service Compliance": "percentile Not Public",
+          "Driver Fitness": "percentile Not Public",
+          "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+          "Vehicle Maintenance": "percentile Not Public"
+        },
+        "raw_dot": "185040"
+      }
+    },
+    {
+      "id": "SUB-017",
+      "carrier_name": "Big Sky Trucking Inc",
+      "dot_number": "171830",
+      "safer_legal_name": "KA BULK TRANSPORT LLC",
+      "fleet_size": 603,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "MS",
+        "AL",
+        "GA",
+        "FL"
+      ],
+      "effective_date": "2026-08-29",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 38,
+          "incurred_usd": "3972071"
+        },
+        {
+          "year": 2022,
+          "claims": 39,
+          "incurred_usd": "4046091"
+        },
+        {
+          "year": 2023,
+          "claims": 40,
+          "incurred_usd": "4522449"
+        },
+        {
+          "year": 2024,
+          "claims": 42,
+          "incurred_usd": "4605006"
+        },
+        {
+          "year": 2025,
+          "claims": 44,
+          "incurred_usd": "6016206"
+        }
+      ],
+      "broker_email": "Team \u2014\n\nLooking for a Hartford quote on Big Sky Trucking Inc (DOT 171830). They run 603 power units, mostly out of MS/FL corridors. 5-yr loss run attached, MVRs are clean for the most part. Renewal effective in 30 days. Producer is Mike at Lockton.\n\n\u2014J.",
+      "commodity": "general_freight",
+      "_safer_snapshot": {
+        "legal_name": "KA BULK TRANSPORT LLC",
+        "operating_status": "AUTHORIZED",
+        "power_units": 581,
+        "drivers": 605,
+        "crashes_24mo_total": 0,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 0,
+        "crashes_24mo_towaway": 0,
+        "oos_rate_vehicle": 0.0,
+        "oos_rate_driver": 0.0,
+        "oos_rate_hazmat": null,
+        "basic_violations": {
+          "Unsafe Driving": "percentile Not Public",
+          "Hours-of-Service Compliance": "percentile Not Public",
+          "Driver Fitness": "percentile Not Public",
+          "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+          "Vehicle Maintenance": "percentile Not Public"
+        },
+        "raw_dot": "171830"
+      }
+    },
+    {
+      "id": "SUB-018",
+      "carrier_name": "Peach State Freight Inc",
+      "dot_number": "184405",
+      "safer_legal_name": "J & M TANK LINES INC",
+      "fleet_size": 445,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "IA",
+        "NE",
+        "MO",
+        "KS",
+        "IL",
+        "IN"
+      ],
+      "effective_date": "2026-08-14",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 28,
+          "incurred_usd": "2847724"
+        },
+        {
+          "year": 2022,
+          "claims": 29,
+          "incurred_usd": "3630790"
+        },
+        {
+          "year": 2023,
+          "claims": 30,
+          "incurred_usd": "3163062"
+        },
+        {
+          "year": 2024,
+          "claims": 31,
+          "incurred_usd": "4167349"
+        },
+        {
+          "year": 2025,
+          "claims": 32,
+          "incurred_usd": "3849653"
+        }
+      ],
+      "broker_email": "New submission \u2014 Peach State Freight Inc (184405). Solid mid-market account in the IA corridor. Fleet 445 PUs, general freight, no hazmat. Loss runs decent. Ready for your quote at the earliest.",
+      "commodity": "general_freight",
+      "_safer_snapshot": {
+        "legal_name": "J & M TANK LINES INC",
+        "operating_status": "AUTHORIZED",
+        "power_units": 438,
+        "drivers": 374,
+        "crashes_24mo_total": 28,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 11,
+        "crashes_24mo_towaway": 17,
+        "oos_rate_vehicle": 0.15979381443298968,
+        "oos_rate_driver": 0.008174386920980926,
+        "oos_rate_hazmat": null,
+        "basic_violations": {
+          "Unsafe Driving": "percentile Not Public",
+          "Hours-of-Service Compliance": "percentile Not Public",
+          "Driver Fitness": "percentile Not Public",
+          "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+          "Vehicle Maintenance": "percentile Not Public"
+        },
+        "raw_dot": "184405"
+      }
+    },
+    {
+      "id": "SUB-019",
+      "carrier_name": "Old North Freightways Inc",
+      "dot_number": "229047",
+      "safer_legal_name": "WILLIAMS TANK LINES LLC",
+      "fleet_size": 319,
+      "vehicle_mix": {
+        "tractor": 0.74,
+        "straight_truck": 0.06,
+        "trailer": 0.18,
+        "other": 0.02
+      },
+      "states_of_operation": [
+        "CA",
+        "NV",
+        "AZ"
+      ],
+      "effective_date": "2026-08-18",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 10,
+          "incurred_usd": "673528"
+        },
+        {
+          "year": 2022,
+          "claims": 10,
+          "incurred_usd": "918632"
+        },
+        {
+          "year": 2023,
+          "claims": 10,
+          "incurred_usd": "972758"
+        },
+        {
+          "year": 2024,
+          "claims": 11,
+          "incurred_usd": "1142790"
+        },
+        {
+          "year": 2025,
+          "claims": 11,
+          "incurred_usd": "1116856"
+        }
+      ],
+      "broker_email": "Team \u2014\n\nLooking for a Hartford quote on Old North Freightways Inc (DOT 229047). They run 319 power units, mostly out of CA/AZ corridors. 5-yr loss run attached, MVRs are clean for the most part. Renewal effective in 30 days. Producer is Mike at Lockton.\n\n\u2014J.",
+      "commodity": "tank",
+      "_safer_snapshot": {
+        "legal_name": "WILLIAMS TANK LINES LLC",
+        "operating_status": "AUTHORIZED",
+        "power_units": 316,
+        "drivers": 347,
+        "crashes_24mo_total": 16,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 7,
+        "crashes_24mo_towaway": 9,
+        "oos_rate_vehicle": 0.06484149855907781,
+        "oos_rate_driver": 0.003194888178913738,
+        "oos_rate_hazmat": null,
+        "basic_violations": {
+          "Unsafe Driving": "percentile Not Public",
+          "Hours-of-Service Compliance": "percentile Not Public",
+          "Driver Fitness": "percentile Not Public",
+          "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+          "Vehicle Maintenance": "percentile Not Public"
+        },
+        "raw_dot": "229047"
+      }
+    },
+    {
+      "id": "SUB-020",
+      "carrier_name": "Granite Mountain Logistics Inc",
+      "dot_number": "890682",
+      "safer_legal_name": "ANDERSEN DISTRIBUTION INC",
+      "fleet_size": 262,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "NJ",
+        "PA",
+        "NY",
+        "CT"
+      ],
+      "effective_date": "2026-08-18",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 16,
+          "incurred_usd": "1531324"
+        },
+        {
+          "year": 2022,
+          "claims": 17,
+          "incurred_usd": "1995227"
+        },
+        {
+          "year": 2023,
+          "claims": 17,
+          "incurred_usd": "1917763"
+        },
+        {
+          "year": 2024,
+          "claims": 18,
+          "incurred_usd": "1957448"
+        },
+        {
+          "year": 2025,
+          "claims": 19,
+          "incurred_usd": "2282454"
+        }
+      ],
+      "broker_email": "Hi \u2014 please see attached for Granite Mountain Logistics Inc, USDOT 890682. 262 units, 4 states (NJ, PA, NY, CT). They came off ABC Insurance after a tough year on freq. Loss runs and MVRs in the packet. Need terms by Friday.\n\nThanks,\nProducer",
+      "commodity": "hazmat",
+      "_safer_snapshot": {
+        "legal_name": "ANDERSEN DISTRIBUTION INC",
+        "operating_status": "AUTHORIZED",
+        "power_units": 267,
+        "drivers": 269,
+        "crashes_24mo_total": 11,
+        "crashes_24mo_fatal": 1,
+        "crashes_24mo_injury": 5,
+        "crashes_24mo_towaway": 5,
+        "oos_rate_vehicle": 0.16393442622950818,
+        "oos_rate_driver": 0.007272727272727273,
+        "oos_rate_hazmat": null,
+        "basic_violations": {
+          "Unsafe Driving": "percentile Not Public",
+          "Hours-of-Service Compliance": "percentile Not Public",
+          "Driver Fitness": "percentile Not Public",
+          "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+          "Vehicle Maintenance": "percentile Not Public"
+        },
+        "raw_dot": "890682"
+      }
+    },
+    {
+      "id": "SUB-021",
+      "carrier_name": "Ozark Express Inc",
+      "dot_number": "1805208",
+      "safer_legal_name": "DEDICATED DELIVERY PROFESSIONALS INC",
+      "fleet_size": 91,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "NC",
+        "SC",
+        "VA",
+        "WV"
+      ],
+      "effective_date": "2026-08-31",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 3,
+          "incurred_usd": "227284"
+        },
+        {
+          "year": 2022,
+          "claims": 3,
+          "incurred_usd": "223270"
+        },
+        {
+          "year": 2023,
+          "claims": 3,
+          "incurred_usd": "244184"
+        },
+        {
+          "year": 2024,
+          "claims": 3,
+          "incurred_usd": "232577"
+        },
+        {
+          "year": 2025,
+          "claims": 3,
+          "incurred_usd": "313506"
+        }
+      ],
+      "broker_email": "Hi \u2014 please see attached for Ozark Express Inc, USDOT 1805208. 91 units, 4 states (NC, SC, VA, WV). They came off ABC Insurance after a tough year on freq. Loss runs and MVRs in the packet. Need terms by Friday.\n\nThanks,\nProducer",
+      "commodity": "general_freight",
+      "_safer_snapshot": {
+        "legal_name": "DEDICATED DELIVERY PROFESSIONALS INC",
+        "operating_status": "AUTHORIZED",
+        "power_units": 91,
+        "drivers": 65,
+        "crashes_24mo_total": 1,
+        "crashes_24mo_fatal": 1,
+        "crashes_24mo_injury": 0,
+        "crashes_24mo_towaway": 0,
+        "oos_rate_vehicle": 0.11940298507462688,
+        "oos_rate_driver": 0.012195121951219513,
+        "oos_rate_hazmat": null,
+        "basic_violations": {
+          "Unsafe Driving": "percentile Not Public",
+          "Hours-of-Service Compliance": "percentile Not Public",
+          "Driver Fitness": "percentile Not Public",
+          "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+          "Vehicle Maintenance": "percentile Not Public"
+        },
+        "raw_dot": "1805208"
+      }
+    },
+    {
+      "id": "SUB-022",
+      "carrier_name": "River Valley Cartage Inc",
+      "dot_number": "1151662",
+      "safer_legal_name": "SO CAL PETROLEUM TRANSPORT INC",
+      "fleet_size": 81,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "MI",
+        "OH",
+        "PA"
+      ],
+      "effective_date": "2026-08-21",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 5,
+          "incurred_usd": "538915"
+        },
+        {
+          "year": 2022,
+          "claims": 5,
+          "incurred_usd": "631885"
+        },
+        {
+          "year": 2023,
+          "claims": 5,
+          "incurred_usd": "617301"
+        },
+        {
+          "year": 2024,
+          "claims": 6,
+          "incurred_usd": "735159"
+        },
+        {
+          "year": 2025,
+          "claims": 6,
+          "incurred_usd": "655856"
+        }
+      ],
+      "broker_email": "Hi \u2014 please see attached for River Valley Cartage Inc, USDOT 1151662. 81 units, 3 states (MI, OH, PA). They came off ABC Insurance after a tough year on freq. Loss runs and MVRs in the packet. Need terms by Friday.\n\nThanks,\nProducer",
+      "commodity": "hazmat",
+      "_safer_snapshot": {
+        "legal_name": "SO CAL PETROLEUM TRANSPORT INC",
+        "operating_status": "AUTHORIZED",
+        "power_units": 84,
+        "drivers": 196,
+        "crashes_24mo_total": 6,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 2,
+        "crashes_24mo_towaway": 4,
+        "oos_rate_vehicle": 0.028662420382165602,
+        "oos_rate_driver": 0.0,
+        "oos_rate_hazmat": null,
+        "basic_violations": {
+          "Unsafe Driving": "percentile Not Public",
+          "Hours-of-Service Compliance": "percentile Not Public",
+          "Driver Fitness": "percentile Not Public",
+          "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+          "Vehicle Maintenance": "percentile Not Public"
+        },
+        "raw_dot": "1151662"
+      }
+    },
+    {
+      "id": "SUB-023",
+      "carrier_name": "Twin Ports Trucking Inc",
+      "dot_number": "1606922",
+      "safer_legal_name": "BAILEY HEAVY EQUIPMENT HAULING INC",
+      "fleet_size": 75,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "TN",
+        "KY",
+        "VA"
+      ],
+      "effective_date": "2026-08-20",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 5,
+          "incurred_usd": "534975"
+        },
+        {
+          "year": 2022,
+          "claims": 5,
+          "incurred_usd": "619188"
+        },
+        {
+          "year": 2023,
+          "claims": 5,
+          "incurred_usd": "534793"
+        },
+        {
+          "year": 2024,
+          "claims": 5,
+          "incurred_usd": "658138"
+        },
+        {
+          "year": 2025,
+          "claims": 5,
+          "incurred_usd": "592362"
+        }
+      ],
+      "broker_email": "Team \u2014\n\nLooking for a Hartford quote on Twin Ports Trucking Inc (DOT 1606922). They run 75 power units, mostly out of TN/VA corridors. 5-yr loss run attached, MVRs are clean for the most part. Renewal effective in 30 days. Producer is Mike at Lockton.\n\n\u2014J.",
+      "commodity": "hazmat",
+      "_safer_snapshot": {
+        "legal_name": "BAILEY HEAVY EQUIPMENT HAULING INC",
+        "operating_status": "AUTHORIZED",
+        "power_units": 74,
+        "drivers": 76,
+        "crashes_24mo_total": 5,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 1,
+        "crashes_24mo_towaway": 4,
+        "oos_rate_vehicle": 0.0392156862745098,
+        "oos_rate_driver": 0.012048192771084338,
+        "oos_rate_hazmat": null,
+        "basic_violations": {
+          "Unsafe Driving": "percentile Not Public",
+          "Hours-of-Service Compliance": "percentile Not Public",
+          "Driver Fitness": "percentile Not Public",
+          "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+          "Vehicle Maintenance": "percentile Not Public"
+        },
+        "raw_dot": "1606922"
+      }
+    },
+    {
+      "id": "SUB-024",
+      "carrier_name": "Southwest Stage Lines Inc",
+      "dot_number": "1827085",
+      "safer_legal_name": "DELTA TANK LINES LLC",
+      "fleet_size": 67,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "NJ",
+        "PA",
+        "NY",
+        "CT"
+      ],
+      "effective_date": "2026-08-23",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 4,
+          "incurred_usd": "393942"
+        },
+        {
+          "year": 2022,
+          "claims": 4,
+          "incurred_usd": "420371"
+        },
+        {
+          "year": 2023,
+          "claims": 4,
+          "incurred_usd": "400335"
+        },
+        {
+          "year": 2024,
+          "claims": 5,
+          "incurred_usd": "647599"
+        },
+        {
+          "year": 2025,
+          "claims": 5,
+          "incurred_usd": "679459"
+        }
+      ],
+      "broker_email": "New submission \u2014 Southwest Stage Lines Inc (1827085). Solid mid-market account in the NJ corridor. Fleet 67 PUs, general freight, no hazmat. Loss runs decent. Ready for your quote at the earliest.",
+      "commodity": "general_freight",
+      "_safer_snapshot": {
+        "legal_name": "DELTA TANK LINES LLC",
+        "operating_status": "AUTHORIZED",
+        "power_units": 69,
+        "drivers": 47,
+        "crashes_24mo_total": 3,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 2,
+        "crashes_24mo_towaway": 1,
+        "oos_rate_vehicle": 0.041916167664670656,
+        "oos_rate_driver": 0.005649717514124294,
+        "oos_rate_hazmat": null,
+        "basic_violations": {
+          "Unsafe Driving": "percentile Not Public",
+          "Hours-of-Service Compliance": "percentile Not Public",
+          "Driver Fitness": "percentile Not Public",
+          "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+          "Vehicle Maintenance": "percentile Not Public"
+        },
+        "raw_dot": "1827085"
+      }
+    },
+    {
+      "id": "SUB-025",
+      "carrier_name": "Buckeye Express Inc",
+      "dot_number": "2193193",
+      "safer_legal_name": "P&T TRANSPORT LLC",
+      "fleet_size": 63,
+      "vehicle_mix": {
+        "tractor": 0.74,
+        "straight_truck": 0.06,
+        "trailer": 0.18,
+        "other": 0.02
+      },
+      "states_of_operation": [
+        "MI",
+        "OH",
+        "PA"
+      ],
+      "effective_date": "2026-08-30",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 4,
+          "incurred_usd": "476786"
+        },
+        {
+          "year": 2022,
+          "claims": 4,
+          "incurred_usd": "489265"
+        },
+        {
+          "year": 2023,
+          "claims": 4,
+          "incurred_usd": "430160"
+        },
+        {
+          "year": 2024,
+          "claims": 4,
+          "incurred_usd": "503546"
+        },
+        {
+          "year": 2025,
+          "claims": 5,
+          "incurred_usd": "704733"
+        }
+      ],
+      "broker_email": "Team \u2014\n\nLooking for a Hartford quote on Buckeye Express Inc (DOT 2193193). They run 63 power units, mostly out of MI/PA corridors. 5-yr loss run attached, MVRs are clean for the most part. Renewal effective in 30 days. Producer is Mike at Lockton.\n\n\u2014J.",
+      "commodity": "tank",
+      "_safer_snapshot": {
+        "legal_name": "P&T TRANSPORT LLC",
+        "operating_status": "AUTHORIZED",
+        "power_units": 66,
+        "drivers": 77,
+        "crashes_24mo_total": 3,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 0,
+        "crashes_24mo_towaway": 3,
+        "oos_rate_vehicle": 0.12359550561797754,
+        "oos_rate_driver": 0.010791366906474819,
+        "oos_rate_hazmat": null,
+        "basic_violations": {
+          "Unsafe Driving": "percentile Not Public",
+          "Hours-of-Service Compliance": "percentile Not Public",
+          "Driver Fitness": "percentile Not Public",
+          "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+          "Vehicle Maintenance": "percentile Not Public"
+        },
+        "raw_dot": "2193193"
+      }
+    },
+    {
+      "id": "SUB-026",
+      "carrier_name": "Pinelands Carriers Inc",
+      "dot_number": "1285259",
+      "safer_legal_name": "VAN DYK TANK LINES INC",
+      "fleet_size": 62,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "MN",
+        "WI",
+        "ND"
+      ],
+      "effective_date": "2026-08-24",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 4,
+          "incurred_usd": "397325"
+        },
+        {
+          "year": 2022,
+          "claims": 4,
+          "incurred_usd": "399344"
+        },
+        {
+          "year": 2023,
+          "claims": 4,
+          "incurred_usd": "438029"
+        },
+        {
+          "year": 2024,
+          "claims": 4,
+          "incurred_usd": "539920"
+        },
+        {
+          "year": 2025,
+          "claims": 4,
+          "incurred_usd": "510663"
+        }
+      ],
+      "broker_email": "New submission \u2014 Pinelands Carriers Inc (1285259). Solid mid-market account in the MN corridor. Fleet 62 PUs, general freight, no hazmat. Loss runs decent. Ready for your quote at the earliest.",
+      "commodity": "hazmat",
+      "_safer_snapshot": {
+        "legal_name": "VAN DYK TANK LINES INC",
+        "operating_status": "AUTHORIZED",
+        "power_units": 65,
+        "drivers": 102,
+        "crashes_24mo_total": 6,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 1,
+        "crashes_24mo_towaway": 5,
+        "oos_rate_vehicle": 0.15196078431372548,
+        "oos_rate_driver": 0.006944444444444444,
+        "oos_rate_hazmat": null,
+        "basic_violations": {
+          "Unsafe Driving": "percentile Not Public",
+          "Hours-of-Service Compliance": "percentile Not Public",
+          "Driver Fitness": "percentile Not Public",
+          "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+          "Vehicle Maintenance": "percentile Not Public"
+        },
+        "raw_dot": "1285259"
+      }
+    },
+    {
+      "id": "SUB-027",
+      "carrier_name": "High Desert Hauling Inc",
+      "dot_number": "3436903",
+      "safer_legal_name": "247 FLEET TRANSPORT LLC",
+      "fleet_size": 64,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "TN",
+        "KY",
+        "VA"
+      ],
+      "effective_date": "2026-08-26",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 4,
+          "incurred_usd": "375318"
+        },
+        {
+          "year": 2022,
+          "claims": 4,
+          "incurred_usd": "476524"
+        },
+        {
+          "year": 2023,
+          "claims": 4,
+          "incurred_usd": "449620"
+        },
+        {
+          "year": 2024,
+          "claims": 4,
+          "incurred_usd": "492820"
+        },
+        {
+          "year": 2025,
+          "claims": 5,
+          "incurred_usd": "644332"
+        }
+      ],
+      "broker_email": "New submission \u2014 High Desert Hauling Inc (3436903). Solid mid-market account in the TN corridor. Fleet 64 PUs, general freight, no hazmat. Loss runs decent. Ready for your quote at the earliest.",
+      "commodity": "general_freight",
+      "_safer_snapshot": {
+        "legal_name": "247 FLEET TRANSPORT LLC",
+        "operating_status": "AUTHORIZED",
+        "power_units": 61,
+        "drivers": 1,
+        "crashes_24mo_total": 0,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 0,
+        "crashes_24mo_towaway": 0,
+        "oos_rate_vehicle": 0.0,
+        "oos_rate_driver": 0.0,
+        "oos_rate_hazmat": null,
+        "basic_violations": {},
+        "raw_dot": "3436903"
+      }
+    },
+    {
+      "id": "SUB-028",
+      "carrier_name": "Tidewater Trucking Inc",
+      "dot_number": "270666",
+      "safer_legal_name": "ALLIANCE TANK LINES LLC",
+      "fleet_size": 49,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "WA",
+        "OR",
+        "ID",
+        "MT"
+      ],
+      "effective_date": "2026-08-06",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 3,
+          "incurred_usd": "355702"
+        },
+        {
+          "year": 2022,
+          "claims": 3,
+          "incurred_usd": "310935"
+        },
+        {
+          "year": 2023,
+          "claims": 3,
+          "incurred_usd": "327456"
+        },
+        {
+          "year": 2024,
+          "claims": 3,
+          "incurred_usd": "376997"
+        },
+        {
+          "year": 2025,
+          "claims": 4,
+          "incurred_usd": "524119"
+        }
+      ],
+      "broker_email": "Team \u2014\n\nLooking for a Hartford quote on Tidewater Trucking Inc (DOT 270666). They run 49 power units, mostly out of WA/MT corridors. 5-yr loss run attached, MVRs are clean for the most part. Renewal effective in 30 days. Producer is Mike at Lockton.\n\n\u2014J.",
+      "commodity": "general_freight",
+      "_safer_snapshot": {
+        "legal_name": "ALLIANCE TANK LINES LLC",
+        "operating_status": "AUTHORIZED",
+        "power_units": 47,
+        "drivers": 47,
+        "crashes_24mo_total": 5,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 1,
+        "crashes_24mo_towaway": 4,
+        "oos_rate_vehicle": 0.11971830985915492,
+        "oos_rate_driver": 0.012738853503184712,
+        "oos_rate_hazmat": null,
+        "basic_violations": {},
+        "raw_dot": "270666"
+      }
+    },
+    {
+      "id": "SUB-029",
+      "carrier_name": "Mojave Freight Inc",
+      "dot_number": "502396",
+      "safer_legal_name": "DOUBLE D DISTRIBUTION INC",
+      "fleet_size": 44,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "CA",
+        "NV",
+        "AZ"
+      ],
+      "effective_date": "2026-08-22",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 3,
+          "incurred_usd": "295458"
+        },
+        {
+          "year": 2022,
+          "claims": 3,
+          "incurred_usd": "315469"
+        },
+        {
+          "year": 2023,
+          "claims": 3,
+          "incurred_usd": "309519"
+        },
+        {
+          "year": 2024,
+          "claims": 3,
+          "incurred_usd": "379173"
+        },
+        {
+          "year": 2025,
+          "claims": 3,
+          "incurred_usd": "420589"
+        }
+      ],
+      "broker_email": "Hi \u2014 please see attached for Mojave Freight Inc, USDOT 502396. 44 units, 3 states (CA, NV, AZ). They came off ABC Insurance after a tough year on freq. Loss runs and MVRs in the packet. Need terms by Friday.\n\nThanks,\nProducer",
+      "commodity": "hazmat",
+      "_safer_snapshot": {
+        "legal_name": "DOUBLE D DISTRIBUTION INC",
+        "operating_status": "AUTHORIZED",
+        "power_units": 44,
+        "drivers": 40,
+        "crashes_24mo_total": 2,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 0,
+        "crashes_24mo_towaway": 2,
+        "oos_rate_vehicle": 0.20512820512820515,
+        "oos_rate_driver": 0.010869565217391304,
+        "oos_rate_hazmat": null,
+        "basic_violations": {
+          "Unsafe Driving": "percentile Not Public",
+          "Hours-of-Service Compliance": "percentile Not Public",
+          "Driver Fitness": "percentile Not Public",
+          "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+          "Vehicle Maintenance": "percentile Not Public"
+        },
+        "raw_dot": "502396"
+      }
+    },
+    {
+      "id": "SUB-030",
+      "carrier_name": "Cumberland Transport Inc",
+      "dot_number": "274904",
+      "safer_legal_name": "PS MARSTON ASSOCIATES LLC",
+      "fleet_size": 63,
+      "vehicle_mix": {
+        "tractor": 0.86,
+        "straight_truck": 0.1,
+        "trailer": 0.0,
+        "other": 0.04
+      },
+      "states_of_operation": [
+        "MI",
+        "OH",
+        "PA"
+      ],
+      "effective_date": "2026-08-08",
+      "loss_run": [
+        {
+          "year": 2021,
+          "claims": 4,
+          "incurred_usd": "449782"
+        },
+        {
+          "year": 2022,
+          "claims": 4,
+          "incurred_usd": "424729"
+        },
+        {
+          "year": 2023,
+          "claims": 4,
+          "incurred_usd": "454416"
+        },
+        {
+          "year": 2024,
+          "claims": 4,
+          "incurred_usd": "443489"
+        },
+        {
+          "year": 2025,
+          "claims": 5,
+          "incurred_usd": "656776"
+        }
+      ],
+      "broker_email": "New submission \u2014 Cumberland Transport Inc (274904). Solid mid-market account in the MI corridor. Fleet 63 PUs, general freight, no hazmat. Loss runs decent. Ready for your quote at the earliest.",
+      "commodity": "hazmat",
+      "_safer_snapshot": {
+        "legal_name": "PS MARSTON ASSOCIATES LLC",
+        "operating_status": "AUTHORIZED",
+        "power_units": 65,
+        "drivers": 76,
+        "crashes_24mo_total": 1,
+        "crashes_24mo_fatal": 0,
+        "crashes_24mo_injury": 1,
+        "crashes_24mo_towaway": 0,
+        "oos_rate_vehicle": 0.15384615384615385,
+        "oos_rate_driver": 0.0,
+        "oos_rate_hazmat": null,
+        "basic_violations": {
+          "Unsafe Driving": "percentile Not Public",
+          "Hours-of-Service Compliance": "percentile Not Public",
+          "Driver Fitness": "percentile Not Public",
+          "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+          "Vehicle Maintenance": "percentile Not Public"
+        },
+        "raw_dot": "274904"
+      }
+    }
+  ]
+}
