@@ -49,7 +49,9 @@ steps:
       - --cpu=2
       # Full CPU during container start → faster model warmup on cold boot
       - --cpu-boost
-      - --startup-probe=httpGet.path=/ready,periodSeconds=10,timeoutSeconds=5,failureThreshold=24
+      # Cold imports plus retrieval warmup can exceed four minutes on a new
+      # host. Keep traffic gated on warm models with a six-minute allowance.
+      - --startup-probe=httpGet.path=/ready,periodSeconds=10,timeoutSeconds=5,failureThreshold=36
       - --concurrency=10
       - --timeout=300s
       # min-instances=1 keeps one warm instance (no cold start + models

@@ -51,6 +51,9 @@ async def test_graph_and_both_sdk_calls_share_one_trace(monkeypatch):
     monkeypatch.setattr(settings, "app_environment", "production")
 
     def gemini_response(request):
+        body = json.loads(request.content)
+        assert body["systemInstruction"]["parts"][0]["text"] == "Use only supplied evidence"
+        assert body["generationConfig"]["maxOutputTokens"] == 42
         return httpx.Response(200, headers={"content-type": "text/event-stream"}, text="data: " + json.dumps({
             "candidates": [{"content": {"role": "model", "parts": [{"text": "Synthetic memo"}]}}],
             "usageMetadata": {"promptTokenCount": 10, "candidatesTokenCount": 3, "totalTokenCount": 13},
@@ -77,7 +80,11 @@ async def test_graph_and_both_sdk_calls_share_one_trace(monkeypatch):
         )) as sdk:
             tracing.trace_gemini(sdk)
             async with sdk.aio as aio:
-                chunks = await aio.models.generate_content_stream(model="gemini-test", contents="Draft")
+                chunks = await aio.models.generate_content_stream(
+                    model="gemini-test", contents="Draft", config=types.GenerateContentConfig(
+                        system_instruction="Use only supplied evidence", max_output_tokens=42,
+                    ),
+                )
                 memo = "".join([part.text async for part in chunks])
         return {"memo": memo}
 

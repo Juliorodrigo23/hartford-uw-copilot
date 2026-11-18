@@ -81,9 +81,15 @@ prints (e.g. `https://uw-copilot-backend-xyz-uc.a.run.app`).
 Cloud Run stays in `us-central1`. The default model path uses `GEMINI_AUTH_MODE=api_key` and `GEMINI_API_BACKEND=developer`, with `GEMINI_API_KEY=gemini-api-key:latest`. Set the same values locally to use an API key; no gcloud login is needed for inference. `GCP_LOCATION=global` applies to the alternate ADC/Vertex path, independently of the Cloud Run region.
 The current configured models are `gemini-3.8-flash` and `gemini-3.5-flash-lite`.
 The startup probe calls `/ready`, which returns 503 until retrieval is warm.
+It allows up to six minutes for cold imports and retrieval initialization;
+one minimum instance keeps that startup work off ordinary warm requests.
 Use `/health` for liveness and `/diag` for model names, location, index counts,
 and whether the OpenAI key is configured. `openai_configured` checks presence,
 not key validity; verify a live explicit OpenAI critique after rotation.
+
+Optional LangSmith monitoring uses a server-side Secret Manager key and an
+explicit workspace/environment destination. See [docs/langsmith.md](docs/langsmith.md).
+Later Cloud Build deployments preserve those optional settings and secret mounts.
 
 For a source-only repair, `cloudbuild.hotfix.yaml` builds on a pinned deployed
 image and preserves its exact dependencies and data. Use it only when those
