@@ -1,0 +1,1551 @@
+{
+  "schema_version": 2,
+  "generated_at": "2026-11-18T16:35:37.394508+00:00",
+  "benchmark": {
+    "version": "uw-evidence-v2.0",
+    "review_status": "agent_source_checked; underwriter_validation_pending",
+    "limitations": [
+      "Synthetic submissions and loss aggregates; no verified claim files or earned premium.",
+      "Reference assertions evaluate evidence handling, not actuarial correctness or quote/decline accuracy.",
+      "Retrieval labels are specified supporting passages, not exhaustive relevance judgments.",
+      "Scores are not directly comparable with the July keyword/draft-label benchmark."
+    ],
+    "task_sha256": "d129e91a432f87580649417a0161e9fa37f3697de30965a157940eb302ba0df2",
+    "retrieval_sha256": "27dab93345bf628c1b880dd58e02e0f0b01262ff2cc81a6807128577a93f9a4f",
+    "corpus_sha256": "f96d13ee198af13a97e60f915a740eb4bfe1b76d3f45dc56e35573ad47343a93",
+    "n_task_cases": 20,
+    "n_retrieval_questions": 20,
+    "splits": {
+      "development": 14,
+      "holdout": 6
+    },
+    "corpus_counts": {
+      "ntsb": 875,
+      "10k": 1823,
+      "forms": 0,
+      "industry": 8
+    }
+  },
+  "configuration": {
+    "runtime": {
+      "system": "Linux",
+      "machine": "x86_64",
+      "python": "3.12.13",
+      "libraries": {
+        "torch": "2.11.0",
+        "transformers": "5.6.2",
+        "sentence-transformers": "5.4.1",
+        "chromadb": "1.5.8",
+        "langsmith": "0.7.37"
+      },
+      "embedding_model": "BAAI/bge-large-en-v1.5",
+      "reranker_model": "cross-encoder/ms-marco-MiniLM-L-6-v2",
+      "reranker_health": "finite"
+    },
+    "benchmark": {
+      "version": "uw-evidence-v2.0",
+      "review_status": "agent_source_checked; underwriter_validation_pending",
+      "limitations": [
+        "Synthetic submissions and loss aggregates; no verified claim files or earned premium.",
+        "Reference assertions evaluate evidence handling, not actuarial correctness or quote/decline accuracy.",
+        "Retrieval labels are specified supporting passages, not exhaustive relevance judgments.",
+        "Scores are not directly comparable with the July keyword/draft-label benchmark."
+      ],
+      "task_sha256": "d129e91a432f87580649417a0161e9fa37f3697de30965a157940eb302ba0df2",
+      "retrieval_sha256": "27dab93345bf628c1b880dd58e02e0f0b01262ff2cc81a6807128577a93f9a4f",
+      "corpus_sha256": "f96d13ee198af13a97e60f915a740eb4bfe1b76d3f45dc56e35573ad47343a93",
+      "n_task_cases": 20,
+      "n_retrieval_questions": 20,
+      "splits": {
+        "development": 14,
+        "holdout": 6
+      },
+      "corpus_counts": {
+        "ntsb": 875,
+        "10k": 1823,
+        "forms": 0,
+        "industry": 8
+      }
+    },
+    "code_sha256": "712a3eff33585e09abc91be7697ef5429efdcc83a3feb03834bcddfff2e29e00",
+    "generator": "gemini-3.8-flash",
+    "reviewer": "gpt-4o",
+    "grader": "gpt-4o",
+    "baseline": "single shot; same complete raw packet; no retrieval, analytical tools or critique",
+    "temperature": 0.2,
+    "scope": "full",
+    "case_ids": [
+      "SUB-001",
+      "SUB-002",
+      "SUB-003",
+      "SUB-004",
+      "SUB-005",
+      "SUB-006",
+      "SUB-007",
+      "SUB-008",
+      "SUB-009",
+      "SUB-010",
+      "SUB-011",
+      "SUB-012",
+      "SUB-013",
+      "SUB-014",
+      "SUB-015",
+      "SUB-016",
+      "SUB-017",
+      "SUB-018",
+      "SUB-019",
+      "SUB-020"
+    ]
+  },
+  "retrieval": {
+    "status": "ok",
+    "method": "source-checked passage anchors; exact-quote overlap within the same source accepted",
+    "recall_at_5": 0.8888888888888888,
+    "recall_at_10": 0.8888888888888888,
+    "mrr": 0.7361111111111112,
+    "ndcg_at_10": 0.7752441984644013,
+    "n_questions": 20,
+    "n_answerable": 18,
+    "n_no_evidence": 2,
+    "abstention_accuracy": 1.0,
+    "by_corpus": [
+      {
+        "corpus": "10k",
+        "recall_at_10": 0.6666666666666666,
+        "n": 6
+      },
+      {
+        "corpus": "industry",
+        "recall_at_10": 1.0,
+        "n": 8
+      },
+      {
+        "corpus": "ntsb",
+        "recall_at_10": 1.0,
+        "n": 4
+      }
+    ],
+    "by_split": {
+      "development": {
+        "n": 10,
+        "recall_at_10": 0.8888888888888888
+      },
+      "holdout": {
+        "n": 10,
+        "recall_at_10": 0.8888888888888888
+      }
+    },
+    "per_question": [
+      {
+        "id": "RQ2-001",
+        "query": "FMCSA property-carrying driver daily driving time and on-duty window after a ten-hour rest",
+        "corpus": "industry",
+        "split": "development",
+        "retrieved_ids": [
+          "fmcsa-hos-weekly#chunk-0",
+          "fmcsa-hos-driving#chunk-0",
+          "fmcsa-hos-break#chunk-0",
+          "fmcsa-csa-privacy#chunk-0",
+          "fmcsa-insurance-overview#chunk-0",
+          "fmcsa-crash-fault#chunk-0",
+          "fmcsa-csa-ratings#chunk-0",
+          "fmcsa-insurance-identity#chunk-0"
+        ],
+        "reference_ids": [
+          "fmcsa-hos-driving#chunk-0"
+        ],
+        "recall_at_5": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.5,
+        "ndcg_at_10": 0.6309297535714575
+      },
+      {
+        "id": "RQ2-002",
+        "query": "When does a property-carrying driver need a break under FMCSA hours-of-service rules?",
+        "corpus": "industry",
+        "split": "holdout",
+        "retrieved_ids": [
+          "fmcsa-hos-break#chunk-0",
+          "fmcsa-hos-weekly#chunk-0",
+          "fmcsa-hos-driving#chunk-0",
+          "fmcsa-insurance-overview#chunk-0",
+          "fmcsa-csa-privacy#chunk-0",
+          "fmcsa-crash-fault#chunk-0",
+          "fmcsa-insurance-identity#chunk-0",
+          "fmcsa-csa-ratings#chunk-0"
+        ],
+        "reference_ids": [
+          "fmcsa-hos-break#chunk-0"
+        ],
+        "recall_at_5": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_10": 1.0
+      },
+      {
+        "id": "RQ2-003",
+        "query": "FMCSA weekly on-duty hours limit and restart period for property-carrying drivers",
+        "corpus": "industry",
+        "split": "development",
+        "retrieved_ids": [
+          "fmcsa-hos-weekly#chunk-0",
+          "fmcsa-hos-driving#chunk-0",
+          "fmcsa-hos-break#chunk-0",
+          "fmcsa-insurance-overview#chunk-0",
+          "fmcsa-csa-privacy#chunk-0",
+          "fmcsa-csa-ratings#chunk-0",
+          "fmcsa-crash-fault#chunk-0",
+          "fmcsa-insurance-identity#chunk-0"
+        ],
+        "reference_ids": [
+          "fmcsa-hos-weekly#chunk-0"
+        ],
+        "recall_at_5": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_10": 1.0
+      },
+      {
+        "id": "RQ2-004",
+        "query": "Does an FMCSA public crash record tell us whether the motor carrier caused the crash?",
+        "corpus": "industry",
+        "split": "holdout",
+        "retrieved_ids": [
+          "fmcsa-crash-fault#chunk-0",
+          "fmcsa-csa-privacy#chunk-0",
+          "fmcsa-csa-ratings#chunk-0",
+          "fmcsa-insurance-overview#chunk-0",
+          "fmcsa-insurance-identity#chunk-0",
+          "fmcsa-hos-break#chunk-0",
+          "fmcsa-hos-weekly#chunk-0",
+          "fmcsa-hos-driving#chunk-0"
+        ],
+        "reference_ids": [
+          "fmcsa-crash-fault#chunk-0"
+        ],
+        "recall_at_5": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_10": 1.0
+      },
+      {
+        "id": "RQ2-005",
+        "query": "Which extra BASIC percentile data become visible when a carrier signs into FMCSA SMS?",
+        "corpus": "industry",
+        "split": "development",
+        "retrieved_ids": [
+          "fmcsa-csa-privacy#chunk-0",
+          "fmcsa-csa-ratings#chunk-0",
+          "fmcsa-crash-fault#chunk-0",
+          "fmcsa-insurance-overview#chunk-0",
+          "fmcsa-insurance-identity#chunk-0",
+          "fmcsa-hos-weekly#chunk-0",
+          "fmcsa-hos-break#chunk-0",
+          "fmcsa-hos-driving#chunk-0"
+        ],
+        "reference_ids": [
+          "fmcsa-csa-privacy#chunk-0"
+        ],
+        "recall_at_5": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_10": 1.0
+      },
+      {
+        "id": "RQ2-006",
+        "query": "Are FMCSA SMS percentile rankings the same as a federal safety fitness rating?",
+        "corpus": "industry",
+        "split": "holdout",
+        "retrieved_ids": [
+          "fmcsa-csa-ratings#chunk-0",
+          "fmcsa-csa-privacy#chunk-0",
+          "fmcsa-crash-fault#chunk-0",
+          "fmcsa-insurance-overview#chunk-0",
+          "fmcsa-hos-weekly#chunk-0",
+          "fmcsa-insurance-identity#chunk-0",
+          "fmcsa-hos-break#chunk-0",
+          "fmcsa-hos-driving#chunk-0"
+        ],
+        "reference_ids": [
+          "fmcsa-csa-ratings#chunk-0"
+        ],
+        "recall_at_5": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_10": 1.0
+      },
+      {
+        "id": "RQ2-007",
+        "query": "What determines FMCSA insurance requirements and when must insurance be on file for authority?",
+        "corpus": "industry",
+        "split": "development",
+        "retrieved_ids": [
+          "fmcsa-insurance-overview#chunk-0",
+          "fmcsa-insurance-identity#chunk-0",
+          "fmcsa-csa-privacy#chunk-0",
+          "fmcsa-csa-ratings#chunk-0",
+          "fmcsa-hos-break#chunk-0",
+          "fmcsa-hos-weekly#chunk-0",
+          "fmcsa-crash-fault#chunk-0",
+          "fmcsa-hos-driving#chunk-0"
+        ],
+        "reference_ids": [
+          "fmcsa-insurance-overview#chunk-0"
+        ],
+        "recall_at_5": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_10": 1.0
+      },
+      {
+        "id": "RQ2-008",
+        "query": "Why can inconsistent business names delay FMCSA operating-authority filings?",
+        "corpus": "industry",
+        "split": "holdout",
+        "retrieved_ids": [
+          "fmcsa-insurance-identity#chunk-0",
+          "fmcsa-insurance-overview#chunk-0",
+          "fmcsa-hos-weekly#chunk-0",
+          "fmcsa-csa-privacy#chunk-0",
+          "fmcsa-hos-break#chunk-0",
+          "fmcsa-csa-ratings#chunk-0",
+          "fmcsa-crash-fault#chunk-0",
+          "fmcsa-hos-driving#chunk-0"
+        ],
+        "reference_ids": [
+          "fmcsa-insurance-identity#chunk-0"
+        ],
+        "recall_at_5": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_10": 1.0
+      },
+      {
+        "id": "RQ2-009",
+        "query": "NTSB inspection of the America Shengjia bus: were its brakes out of adjustment?",
+        "corpus": "ntsb",
+        "split": "development",
+        "retrieved_ids": [
+          "ntsb-har-2101#chunk-25",
+          "ntsb-har-2101#chunk-50",
+          "ntsb-har-2102#chunk-47",
+          "ntsb-har-1901#chunk-41",
+          "ntsb-har-1901#chunk-54",
+          "ntsb-har-2102#chunk-46"
+        ],
+        "reference_ids": [
+          "ntsb-har-2101#chunk-25"
+        ],
+        "recall_at_5": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_10": 1.0
+      },
+      {
+        "id": "RQ2-010",
+        "query": "NTSB Tesla crash attenuator investigation: why did forward collision warning and emergency braking not activate?",
+        "corpus": "ntsb",
+        "split": "holdout",
+        "retrieved_ids": [
+          "ntsb-har-2001#chunk-94",
+          "ntsb-har-2001#chunk-155",
+          "ntsb-har-2101#chunk-67",
+          "ntsb-har-2101#chunk-66"
+        ],
+        "reference_ids": [
+          "ntsb-har-2001#chunk-94"
+        ],
+        "recall_at_5": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_10": 1.0
+      },
+      {
+        "id": "RQ2-011",
+        "query": "NTSB report on the driver’s precrash sleep: what sleep opportunity did his wife describe on the two previous nights?",
+        "corpus": "ntsb",
+        "split": "development",
+        "retrieved_ids": [
+          "ntsb-har-2001#chunk-59",
+          "ntsb-har-1901#chunk-27",
+          "ntsb-har-2101#chunk-44",
+          "ntsb-har-2001#chunk-58",
+          "ntsb-har-1901#chunk-28",
+          "ntsb-har-2101#chunk-60",
+          "ntsb-har-2102#chunk-49",
+          "ntsb-har-2102#chunk-6"
+        ],
+        "reference_ids": [
+          "ntsb-har-1901#chunk-27"
+        ],
+        "recall_at_5": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.5,
+        "ndcg_at_10": 0.6309297535714575
+      },
+      {
+        "id": "RQ2-012",
+        "query": "NTSB HAR-21/02: which driver-assistance technologies were unavailable on the passenger vehicle trim?",
+        "corpus": "ntsb",
+        "split": "holdout",
+        "retrieved_ids": [
+          "ntsb-har-2102#chunk-59",
+          "ntsb-har-2102#chunk-20",
+          "ntsb-har-2001#chunk-105",
+          "ntsb-har-2001#chunk-22",
+          "ntsb-har-2101#chunk-6",
+          "ntsb-har-2101#chunk-30",
+          "ntsb-har-1901#chunk-98",
+          "ntsb-har-1901#chunk-75"
+        ],
+        "reference_ids": [
+          "ntsb-har-2102#chunk-19"
+        ],
+        "recall_at_5": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.5,
+        "ndcg_at_10": 0.6309297535714575
+      },
+      {
+        "id": "RQ2-013",
+        "query": "Werner annual report 2026: how do driver recruiting, turnover and shortages affect operations?",
+        "corpus": "10k",
+        "split": "development",
+        "retrieved_ids": [
+          "10k-wern-2025#chunk-2",
+          "10k-wern-2026#chunk-2",
+          "10k-usx-2022#chunk-69",
+          "10k-usx-2021#chunk-64",
+          "10k-htld-2022#chunk-9",
+          "10k-htld-2025#chunk-10",
+          "10k-sndr-2026#chunk-8",
+          "10k-usx-2020#chunk-50",
+          "10k-htld-2024#chunk-10",
+          "10k-sndr-2022#chunk-7"
+        ],
+        "reference_ids": [
+          "10k-wern-2026#chunk-2"
+        ],
+        "recall_at_5": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.5,
+        "ndcg_at_10": 0.6309297535714575
+      },
+      {
+        "id": "RQ2-014",
+        "query": "Werner annual report 2026: insurance claims, large verdicts and self-insurance exposure",
+        "corpus": "10k",
+        "split": "holdout",
+        "retrieved_ids": [
+          "10k-wern-2025#chunk-21",
+          "10k-wern-2024#chunk-20",
+          "10k-wern-2022#chunk-16",
+          "10k-wern-2026#chunk-19",
+          "10k-knx-2022#chunk-14",
+          "10k-sndr-2026#chunk-25",
+          "10k-wern-2023#chunk-18",
+          "10k-htld-2026#chunk-29",
+          "10k-sndr-2024#chunk-26",
+          "10k-jbht-2026#chunk-6"
+        ],
+        "reference_ids": [
+          "10k-wern-2026#chunk-19"
+        ],
+        "recall_at_5": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.25,
+        "ndcg_at_10": 0.43067655807339306
+      },
+      {
+        "id": "RQ2-015",
+        "query": "Werner annual report 2026: how quickly do fuel surcharges adjust and do they recover every fuel increase?",
+        "corpus": "10k",
+        "split": "development",
+        "retrieved_ids": [
+          "10k-wern-2024#chunk-5",
+          "10k-wern-2025#chunk-5",
+          "10k-knx-2023#chunk-6",
+          "10k-odfl-2026#chunk-9",
+          "10k-jbht-2026#chunk-5",
+          "10k-usx-2022#chunk-75",
+          "10k-odfl-2025#chunk-9",
+          "10k-jbht-2024#chunk-6",
+          "10k-odfl-2024#chunk-9",
+          "10k-jbht-2025#chunk-5"
+        ],
+        "reference_ids": [
+          "10k-wern-2026#chunk-4"
+        ],
+        "recall_at_5": 0.0,
+        "recall_at_10": 0.0,
+        "mrr": 0.0,
+        "ndcg_at_10": 0.0
+      },
+      {
+        "id": "RQ2-016",
+        "query": "Heartland annual report 2024: premium and collateral pressure in trucking insurance renewals",
+        "corpus": "10k",
+        "split": "holdout",
+        "retrieved_ids": [
+          "10k-htld-2024#chunk-30",
+          "10k-htld-2025#chunk-29",
+          "10k-htld-2026#chunk-31",
+          "10k-htld-2023#chunk-26",
+          "10k-htld-2022#chunk-23",
+          "10k-htld-2024#chunk-31",
+          "10k-htld-2025#chunk-30",
+          "10k-usx-2023#chunk-91",
+          "10k-odfl-2024#chunk-4",
+          "10k-htld-2026#chunk-30"
+        ],
+        "reference_ids": [
+          "10k-htld-2024#chunk-30"
+        ],
+        "recall_at_5": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_10": 1.0
+      },
+      {
+        "id": "RQ2-017",
+        "query": "J B Hunt annual report 2023: regulation effects on productivity, maintenance and independent contractors",
+        "corpus": "10k",
+        "split": "development",
+        "retrieved_ids": [
+          "10k-jbht-2023#chunk-6",
+          "10k-knx-2023#chunk-31",
+          "10k-jbht-2025#chunk-4",
+          "10k-jbht-2024#chunk-5",
+          "10k-knx-2022#chunk-29",
+          "10k-jbht-2026#chunk-4",
+          "10k-knx-2024#chunk-35",
+          "10k-knx-2023#chunk-32",
+          "10k-knx-2025#chunk-36",
+          "10k-jbht-2023#chunk-11"
+        ],
+        "reference_ids": [
+          "10k-jbht-2023#chunk-6"
+        ],
+        "recall_at_5": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_10": 1.0
+      },
+      {
+        "id": "RQ2-018",
+        "query": "Heartland annual report 2022: hazardous material handling, fuel spills and environmental exposure",
+        "corpus": "10k",
+        "split": "holdout",
+        "retrieved_ids": [
+          "10k-htld-2024#chunk-41",
+          "10k-htld-2025#chunk-37",
+          "10k-htld-2026#chunk-40",
+          "10k-wern-2025#chunk-18",
+          "10k-jbht-2025#chunk-2",
+          "10k-wern-2024#chunk-17",
+          "10k-jbht-2026#chunk-2",
+          "10k-wern-2022#chunk-15",
+          "10k-usx-2022#chunk-42",
+          "10k-jbht-2024#chunk-3"
+        ],
+        "reference_ids": [
+          "10k-htld-2022#chunk-31"
+        ],
+        "recall_at_5": 0.0,
+        "recall_at_10": 0.0,
+        "mrr": 0.0,
+        "ndcg_at_10": 0.0
+      },
+      {
+        "id": "RQ2-019",
+        "query": "ISO commercial auto coverage form contractual liability exclusions",
+        "corpus": "forms",
+        "split": "development",
+        "retrieved_ids": [],
+        "reference_ids": [],
+        "abstention_correct": true
+      },
+      {
+        "id": "RQ2-020",
+        "query": "ACORD coverage form attached to this account and signed policy conditions",
+        "corpus": "forms",
+        "split": "holdout",
+        "retrieved_ids": [],
+        "reference_ids": [],
+        "abstention_correct": true
+      }
+    ]
+  },
+  "generation": {
+    "status": "ok",
+    "n_cases": 20,
+    "rubric": [
+      {
+        "dimension": "Factual Accuracy",
+        "agent": 5.0,
+        "baseline": 4.95
+      },
+      {
+        "dimension": "Completeness",
+        "agent": 5.0,
+        "baseline": 5.0
+      },
+      {
+        "dimension": "Calibration",
+        "agent": 5.0,
+        "baseline": 5.0
+      },
+      {
+        "dimension": "Citations",
+        "agent": 5.0,
+        "baseline": 4.95
+      },
+      {
+        "dimension": "Format",
+        "agent": 5.0,
+        "baseline": 5.0
+      }
+    ],
+    "baseline_description": "single shot; same complete raw packet; no retrieval, analytical tools or critique",
+    "pairwise_status": "not_run",
+    "note": "Absolute evidence-aware rubric on paired cases; no unmeasured pairwise win rate is displayed."
+  },
+  "task_level": {
+    "status": "ok",
+    "n_cases": 20,
+    "n_expected": 20,
+    "completion_rate": 1.0,
+    "assertion_recall": 1.0,
+    "assertions_met": 131,
+    "assertions_total": 131,
+    "unsupported_claim_rate": 0.007142857142857143,
+    "unsupported_claims": 1,
+    "claims_checked": 140,
+    "citation_validity": 1.0,
+    "references_used": 100,
+    "format_validity": 1.0,
+    "rubric_scores": {
+      "factual_accuracy": 5.0,
+      "completeness": 5.0,
+      "calibration": 5.0,
+      "citations": 5.0,
+      "format": 5.0
+    },
+    "latency_p50_s": 105.545,
+    "failures": [],
+    "per_submission": [
+      {
+        "id": "SUB-001",
+        "split": "development",
+        "run_id": "02549802-e306-4584-90bb-81ec3753c198",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/02549802-e306-4584-90bb-81ec3753c198?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 7,
+        "assertions_total": 7,
+        "unsupported_claims": 0,
+        "claims_checked": 6,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-002",
+        "split": "development",
+        "run_id": "d86ae973-7a4d-433b-8d5d-227b3c66e0e3",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/d86ae973-7a4d-433b-8d5d-227b3c66e0e3?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 6,
+        "assertions_total": 6,
+        "unsupported_claims": 0,
+        "claims_checked": 6,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-003",
+        "split": "holdout",
+        "run_id": "d448b4b4-9fb4-48cf-b5cc-8397c53ab471",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/d448b4b4-9fb4-48cf-b5cc-8397c53ab471?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 6,
+        "assertions_total": 6,
+        "unsupported_claims": 0,
+        "claims_checked": 11,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-004",
+        "split": "development",
+        "run_id": "cd30e678-20a2-45f6-a6dc-e241683548aa",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/cd30e678-20a2-45f6-a6dc-e241683548aa?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.2,
+        "assertions_met": 6,
+        "assertions_total": 6,
+        "unsupported_claims": 1,
+        "claims_checked": 5,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-005",
+        "split": "development",
+        "run_id": "52520656-b537-4e3d-b006-1befa7f22d67",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/52520656-b537-4e3d-b006-1befa7f22d67?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 8,
+        "assertions_total": 8,
+        "unsupported_claims": 0,
+        "claims_checked": 5,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-006",
+        "split": "holdout",
+        "run_id": "2d442050-1860-4baf-8c49-3085fe0a1a04",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/2d442050-1860-4baf-8c49-3085fe0a1a04?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 8,
+        "assertions_total": 8,
+        "unsupported_claims": 0,
+        "claims_checked": 11,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-007",
+        "split": "development",
+        "run_id": "f47f15da-611e-4d49-91c6-e90d677ee54c",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/f47f15da-611e-4d49-91c6-e90d677ee54c?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 6,
+        "assertions_total": 6,
+        "unsupported_claims": 0,
+        "claims_checked": 5,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-008",
+        "split": "development",
+        "run_id": "a56bbc42-3186-48d3-87ba-595ae5c04330",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/a56bbc42-3186-48d3-87ba-595ae5c04330?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 7,
+        "assertions_total": 7,
+        "unsupported_claims": 0,
+        "claims_checked": 5,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-009",
+        "split": "holdout",
+        "run_id": "2f736a9c-247b-4919-a075-f4a7f9afe337",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/2f736a9c-247b-4919-a075-f4a7f9afe337?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 6,
+        "assertions_total": 6,
+        "unsupported_claims": 0,
+        "claims_checked": 6,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-010",
+        "split": "development",
+        "run_id": "89889b56-1b53-47d0-9340-7b55070941d4",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/89889b56-1b53-47d0-9340-7b55070941d4?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 6,
+        "assertions_total": 6,
+        "unsupported_claims": 0,
+        "claims_checked": 6,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-011",
+        "split": "development",
+        "run_id": "9ad008ab-b02d-4467-b7aa-55d621c45763",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/9ad008ab-b02d-4467-b7aa-55d621c45763?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 6,
+        "assertions_total": 6,
+        "unsupported_claims": 0,
+        "claims_checked": 9,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-012",
+        "split": "holdout",
+        "run_id": "3a12061b-eb0d-4c69-9264-b57cc0254702",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/3a12061b-eb0d-4c69-9264-b57cc0254702?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 6,
+        "assertions_total": 6,
+        "unsupported_claims": 0,
+        "claims_checked": 10,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-013",
+        "split": "development",
+        "run_id": "b4eb1552-8dab-4008-8076-56073b3c5cfe",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/b4eb1552-8dab-4008-8076-56073b3c5cfe?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 7,
+        "assertions_total": 7,
+        "unsupported_claims": 0,
+        "claims_checked": 4,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-014",
+        "split": "development",
+        "run_id": "db2175aa-e9af-4f33-90c2-0604de5ec5ad",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/db2175aa-e9af-4f33-90c2-0604de5ec5ad?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 6,
+        "assertions_total": 6,
+        "unsupported_claims": 0,
+        "claims_checked": 8,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-015",
+        "split": "holdout",
+        "run_id": "d652a835-5781-412d-861e-1e5c54c88cac",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/d652a835-5781-412d-861e-1e5c54c88cac?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 6,
+        "assertions_total": 6,
+        "unsupported_claims": 0,
+        "claims_checked": 6,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-016",
+        "split": "development",
+        "run_id": "f10edc64-0340-4949-b53c-80d3f866c590",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/f10edc64-0340-4949-b53c-80d3f866c590?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 8,
+        "assertions_total": 8,
+        "unsupported_claims": 0,
+        "claims_checked": 5,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-017",
+        "split": "development",
+        "run_id": "e66ddd57-6bb0-4c9a-b4fa-3d4276482cbe",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/e66ddd57-6bb0-4c9a-b4fa-3d4276482cbe?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 6,
+        "assertions_total": 6,
+        "unsupported_claims": 0,
+        "claims_checked": 4,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-018",
+        "split": "holdout",
+        "run_id": "047390ac-3472-4690-a937-26e20b4b2ba6",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/047390ac-3472-4690-a937-26e20b4b2ba6?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 6,
+        "assertions_total": 6,
+        "unsupported_claims": 0,
+        "claims_checked": 6,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-019",
+        "split": "development",
+        "run_id": "f0caa1c4-09d2-4585-a5dc-ebbe5030cea1",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/f0caa1c4-09d2-4585-a5dc-ebbe5030cea1?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 6,
+        "assertions_total": 6,
+        "unsupported_claims": 0,
+        "claims_checked": 8,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-020",
+        "split": "development",
+        "run_id": "9ee48328-fe81-44d0-b25d-6ccc78f316ba",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/9ee48328-fe81-44d0-b25d-6ccc78f316ba?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 8,
+        "assertions_total": 8,
+        "unsupported_claims": 0,
+        "claims_checked": 14,
+        "review_status": "needs_review"
+      }
+    ],
+    "method": "Semantic source-checked assertion coverage and unsupported factual-claim rate; deterministic citation-ID and JSON checks.",
+    "by_split": {
+      "development": {
+        "status": "ok",
+        "n_cases": 14,
+        "n_expected": 14,
+        "completion_rate": 1.0,
+        "assertion_recall": 1.0,
+        "assertions_met": 93,
+        "assertions_total": 93,
+        "unsupported_claim_rate": 0.011111111111111112,
+        "unsupported_claims": 1,
+        "claims_checked": 90,
+        "citation_validity": 1.0,
+        "references_used": 73,
+        "format_validity": 1.0,
+        "rubric_scores": {
+          "factual_accuracy": 5.0,
+          "completeness": 5.0,
+          "calibration": 5.0,
+          "citations": 5.0,
+          "format": 5.0
+        },
+        "latency_p50_s": 105.16,
+        "failures": [],
+        "per_submission": [
+          {
+            "id": "SUB-001",
+            "split": "development",
+            "run_id": "02549802-e306-4584-90bb-81ec3753c198",
+            "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/02549802-e306-4584-90bb-81ec3753c198?poll=true",
+            "assertion_recall": 1.0,
+            "unsupported_claim_rate": 0.0,
+            "assertions_met": 7,
+            "assertions_total": 7,
+            "unsupported_claims": 0,
+            "claims_checked": 6,
+            "review_status": "needs_review"
+          },
+          {
+            "id": "SUB-002",
+            "split": "development",
+            "run_id": "d86ae973-7a4d-433b-8d5d-227b3c66e0e3",
+            "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/d86ae973-7a4d-433b-8d5d-227b3c66e0e3?poll=true",
+            "assertion_recall": 1.0,
+            "unsupported_claim_rate": 0.0,
+            "assertions_met": 6,
+            "assertions_total": 6,
+            "unsupported_claims": 0,
+            "claims_checked": 6,
+            "review_status": "needs_review"
+          },
+          {
+            "id": "SUB-004",
+            "split": "development",
+            "run_id": "cd30e678-20a2-45f6-a6dc-e241683548aa",
+            "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/cd30e678-20a2-45f6-a6dc-e241683548aa?poll=true",
+            "assertion_recall": 1.0,
+            "unsupported_claim_rate": 0.2,
+            "assertions_met": 6,
+            "assertions_total": 6,
+            "unsupported_claims": 1,
+            "claims_checked": 5,
+            "review_status": "needs_review"
+          },
+          {
+            "id": "SUB-005",
+            "split": "development",
+            "run_id": "52520656-b537-4e3d-b006-1befa7f22d67",
+            "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/52520656-b537-4e3d-b006-1befa7f22d67?poll=true",
+            "assertion_recall": 1.0,
+            "unsupported_claim_rate": 0.0,
+            "assertions_met": 8,
+            "assertions_total": 8,
+            "unsupported_claims": 0,
+            "claims_checked": 5,
+            "review_status": "needs_review"
+          },
+          {
+            "id": "SUB-007",
+            "split": "development",
+            "run_id": "f47f15da-611e-4d49-91c6-e90d677ee54c",
+            "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/f47f15da-611e-4d49-91c6-e90d677ee54c?poll=true",
+            "assertion_recall": 1.0,
+            "unsupported_claim_rate": 0.0,
+            "assertions_met": 6,
+            "assertions_total": 6,
+            "unsupported_claims": 0,
+            "claims_checked": 5,
+            "review_status": "needs_review"
+          },
+          {
+            "id": "SUB-008",
+            "split": "development",
+            "run_id": "a56bbc42-3186-48d3-87ba-595ae5c04330",
+            "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/a56bbc42-3186-48d3-87ba-595ae5c04330?poll=true",
+            "assertion_recall": 1.0,
+            "unsupported_claim_rate": 0.0,
+            "assertions_met": 7,
+            "assertions_total": 7,
+            "unsupported_claims": 0,
+            "claims_checked": 5,
+            "review_status": "needs_review"
+          },
+          {
+            "id": "SUB-010",
+            "split": "development",
+            "run_id": "89889b56-1b53-47d0-9340-7b55070941d4",
+            "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/89889b56-1b53-47d0-9340-7b55070941d4?poll=true",
+            "assertion_recall": 1.0,
+            "unsupported_claim_rate": 0.0,
+            "assertions_met": 6,
+            "assertions_total": 6,
+            "unsupported_claims": 0,
+            "claims_checked": 6,
+            "review_status": "needs_review"
+          },
+          {
+            "id": "SUB-011",
+            "split": "development",
+            "run_id": "9ad008ab-b02d-4467-b7aa-55d621c45763",
+            "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/9ad008ab-b02d-4467-b7aa-55d621c45763?poll=true",
+            "assertion_recall": 1.0,
+            "unsupported_claim_rate": 0.0,
+            "assertions_met": 6,
+            "assertions_total": 6,
+            "unsupported_claims": 0,
+            "claims_checked": 9,
+            "review_status": "needs_review"
+          },
+          {
+            "id": "SUB-013",
+            "split": "development",
+            "run_id": "b4eb1552-8dab-4008-8076-56073b3c5cfe",
+            "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/b4eb1552-8dab-4008-8076-56073b3c5cfe?poll=true",
+            "assertion_recall": 1.0,
+            "unsupported_claim_rate": 0.0,
+            "assertions_met": 7,
+            "assertions_total": 7,
+            "unsupported_claims": 0,
+            "claims_checked": 4,
+            "review_status": "needs_review"
+          },
+          {
+            "id": "SUB-014",
+            "split": "development",
+            "run_id": "db2175aa-e9af-4f33-90c2-0604de5ec5ad",
+            "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/db2175aa-e9af-4f33-90c2-0604de5ec5ad?poll=true",
+            "assertion_recall": 1.0,
+            "unsupported_claim_rate": 0.0,
+            "assertions_met": 6,
+            "assertions_total": 6,
+            "unsupported_claims": 0,
+            "claims_checked": 8,
+            "review_status": "needs_review"
+          },
+          {
+            "id": "SUB-016",
+            "split": "development",
+            "run_id": "f10edc64-0340-4949-b53c-80d3f866c590",
+            "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/f10edc64-0340-4949-b53c-80d3f866c590?poll=true",
+            "assertion_recall": 1.0,
+            "unsupported_claim_rate": 0.0,
+            "assertions_met": 8,
+            "assertions_total": 8,
+            "unsupported_claims": 0,
+            "claims_checked": 5,
+            "review_status": "needs_review"
+          },
+          {
+            "id": "SUB-017",
+            "split": "development",
+            "run_id": "e66ddd57-6bb0-4c9a-b4fa-3d4276482cbe",
+            "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/e66ddd57-6bb0-4c9a-b4fa-3d4276482cbe?poll=true",
+            "assertion_recall": 1.0,
+            "unsupported_claim_rate": 0.0,
+            "assertions_met": 6,
+            "assertions_total": 6,
+            "unsupported_claims": 0,
+            "claims_checked": 4,
+            "review_status": "needs_review"
+          },
+          {
+            "id": "SUB-019",
+            "split": "development",
+            "run_id": "f0caa1c4-09d2-4585-a5dc-ebbe5030cea1",
+            "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/f0caa1c4-09d2-4585-a5dc-ebbe5030cea1?poll=true",
+            "assertion_recall": 1.0,
+            "unsupported_claim_rate": 0.0,
+            "assertions_met": 6,
+            "assertions_total": 6,
+            "unsupported_claims": 0,
+            "claims_checked": 8,
+            "review_status": "needs_review"
+          },
+          {
+            "id": "SUB-020",
+            "split": "development",
+            "run_id": "9ee48328-fe81-44d0-b25d-6ccc78f316ba",
+            "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/9ee48328-fe81-44d0-b25d-6ccc78f316ba?poll=true",
+            "assertion_recall": 1.0,
+            "unsupported_claim_rate": 0.0,
+            "assertions_met": 8,
+            "assertions_total": 8,
+            "unsupported_claims": 0,
+            "claims_checked": 14,
+            "review_status": "needs_review"
+          }
+        ]
+      },
+      "holdout": {
+        "status": "ok",
+        "n_cases": 6,
+        "n_expected": 6,
+        "completion_rate": 1.0,
+        "assertion_recall": 1.0,
+        "assertions_met": 38,
+        "assertions_total": 38,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": 0,
+        "claims_checked": 50,
+        "citation_validity": 1.0,
+        "references_used": 27,
+        "format_validity": 1.0,
+        "rubric_scores": {
+          "factual_accuracy": 5.0,
+          "completeness": 5.0,
+          "calibration": 5.0,
+          "citations": 5.0,
+          "format": 5.0
+        },
+        "latency_p50_s": 108.495,
+        "failures": [],
+        "per_submission": [
+          {
+            "id": "SUB-003",
+            "split": "holdout",
+            "run_id": "d448b4b4-9fb4-48cf-b5cc-8397c53ab471",
+            "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/d448b4b4-9fb4-48cf-b5cc-8397c53ab471?poll=true",
+            "assertion_recall": 1.0,
+            "unsupported_claim_rate": 0.0,
+            "assertions_met": 6,
+            "assertions_total": 6,
+            "unsupported_claims": 0,
+            "claims_checked": 11,
+            "review_status": "needs_review"
+          },
+          {
+            "id": "SUB-006",
+            "split": "holdout",
+            "run_id": "2d442050-1860-4baf-8c49-3085fe0a1a04",
+            "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/2d442050-1860-4baf-8c49-3085fe0a1a04?poll=true",
+            "assertion_recall": 1.0,
+            "unsupported_claim_rate": 0.0,
+            "assertions_met": 8,
+            "assertions_total": 8,
+            "unsupported_claims": 0,
+            "claims_checked": 11,
+            "review_status": "needs_review"
+          },
+          {
+            "id": "SUB-009",
+            "split": "holdout",
+            "run_id": "2f736a9c-247b-4919-a075-f4a7f9afe337",
+            "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/2f736a9c-247b-4919-a075-f4a7f9afe337?poll=true",
+            "assertion_recall": 1.0,
+            "unsupported_claim_rate": 0.0,
+            "assertions_met": 6,
+            "assertions_total": 6,
+            "unsupported_claims": 0,
+            "claims_checked": 6,
+            "review_status": "needs_review"
+          },
+          {
+            "id": "SUB-012",
+            "split": "holdout",
+            "run_id": "3a12061b-eb0d-4c69-9264-b57cc0254702",
+            "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/3a12061b-eb0d-4c69-9264-b57cc0254702?poll=true",
+            "assertion_recall": 1.0,
+            "unsupported_claim_rate": 0.0,
+            "assertions_met": 6,
+            "assertions_total": 6,
+            "unsupported_claims": 0,
+            "claims_checked": 10,
+            "review_status": "needs_review"
+          },
+          {
+            "id": "SUB-015",
+            "split": "holdout",
+            "run_id": "d652a835-5781-412d-861e-1e5c54c88cac",
+            "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/d652a835-5781-412d-861e-1e5c54c88cac?poll=true",
+            "assertion_recall": 1.0,
+            "unsupported_claim_rate": 0.0,
+            "assertions_met": 6,
+            "assertions_total": 6,
+            "unsupported_claims": 0,
+            "claims_checked": 6,
+            "review_status": "needs_review"
+          },
+          {
+            "id": "SUB-018",
+            "split": "holdout",
+            "run_id": "047390ac-3472-4690-a937-26e20b4b2ba6",
+            "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/4ad298a3-9fa3-4eae-b01e-f1df545efe0e/r/047390ac-3472-4690-a937-26e20b4b2ba6?poll=true",
+            "assertion_recall": 1.0,
+            "unsupported_claim_rate": 0.0,
+            "assertions_met": 6,
+            "assertions_total": 6,
+            "unsupported_claims": 0,
+            "claims_checked": 6,
+            "review_status": "needs_review"
+          }
+        ]
+      }
+    }
+  },
+  "baseline": {
+    "status": "ok",
+    "n_cases": 20,
+    "n_expected": 20,
+    "completion_rate": 1.0,
+    "assertion_recall": 1.0,
+    "assertions_met": 131,
+    "assertions_total": 131,
+    "unsupported_claim_rate": 0.017543859649122806,
+    "unsupported_claims": 2,
+    "claims_checked": 114,
+    "citation_validity": null,
+    "references_used": 0,
+    "format_validity": 1.0,
+    "rubric_scores": {
+      "factual_accuracy": 4.95,
+      "completeness": 5.0,
+      "calibration": 5.0,
+      "citations": 4.95,
+      "format": 5.0
+    },
+    "latency_p50_s": 31.505,
+    "failures": [],
+    "per_submission": [
+      {
+        "id": "SUB-001",
+        "split": "development",
+        "run_id": "4a0e7b7b-13db-4b5e-a8d0-0953e8cd8128",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/0001cf24-4934-41fe-a8e7-21a6c75cff98/r/4a0e7b7b-13db-4b5e-a8d0-0953e8cd8128?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.125,
+        "assertions_met": 7,
+        "assertions_total": 7,
+        "unsupported_claims": 1,
+        "claims_checked": 8,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-002",
+        "split": "development",
+        "run_id": "4418d15d-3599-47c8-b45e-cdde6e2f9d39",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/0001cf24-4934-41fe-a8e7-21a6c75cff98/r/4418d15d-3599-47c8-b45e-cdde6e2f9d39?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 6,
+        "assertions_total": 6,
+        "unsupported_claims": 0,
+        "claims_checked": 5,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-003",
+        "split": "holdout",
+        "run_id": "f0f14404-700b-4f78-abf8-364f04083a9f",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/0001cf24-4934-41fe-a8e7-21a6c75cff98/r/f0f14404-700b-4f78-abf8-364f04083a9f?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 6,
+        "assertions_total": 6,
+        "unsupported_claims": 0,
+        "claims_checked": 7,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-004",
+        "split": "development",
+        "run_id": "7756d8ad-fa9f-468b-92f6-a818b9ea1d73",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/0001cf24-4934-41fe-a8e7-21a6c75cff98/r/7756d8ad-fa9f-468b-92f6-a818b9ea1d73?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 6,
+        "assertions_total": 6,
+        "unsupported_claims": 0,
+        "claims_checked": 8,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-005",
+        "split": "development",
+        "run_id": "256bad74-14e2-4d0a-a0bf-3aad3a01a0d5",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/0001cf24-4934-41fe-a8e7-21a6c75cff98/r/256bad74-14e2-4d0a-a0bf-3aad3a01a0d5?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 8,
+        "assertions_total": 8,
+        "unsupported_claims": 0,
+        "claims_checked": 5,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-006",
+        "split": "holdout",
+        "run_id": "1b4e7bfd-7361-42bc-a2d0-94f6542930b1",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/0001cf24-4934-41fe-a8e7-21a6c75cff98/r/1b4e7bfd-7361-42bc-a2d0-94f6542930b1?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.2,
+        "assertions_met": 8,
+        "assertions_total": 8,
+        "unsupported_claims": 1,
+        "claims_checked": 5,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-007",
+        "split": "development",
+        "run_id": "edc4baf9-88f9-4d9d-8d77-5ce1b43ac51b",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/0001cf24-4934-41fe-a8e7-21a6c75cff98/r/edc4baf9-88f9-4d9d-8d77-5ce1b43ac51b?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 6,
+        "assertions_total": 6,
+        "unsupported_claims": 0,
+        "claims_checked": 5,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-008",
+        "split": "development",
+        "run_id": "ab3ee84c-831e-4526-9124-cac5d07fc751",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/0001cf24-4934-41fe-a8e7-21a6c75cff98/r/ab3ee84c-831e-4526-9124-cac5d07fc751?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 7,
+        "assertions_total": 7,
+        "unsupported_claims": 0,
+        "claims_checked": 4,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-009",
+        "split": "holdout",
+        "run_id": "7b83b5bc-59a9-4199-9f54-a05455c96332",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/0001cf24-4934-41fe-a8e7-21a6c75cff98/r/7b83b5bc-59a9-4199-9f54-a05455c96332?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 6,
+        "assertions_total": 6,
+        "unsupported_claims": 0,
+        "claims_checked": 6,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-010",
+        "split": "development",
+        "run_id": "cdd3873d-53bf-4ae8-9f7b-13e874b85a49",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/0001cf24-4934-41fe-a8e7-21a6c75cff98/r/cdd3873d-53bf-4ae8-9f7b-13e874b85a49?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 6,
+        "assertions_total": 6,
+        "unsupported_claims": 0,
+        "claims_checked": 4,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-011",
+        "split": "development",
+        "run_id": "09f05927-fbc0-4eee-859f-8d3b5ca155d7",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/0001cf24-4934-41fe-a8e7-21a6c75cff98/r/09f05927-fbc0-4eee-859f-8d3b5ca155d7?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 6,
+        "assertions_total": 6,
+        "unsupported_claims": 0,
+        "claims_checked": 7,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-012",
+        "split": "holdout",
+        "run_id": "6fc6da6a-3589-4908-aa1c-99d7596e4ff5",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/0001cf24-4934-41fe-a8e7-21a6c75cff98/r/6fc6da6a-3589-4908-aa1c-99d7596e4ff5?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 6,
+        "assertions_total": 6,
+        "unsupported_claims": 0,
+        "claims_checked": 6,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-013",
+        "split": "development",
+        "run_id": "37548deb-a2f5-4e16-8bba-1ec631dc0612",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/0001cf24-4934-41fe-a8e7-21a6c75cff98/r/37548deb-a2f5-4e16-8bba-1ec631dc0612?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 7,
+        "assertions_total": 7,
+        "unsupported_claims": 0,
+        "claims_checked": 5,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-014",
+        "split": "development",
+        "run_id": "b4974ce8-14ee-4b7c-9ec3-534ff48ff521",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/0001cf24-4934-41fe-a8e7-21a6c75cff98/r/b4974ce8-14ee-4b7c-9ec3-534ff48ff521?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 6,
+        "assertions_total": 6,
+        "unsupported_claims": 0,
+        "claims_checked": 6,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-015",
+        "split": "holdout",
+        "run_id": "f058ac17-eef5-4f1c-859c-96916117ceb3",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/0001cf24-4934-41fe-a8e7-21a6c75cff98/r/f058ac17-eef5-4f1c-859c-96916117ceb3?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 6,
+        "assertions_total": 6,
+        "unsupported_claims": 0,
+        "claims_checked": 7,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-016",
+        "split": "development",
+        "run_id": "c1b2bd84-3212-4b68-9429-5a5ddbeba430",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/0001cf24-4934-41fe-a8e7-21a6c75cff98/r/c1b2bd84-3212-4b68-9429-5a5ddbeba430?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 8,
+        "assertions_total": 8,
+        "unsupported_claims": 0,
+        "claims_checked": 6,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-017",
+        "split": "development",
+        "run_id": "28cfacae-59d9-4c10-b452-2ebde86ce8bf",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/0001cf24-4934-41fe-a8e7-21a6c75cff98/r/28cfacae-59d9-4c10-b452-2ebde86ce8bf?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 6,
+        "assertions_total": 6,
+        "unsupported_claims": 0,
+        "claims_checked": 5,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-018",
+        "split": "holdout",
+        "run_id": "a6db03fd-23bb-468d-af5b-45657077421d",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/0001cf24-4934-41fe-a8e7-21a6c75cff98/r/a6db03fd-23bb-468d-af5b-45657077421d?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 6,
+        "assertions_total": 6,
+        "unsupported_claims": 0,
+        "claims_checked": 5,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-019",
+        "split": "development",
+        "run_id": "72837a99-c054-4dd6-beaa-ebb8892e970f",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/0001cf24-4934-41fe-a8e7-21a6c75cff98/r/72837a99-c054-4dd6-beaa-ebb8892e970f?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 6,
+        "assertions_total": 6,
+        "unsupported_claims": 0,
+        "claims_checked": 5,
+        "review_status": "needs_review"
+      },
+      {
+        "id": "SUB-020",
+        "split": "development",
+        "run_id": "1c81aa15-d3f9-460e-a5f4-d679ab4bab89",
+        "trace_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/projects/p/0001cf24-4934-41fe-a8e7-21a6c75cff98/r/1c81aa15-d3f9-460e-a5f4-d679ab4bab89?poll=true",
+        "assertion_recall": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "assertions_met": 8,
+        "assertions_total": 8,
+        "unsupported_claims": 0,
+        "claims_checked": 5,
+        "review_status": "needs_review"
+      }
+    ]
+  },
+  "ablations": {
+    "status": "skipped",
+    "reason": "Component ablations were not rerun; paired single-shot baseline is reported separately."
+  },
+  "langsmith": {
+    "dataset_id": "7eabf16c-161f-4cbf-b8c2-efdb145d7a2c",
+    "dataset_name": "uw-evidence-v2-6e89034d2c9b",
+    "dataset_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/datasets/7eabf16c-161f-4cbf-b8c2-efdb145d7a2c",
+    "examples": {
+      "SUB-001": "6ebbddcf-e7f6-5c3b-ad15-2dda0c51e786",
+      "SUB-002": "23687566-7de2-5e24-8ce3-801ccf0438c7",
+      "SUB-003": "57d5c97b-283c-5038-a25a-83c28d4d2bab",
+      "SUB-004": "95a4db02-4d8f-5be8-9c5b-560bf33b1d19",
+      "SUB-005": "31df2359-af4f-581b-a326-b33d2831182e",
+      "SUB-006": "845b136f-ab27-57af-8d4d-8ac0017bfb83",
+      "SUB-007": "6136017a-0c58-5fa8-88d0-fed23f1d89c6",
+      "SUB-008": "168b407d-73e3-5457-a3dc-40915739b668",
+      "SUB-009": "f383b472-0e3c-5070-b7e8-5d1cd3977960",
+      "SUB-010": "cda1295f-b6ad-5a43-9b28-6a26aa9f338e",
+      "SUB-011": "2480ea29-acbe-5e17-acef-638310d6fc1a",
+      "SUB-012": "fa5a1c4a-8bb3-5a32-8bfa-3a68d8dfa5ca",
+      "SUB-013": "ed89acbb-6bb2-5d78-a192-3b38d2d65b87",
+      "SUB-014": "2b95562f-aa19-5b2a-b415-fb191df046bf",
+      "SUB-015": "895c734f-d5ae-5d77-b1b5-f1b0d8e3fb66",
+      "SUB-016": "0522caae-9a06-593e-88d4-4b927579e769",
+      "SUB-017": "b64b62f4-66f7-5f61-a317-c8a971f4db2a",
+      "SUB-018": "899ae292-7464-5802-b05b-349a8bccceef",
+      "SUB-019": "e4abce68-3724-53cf-b44d-4658bf11e4cc",
+      "SUB-020": "21cd0816-95df-562f-afcc-a7eacfe18d38"
+    },
+    "experiments": {
+      "baseline": {
+        "name": "uw-v2-baseline-6e89034d2c9b",
+        "id": "0001cf24-4934-41fe-a8e7-21a6c75cff98"
+      },
+      "agent": {
+        "name": "uw-v2-agent-6e89034d2c9b",
+        "id": "4ad298a3-9fa3-4eae-b01e-f1df545efe0e"
+      }
+    },
+    "retrieval_dataset_url": "https://smith.langchain.com/o/45957e74-6916-42a0-a56d-183cbbbfec4e/datasets/ebd0ca94-03be-42cc-8aca-b8e4d6d0da34",
+    "retrieval_dataset_id": "ebd0ca94-03be-42cc-8aca-b8e4d6d0da34",
+    "retrieval_experiment_id": "ac863dc5-6710-4b68-8b03-a5d47d261ba6"
+  },
+  "evaluation_key": "6e89034d2c9b063f",
+  "execution": {
+    "platform": "Cloud Run Job",
+    "name": "uw-evidence-eval-v2-d9xbf",
+    "image": "us-central1-docker.pkg.dev/juliooo-uw-copilot/uw-copilot/backend:repair-68a4f0e2-48dd-440e-b04e-05992af4de75",
+    "source_commit_after_testing": "7e446fc"
+  }
+}
