@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "description": "Hand-curated ground-truth memo expectations. The agent's memo is scored on whether it surfaces the listed red flags and avoids the must-not-claim items.",
+  "cases": [
+    {
+      "submission_id": "SUB-001",
+      "ground_truth": {
+        "expected_disposition": ["decline", "quote_with_surcharge"],
+        "expected_redflags": [
+          "OOS",
+          "BASIC",
+          "vehicle maintenance",
+          "trend"
+        ],
+        "must_not_claim": [
+          "no concerns",
+          "low risk",
+          "best in class"
+        ],
+        "expected_reference_corpora": ["ntsb", "10k"]
+      }
+    },
+    {
+      "submission_id": "SUB-002",
+      "ground_truth": {
+        "expected_disposition": ["quote", "quote_with_surcharge"],
+        "expected_redflags": [],
+        "must_not_claim": ["decline"],
+        "expected_reference_corpora": ["10k", "industry"]
+      }
+    },
+    {
+      "submission_id": "SUB-003",
+      "ground_truth": {
+        "expected_disposition": ["quote_with_surcharge", "decline"],
+        "expected_redflags": ["hazmat", "fatal"],
+        "must_not_claim": ["routine", "low risk"],
+        "expected_reference_corpora": ["ntsb", "forms"]
+      }
+    },
+    {
+      "submission_id": "SUB-004",
+      "ground_truth": {
+        "expected_disposition": ["quote_with_surcharge"],
+        "expected_redflags": ["driver shortage", "trend"],
+        "must_not_claim": ["no concerns"],
+        "expected_reference_corpora": ["10k"]
+      }
+    },
+    {
+      "submission_id": "SUB-005",
+      "ground_truth": {
+        "expected_disposition": ["quote_with_surcharge"],
+        "expected_redflags": ["violations"],
+        "must_not_claim": ["clean record"],
+        "expected_reference_corpora": ["ntsb", "10k"]
+      }
+    }
+  ]
+}

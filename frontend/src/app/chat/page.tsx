@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { Send, RotateCcw, Wand2, Scale, Radio } from "lucide-react";
 import { SubmissionPicker, type ChatSubmission } from "@/components/chat/SubmissionPicker";
 import { MessageStream, type Message } from "@/components/chat/MessageStream";
@@ -138,6 +139,8 @@ export default function ChatPage() {
   const [citations, setCitations] = useState<{ ref: string; doc_id: string; snippet: string }[]>([]);
   const [critique, setCritique] = useState<"auto" | "openai" | "gemini">("auto");
   const [demoNotice, setDemoNotice] = useState<string | null>(null);
+  const [reviewNotice, setReviewNotice] = useState<string | null>(null);
+  const [completedRun, setCompletedRun] = useState<{ id: string; submission: string | null; recorded: boolean } | null>(null);
   const [runMode, setRunMode] = useState<RunMode>(null);
   const [demoSubmissionId, setDemoSubmissionId] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -164,6 +167,8 @@ export default function ChatPage() {
       if (!text.trim() || busy) return;
       setBusy(true);
       setDemoNotice(null);
+      setReviewNotice(null);
+      setCompletedRun(null);
       setRunMode(recordedReplay ? "recorded" : "connecting");
       setInput("");
       const userMsg: Message = { role: "user", text };
@@ -199,6 +204,7 @@ export default function ChatPage() {
           return;
         }
 
+        let terminal = false;
         for await (const ev of parseSSE(res.body)) {
           if (ev.type === "demo_notice") {
             setDemoNotice(ev.message);
@@ -207,6 +213,8 @@ export default function ChatPage() {
             if (!recordedReplay) setRunMode("live");
             setActive(ev.node);
             setTrace((t) => [...t, { kind: "node_enter", node: ev.node, t_ms: ev.t_ms }]);
+          } else if (ev.type === "model_route") {
+            setTrace((t) => [...t, { kind: "model_route", role: ev.role, provider: ev.provider, model: ev.model }]);
           } else if (ev.type === "node_exit") {
             setTrace((t) => [...t, { kind: "node_exit", node: ev.node, t_ms: ev.t_ms }]);
           } else if (ev.type === "tool_call") {
@@ -219,7 +227,7 @@ export default function ChatPage() {
           } else if (ev.type === "critique_judge") {
             setTrace((t) => [
               ...t,
-              { kind: "critique_judge", judge: ev.judge, iter: ev.iter, passed: ev.passed, error: ev.error, gaps: ev.gaps },
+              { kind: "critique_judge", judge: ev.judge, iter: ev.iter, passed: ev.passed, error: ev.error, warning: ev.warning, gaps: ev.gaps, missingDocuments: ev.missingDocuments },
             ]);
           } else if (ev.type === "redraft") {
             // The critique loop produced a new draft: clear the streamed
@@ -228,13 +236,19 @@ export default function ChatPage() {
           } else if (ev.type === "token") {
             updateLastByAppend(ev.text);
           } else if (ev.type === "final") {
+            terminal = true;
+            setCompletedRun({ id: ev.runId, submission: submission?.id ?? null, recorded: recordedReplay || ev.runId.startsWith("demo-") });
+            setReviewNotice(ev.reviewStatus === "unreviewed" ? "The memo is complete, but automated review was unavailable. Human review is required." : ev.reviewStatus === "needs_review" ? "The reviewer found unresolved gaps after the repair limit. Human review is required." : null);
             updateLast((prev) => ({ role: "assistant", text: ev.memo || prev.text, pending: false }));
             setActive(null);
           } else if (ev.type === "error") {
+            terminal = true;
             setRunMode(null);
             updateLast({ role: "assistant", text: `Backend error: ${ev.message}`, pending: false });
           }
         }
+
+        if (!terminal) throw new Error("The connection closed before analysis completed. Please retry.");
 
         // Stream closed. If nothing ever arrived (proxy timeout, backend
         // died mid-run), say so instead of leaving an empty bubble.
@@ -244,8 +258,7 @@ export default function ChatPage() {
           text:
             p.text ||
             "No response received — the stream closed before any tokens arrived. " +
-              "Usually this means the backend run timed out or errored mid-stream; " +
-              "check the Cloud Run logs (gcloud run services logs read uw-copilot-backend --region us-central1).",
+              "Please retry the analysis.",
         }));
       } catch (e: unknown) {
         if (!isAbortError(e)) {
@@ -260,6 +273,8 @@ export default function ChatPage() {
           }));
         }
       } finally {
+        setActive(null);
+        updateLast((p) => ({ ...p, pending: false }));
         setBusy(false);
         abortRef.current = null;
       }
@@ -308,6 +323,8 @@ export default function ChatPage() {
     setActive(null);
     setCitations([]);
     setDemoNotice(null);
+    setReviewNotice(null);
+    setCompletedRun(null);
     setRunMode(null);
   }
 
@@ -332,11 +349,19 @@ export default function ChatPage() {
         </h1>
         <p className="mt-1 max-w-3xl text-sm text-ink-muted">
           Pick a submission on the left to bind it as context. The middle panel
-          streams tokens as they arrive. The right panel shows the live LangGraph
+        displays the generated memo. The right panel shows the live LangGraph
           trace, tool calls (with input/output JSON), and citations. Every
           submission's DOT number resolves to a real FMCSA SAFER carrier profile.
         </p>
       </div>
+
+      {reviewNotice && <div role="status" className="mb-4 rounded-md border border-warn-500/40 bg-warn-500/10 px-3 py-2 text-sm text-warn-400">{reviewNotice}</div>}
+      {completedRun && (
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-bg-panel px-4 py-3 text-sm">
+          <span className="text-ink-muted">Review the complete submission, evidence, and briefing memo.</span>
+          <Link className="btn-secondary" href={completedRun.recorded ? "/package?submission=SUB-001" : `/package?${new URLSearchParams({ ...(completedRun.submission ? { submission: completedRun.submission } : {}), run: completedRun.id })}`}>Open submission package →</Link>
+        </div>
+      )}
 
       {runMode && (
         <div
@@ -393,7 +418,7 @@ export default function ChatPage() {
                     critique === v ? "bg-bg-subtle text-ink" : "text-ink-muted hover:text-ink"
                   }`}
                 >
-                  {v === "openai" ? "GPT-4o (cross-family)" : v === "gemini" ? "Gemini Flash" : "auto"}
+                  {v === "openai" ? "OpenAI (cross-family)" : v === "gemini" ? "Gemini" : "auto"}
                 </button>
               ))}
             </div>

@@ -7,7 +7,7 @@ import time
 import uuid
 
 from app.graph.state import AgentState
-from app.schemas import ToolCall
+from app.schemas import SAFERProfile, ToolCall
 from app.tools.safer_lookup import safer_lookup
 
 log = logging.getLogger(__name__)
@@ -20,12 +20,12 @@ async def enrich_carrier(state: AgentState) -> AgentState:
 
     call_id = uuid.uuid4().hex[:8]
     t0 = time.time()
-    profile = await safer_lookup(sub.dot_number)
+    profile = SAFERProfile.model_validate(state["benchmark_safer"]) if state.get("benchmark_safer") else await safer_lookup(sub.dot_number)
     ms = int((time.time() - t0) * 1000)
 
     tc = ToolCall(
         id=call_id,
-        name="safer_lookup",
+        name="frozen_safer_snapshot" if state.get("benchmark_safer") else "safer_lookup",
         input={"dot_number": sub.dot_number},
         output=profile.model_dump(mode="json") if profile else None,
         ms=ms,

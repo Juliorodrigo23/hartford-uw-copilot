@@ -10,7 +10,7 @@ export function Footer() {
         <div className="text-sm text-ink-muted">
           <div className="mb-2 font-semibold text-ink">Stack</div>
           <ul className="space-y-1 font-mono text-2xs">
-            <li>Vertex AI · Gemini 2.5 Pro · OpenAI (judge)</li>
+            <li>Google Gemini API · OpenAI (judge)</li>
             <li>LangGraph · LangChain · Pydantic v2</li>
             <li>Chroma · BAAI/bge-large-en · BM25 + RRF + cross-encoder</li>
             <li>XGBoost · SHAP · scikit-learn isotonic</li>

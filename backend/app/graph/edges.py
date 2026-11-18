@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from app.graph.state import AgentState
 
-
 MAX_CRITIQUE_ITERS = 2
 
 
@@ -18,6 +17,8 @@ def after_enrich(state: AgentState) -> str:
 def after_critique(state: AgentState) -> str:
     """Loop back to retrieval if critique flags gaps and we have iters left."""
     iters = state.get("critique_iters", 0)
+    if state.get("critique_error"):
+        return "pass"  # preserve the memo as unreviewed; repeating retrieval cannot repair an outage
     if state.get("critique_pass", False):
         return "pass"
     if iters >= MAX_CRITIQUE_ITERS:

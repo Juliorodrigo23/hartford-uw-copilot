@@ -7,6 +7,7 @@ import logging
 from functools import lru_cache
 
 import numpy as np
+from langsmith import traceable
 
 from app.config import settings
 from app.schemas import LossStats, SAFERProfile, Submission
@@ -72,6 +73,7 @@ def _book() -> tuple[list[dict], np.ndarray]:
     return items, M
 
 
+@traceable(name="comparable_search", run_type="tool")
 def comparable_search(
     sub: Submission,
     k: int = 5,

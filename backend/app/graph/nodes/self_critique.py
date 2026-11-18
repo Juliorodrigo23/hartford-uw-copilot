@@ -13,6 +13,7 @@ actually ran, and the SSE layer surfaces it to the trace UI.
 
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 
@@ -20,8 +21,10 @@ from langchain_core.messages import HumanMessage, SystemMessage
 
 from app.config import settings
 from app.graph.state import AgentState
+from app.llm.evidence import evidence_hash, evidence_json
 from app.llm.judge_client import openai_runtime_critique
 from app.llm.prompts.memo import CRITIQUE_PROMPT
+from app.llm.text import response_text
 from app.llm.vertex_client import gemini_fast
 from app.schemas import CritiqueVerdict
 
@@ -29,22 +32,7 @@ log = logging.getLogger(__name__)
 
 
 def _evidence_summary(state: AgentState) -> str:
-    bits: list[str] = []
-    safer = state.get("safer_profile")
-    if safer:
-        bits.append("SAFER · " + json.dumps(safer.model_dump(mode="json")))
-    s = state.get("loss_stats")
-    if s:
-        bits.append("LOSS · " + json.dumps(s.model_dump(mode="json"), default=str))
-    p = state.get("xgb_pred")
-    if p:
-        bits.append("XGB · " + json.dumps(p.model_dump(mode="json")))
-    cits = state.get("citations") or []
-    if cits:
-        bits.append("VALID CITATION REFS · " + ", ".join(c.ref for c in cits))
-    else:
-        bits.append("VALID CITATION REFS · none (any [n] in the memo is a critical gap)")
-    return "\n".join(bits)
+    return evidence_json(state)
 
 
 def _resolve_provider(state: AgentState) -> str:
@@ -60,11 +48,12 @@ def _resolve_provider(state: AgentState) -> str:
 
 async def _gemini_critique(memo: str, evidence: str) -> dict:
     llm = gemini_fast()
-    resp = await llm.ainvoke([
-        SystemMessage(content="You return strict JSON only."),
-        HumanMessage(content=CRITIQUE_PROMPT.format(memo=memo, evidence=evidence)),
-    ])
-    text = resp.content if isinstance(resp.content, str) else str(resp.content)
+    async with asyncio.timeout(40):
+        resp = await llm.ainvoke([
+            SystemMessage(content="You return strict JSON only."),
+            HumanMessage(content=CRITIQUE_PROMPT.format(memo=memo, evidence=evidence)),
+        ])
+    text = response_text(resp.content)
     start = text.find("{")
     end = text.rfind("}")
     if start < 0 or end <= start:
@@ -88,7 +77,7 @@ async def self_critique(state: AgentState) -> AgentState:
 
     if not memo:
         return {
-            "critique_pass": True,
+            "critique_pass": False,
             "critique_iters": iters,
             "critique_gaps": [],
             "rubric_scores": {},
@@ -100,14 +89,23 @@ async def self_critique(state: AgentState) -> AgentState:
     provider = _resolve_provider(state)
     judge_used = settings.openai_judge_model if provider == "openai" else settings.vertex_fast_model
     error: str | None = None
+    warning: str | None = None
     raw: dict | None = None
+    # An explicit selection must never silently execute a different provider.
+    allow_fallback = not state.get("critique_provider_override") and settings.critique_provider == "auto"
 
     try:
         if provider == "openai":
-            raw = await openai_runtime_critique(memo, evidence)
-            if raw is None:
-                # No key / OpenAI down — fall back to Gemini, and say so.
-                log.warning("openai critique unavailable; falling back to gemini")
+            try:
+                raw = await openai_runtime_critique(memo, evidence)
+                if raw is None:
+                    raise RuntimeError("OpenAI critique is not configured")
+                CritiqueVerdict.model_validate(raw)
+            except Exception:
+                if not allow_fallback:
+                    raise RuntimeError("Selected OpenAI judge is unavailable; check its API key and model access.") from None
+                warning = "OpenAI judge unavailable; auto mode used the Gemini judge."
+                log.warning(warning)
                 judge_used = settings.vertex_fast_model
                 raw = await _gemini_critique(memo, evidence)
         else:
@@ -115,29 +113,31 @@ async def self_critique(state: AgentState) -> AgentState:
     except Exception as e:
         # FAIL OPEN, VISIBLY: the run finalizes, but the state records that
         # this memo was NOT quality-checked, and the UI shows it.
-        error = f"critique judge failed ({judge_used}): {e}"
-        log.error(error)
+        error = f"Critique judge unavailable ({judge_used}); this memo needs human review."
+        log.error("%s [%s]", error, type(e).__name__)
         return {
-            "critique_pass": True,
+            "critique_pass": False,
             "critique_iters": iters,
             "critique_gaps": [],
             "rubric_scores": {},
             "critique_judge": f"error:{judge_used}",
             "critique_error": error,
+            "critique_warning": warning,
         }
 
     try:
         verdict = CritiqueVerdict.model_validate(raw or {})
     except Exception as e:
-        error = f"judge returned malformed verdict: {e}"
-        log.error(error)
+        error = "Judge returned an invalid verdict; this memo needs human review."
+        log.error("%s [%s]", error, type(e).__name__)
         return {
-            "critique_pass": True,
+            "critique_pass": False,
             "critique_iters": iters,
             "critique_gaps": [],
             "rubric_scores": {},
             "critique_judge": f"error:{judge_used}",
             "critique_error": error,
+            "critique_warning": warning,
         }
 
     return {
@@ -147,4 +147,7 @@ async def self_critique(state: AgentState) -> AgentState:
         "rubric_scores": dict(verdict.rubric_scores),
         "critique_judge": judge_used,
         "critique_error": None,
+        "critique_warning": warning,
+        "missing_documents": list(verdict.missing_documents),
+        "review_packet_hash": evidence_hash(state),
     }

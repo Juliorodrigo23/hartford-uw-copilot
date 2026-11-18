@@ -87,8 +87,8 @@ export default function PipelinePage() {
               { term: "GenAI", def: "generative AI — the LLM that drafts the memo and reasons over the documents." },
               { term: "Agent", def: "an LLM that can also call tools and loop, not just answer in one shot." },
               { term: "RAG", def: "retrieval-augmented generation — fetching relevant documents before the LLM writes." },
-              { term: "Vertex AI", def: "Google Cloud's hosted-LLM service. We use it for the Gemini model family." },
-              { term: "LLM-as-a-judge", def: "using a second AI to grade the first AI's answers against a rubric — like a teacher marking essays. We use a judge from a DIFFERENT vendor so it can't be biased toward its own style." },
+              { term: "Gemini API", def: "The configured Google API that drafts memos and can review them. This deployment uses API-key authentication." },
+              { term: "LLM-as-a-judge", def: "using a second AI to grade the first AI's answers against a rubric — like a teacher marking essays. We use a judge from a DIFFERENT vendor to reduce self-preference; human checks are still needed." },
               { term: "Ablation", def: "turning one component off and re-measuring, to prove what each part contributes. If scores don't drop, the component wasn't earning its keep." },
             ]}
           />
@@ -145,10 +145,10 @@ export default function PipelinePage() {
               counterparty.
             </p>
             <p>
-              Three constraints I kept in mind throughout: every number in the memo must trace to
-              a retrieved chunk, the system must fail safely when a DOT can't be resolved, and
-              latency budget is ~12s end-to-end on a warm container — the underwriter is going to
-              run this dozens of times a day.
+              Every number should trace to the supplied packet, a disclosed calculation or a
+              retrieved source. The system stops when the carrier cannot be resolved and exposes
+              missing documents for human review. Warm instances avoid model-loading delays;
+              generation and critique still take time, with actual timings available in each trace.
             </p>
           </ProseRow>
         </PipeSection>
@@ -159,7 +159,7 @@ export default function PipelinePage() {
           number={2}
           eyebrow="Data sources"
           title="Real public data, not toy fixtures"
-          lede="Insurance interviewers will sniff out toy data immediately. The corpus is built on FMCSA SAFER (carrier safety profiles), NTSB accident-investigation narratives, NHTSA FARS fatal-crash counts, and SEC 10-K risk-factor sections from public trucking issuers. Submissions are synthesized on top — but each is tied to a real DOT number verified to resolve in SAFER, so carrier lookups always return real data."
+          lede="The project uses FMCSA SAFER carrier profiles, NTSB accident-investigation narratives, NHTSA FARS fatal-crash counts, and SEC 10-K risk-factor sections. Synthetic submissions reference real DOT numbers. Carrier lookups use a public record or a cached snapshot, with unavailable data reported explicitly."
         >
           <PlainEnglish>
             <p>
@@ -186,7 +186,7 @@ export default function PipelinePage() {
                   <li>· <span className="text-ink">NTSB</span> — long-form narrative crash investigations (curated highway-mode set)</li>
                   <li>· <span className="text-ink">NHTSA FARS</span> — fatal-crash counts by state (the map above)</li>
                   <li>· <span className="text-ink">SEC EDGAR</span> — 10-K Item 1A risk factors for 7 public truckers (Werner, Knight-Swift, JB Hunt, Schneider, Heartland, US Xpress, Old Dominion), up to 5 filings each</li>
-                  <li>· <span className="text-ink">Industry docs + ISO CA coverage forms</span> — pricing and coverage-language grounding</li>
+                  <li>· <span className="text-ink">FMCSA reference excerpts; licensed policy forms are absent</span> — safety and regulatory context, without policy wording or pricing authority</li>
                 </ul>
               </div>
             }
@@ -199,8 +199,9 @@ export default function PipelinePage() {
             </p>
             <p>
               FMCSA SAFER is a legitimate underwriter input today. Real carriers are queried by
-              DOT number; we pull crashes by severity, OOS rates, BASIC scores, fleet
-              composition, and operating-authority status.
+              DOT number; we pull reported crash involvement by severity, OOS rates, fleet
+              composition, and operating status. Private BASIC values remain unknown, and crash
+              involvement does not establish fault or an insurance claim.
             </p>
           </ProseRow>
         </PipeSection>
@@ -211,22 +212,22 @@ export default function PipelinePage() {
           number={3}
           eyebrow="Synthesizing the submission layer"
           title="30 ACORD-style submissions, each tied to a real carrier"
-          lede="Brokers don't send tidy JSON. They send a cover email plus an ACORD packet plus a 5-yr loss run plus a driver MVR summary. I script the synthesis with realistic broker tones and bind each synthesized packet to a real DOT so the SAFER tool returns a real safety profile during retrieval. The live agent itself uses Gemini 2.5 Pro for memo drafting and Gemini 2.5 Flash for parsing and self-critique."
+          lede="Brokers don't send tidy JSON. They send a cover email plus an ACORD packet plus a 5-yr loss run plus a driver MVR summary. I script the synthesis with realistic broker tones and bind each synthesized packet to a real DOT so the SAFER tool returns a real safety profile during retrieval. The live agent uses Gemini 3.8 Flash for drafting and Gemini 3.5 Flash Lite for parsing. OpenAI provides cross-family critique in auto mode when available; explicit judge choices are honored."
         >
           <PlainEnglish>
             <p>
               Real customer applications are sensitive — we can&apos;t put 30 of them on a
               public website. So we make up <em>fake applications</em>, but each one points
               at a <em>real</em> trucking company&apos;s DOT number. When the AI looks the
-              company up in the federal database, it gets real data. When the AI quotes
-              numbers, those numbers are real. Only the cover email and the policy paperwork
-              are synthesized.
+              company up in the federal database, it gets public carrier data. The broker note
+              and annual loss aggregates are synthetic and labeled as such. Verified carrier loss
+              runs, individual claim files and driver records are not supplied in this demo.
             </p>
             <p>
               The code on the right is the contract — the &ldquo;shape&rdquo; that every
-              piece of the system agrees on. If a broker email is missing the fleet size,
-              the system can&apos;t pretend it has one; the type system stops it. This is
-              how you keep an AI from hallucinating numbers nobody told it.
+              piece of the system agrees on. Validation rejects missing or malformed required
+              fields. It cannot prove that a plausible number is true; source provenance and
+              evidence-aware review provide separate checks.
             </p>
           </PlainEnglish>
           <ProseRow
@@ -296,10 +297,10 @@ export default function PipelinePage() {
                   Why bge-large-en-v1.5 over OpenAI embeddings
                 </div>
                 <ul className="mt-3 space-y-2 text-ink-muted">
-                  <li>· On-prem story: an insurer can run this entirely inside their VPC. Submissions never leave.</li>
-                  <li>· Cost: 0¢ at inference time vs ~$0.13/1M tokens. At 200 carriers × 200 docs × 800 tokens, that's a real number.</li>
-                  <li>· Quality: top-10 on MTEB retrieval; for our domain we're not sensitive to the gap.</li>
-                  <li>· Failure mode: if quality regresses on long narratives, we have a fallback to <code>text-embedding-3-large</code> behind a feature flag.</li>
+                  <li>· Embedding deployment: the local embedding model can run inside an insurer’s VPC. Generation and tracing use the separately configured external services.</li>
+                  <li>· Cost: no per-token embedding API charge; the hosting CPU and memory still incur costs.</li>
+                  <li>· Quality: the current source-passage benchmark measures retrieval on this corpus; it does not establish performance on a new insurer’s documents.</li>
+                  <li>· Failure mode: when embedding or reranking fails, finite keyword/fusion results remain available. Changing the embedding model requires rebuilding and evaluating the index.</li>
                 </ul>
               </div>
             }
@@ -358,12 +359,11 @@ export default function PipelinePage() {
             }
           >
             <p>
-              The rankings above are the real pipeline's output for a golden-set query, stage
-              by stage — where BM25 and the dense model disagree is precisely the value of
-              running both. Section 10's eval dashboard carries the measured retrieval metrics
-              (recall@k, MRR, nDCG) and the ablation harness re-runs the agent with retrieval
-              disabled to quantify the contribution. The cross-encoder rerank costs on the
-              order of 100ms on CPU and consistently cleans up the fused ordering.
+              The rankings above illustrate the retrieval stages and identify whether a captured
+              export or deterministic fallback is displayed. Section 10 contains the current
+              measured recall, MRR and nDCG results. The Linux evaluation used a finite
+              cross-encoder reranker; component-level ablations were not rerun, so these results
+              do not isolate the benefit of reranking or retrieval alone.
             </p>
           </ProseRow>
         </PipeSection>
@@ -412,11 +412,11 @@ export default function PipelinePage() {
             }
           >
             <p>
-              The ablation harness re-runs the agent with the XGBoost tool disabled to measure
-              its contribution (see the eval dashboard for the measured numbers). The gain comes
-              nearly free at inference time — the model is a few hundred KB and predicts in under
-              30ms. SHAP values let the agent quote drivers ("vehicle OOS rate is the top
-              contributor") in language an underwriter expects.
+              The agent receives the model prediction, interval, provenance and SHAP drivers.
+              The current benchmark compares the complete agent against a single-shot baseline;
+              it does not measure XGBoost’s isolated contribution. The historical model was trained
+              on synthetic outcomes and requires validation against real claim outcomes before
+              use for underwriting decisions.
             </p>
             <Note kind="ok">
               The point of this section in an interview is not the model's R². It's that I can
@@ -579,72 +579,21 @@ export default function PipelinePage() {
 
         {/* 10. Evaluation */}
         <PipeSection
-          id="evaluation"
-          number={10}
-          eyebrow="Evaluation"
-          title="Three independent tracks, ablated"
-          lede="Most demos stop at 'it works for this one happy-path query'. The differentiator on this team is going to be the eval harness. We grade retrieval (recall@k, MRR, nDCG), generation (cross-family LLM-as-judge), and end-to-end task quality (red-flag recall on hand-curated ground-truth memos), then ablate every major component by re-running the real agent with each one disabled."
+          id="evaluation" number={10} eyebrow="Evaluation"
+          title="A frozen evidence benchmark and paired experiments"
+          lede="We evaluate source-passage retrieval, memo evidence handling, and a controlled single-shot baseline on versioned references. Twenty synthetic packets include six carrier-disjoint holdout cases. References were checked against source evidence by the coding agent; underwriter validation is pending."
         >
           <PlainEnglish>
-            <p>
-              How do you know an AI is any good? You grade it. Three independent ways:
-            </p>
-            <p>
-              <strong>1. Retrieval</strong> — When we ask a question, do the right
-              documents come back? Numbers like &ldquo;recall@10&rdquo; mean &ldquo;of
-              the 10 we fetched, what fraction were the ones the question wanted.&rdquo;
-            </p>
-            <p>
-              <strong>2. Memo quality</strong> — A different AI (GPT-4o, from a different
-              vendor than our writer) reads each memo and scores it. We use a different
-              vendor on purpose — an AI grading itself is biased. Then we compare against
-              a baseline (just an LLM, no agent) — we want our system to win.
-            </p>
-            <p>
-              <strong>3. Task-level</strong> — For a hand-curated set of applications I
-              wrote down the expected answer first: which red flags MUST appear, and which
-              claims must NOT. The AI&apos;s memos are checked against that: did it spot
-              the same red flags? Did it claim things the data doesn&apos;t support?
-            </p>
-            <p>
-              <strong>And ablations</strong> — turn off each major component (RAG, the
-              critique loop, the small ML model) and rerun the whole eval. The drop tells
-              you what each component is worth. If turning a component <em>off</em>
-              didn&apos;t hurt scores, you don&apos;t need it.
-            </p>
+            <p><strong>Retrieval:</strong> recall@10 is the fraction of specified relevant passages recovered among the first ten results. Separate no-source checks test whether unavailable policy forms produce no evidence.</p>
+            <p><strong>Memo quality:</strong> GPT-4o grades factual assertions against the full packet and records its reasons. Code checks citation IDs and disposition JSON. A valid citation ID alone does not establish that a claim is supported.</p>
+            <p><strong>Comparison:</strong> the baseline receives the same complete raw account packet in one call. The agent adds scoped retrieval, analytical tools and critique. Both variants use the same frozen cases and grading criteria.</p>
+            <p><strong>Review status:</strong> a correctly disclosed missing document is an underwriting follow-up. It does not automatically make a memo defective, and a good memo does not authorize a quote.</p>
           </PlainEnglish>
           <EvalDashboard />
           <AblationTable />
-          <ProseRow
-            side={
-              <CodeBlock
-                fileName={SNIPPETS.llm_judge.file}
-                lang={SNIPPETS.llm_judge.lang}
-                code={SNIPPETS.llm_judge.code}
-                highlight={[23, 28, 36]}
-                caption={
-                  <>
-                    Cross-family judging (Gemini generates, GPT-4o evaluates) is the cheap fix for
-                    the well-documented self-judging bias.
-                  </>
-                }
-              />
-            }
-          >
-            <p>
-              Every number on this dashboard comes from an actual eval run; tracks that
-              haven't run yet say so instead of showing placeholders. The two metrics to
-              scrutinize are the <em>hallucination count</em> (forbidden claims that slip
-              past the critique loop) and the ablation deltas (a component whose removal
-              doesn't move red-flag recall isn't earning its latency). I'd rather show
-              real numbers with warts than tune the harness to a perfect demo — an eval
-              that always says "we're good" is worse than no eval.
-            </p>
-            <Note kind="warn">
-              An eval harness that always says "we're good" is more dangerous than no harness.
-              The columns above where the agent loses to baseline are the conversation I want
-              to have with the team.
-            </Note>
+          <ProseRow side={<CodeBlock fileName={SNIPPETS.llm_judge.file} lang={SNIPPETS.llm_judge.lang} code={SNIPPETS.llm_judge.code} caption={<>The evaluator receives the complete evidence and frozen assertions, then validates its structured judgments.</>} />}>
+            <p>The dashboard includes completed and expected case counts, individual trace links, development and holdout results, and fingerprints for the source data and code. Failed calls remain visible. The July draft-label and keyword scores use a different methodology and are not directly comparable.</p>
+            <Note kind="warn">These are synthetic evidence-handling tests with agent-reviewed references. Expert validation and a larger independent sample are still needed. The runtime reviewer and benchmark evaluator use the same OpenAI model, so human review is important for detecting shared judge bias. Individual component ablations were not rerun.</Note>
           </ProseRow>
         </PipeSection>
 
@@ -664,13 +613,13 @@ export default function PipelinePage() {
             />
             <NextItem
               n={2}
-              title="Counterfactual eval"
-              body="Currently we evaluate against ground-truth memos I wrote. Real production needs A/B against underwriters: same submission, agent-only memo vs underwriter-only memo, blind-rated by a senior. That's the only eval that survives contact with management. I'd budget two weeks with the team for the labeling protocol alone."
+              title="Underwriter validation"
+              body="The current reference assertions were checked against frozen synthetic packets by the coding agent; underwriter confirmation is pending. Real production needs A/B against underwriters: same submission, agent-only memo vs underwriter-only memo, blind-rated by a senior. That's the only eval that survives contact with management. I'd budget two weeks with the team for the labeling protocol alone."
             />
             <NextItem
               n={3}
               title="Latency budget triage"
-              body="draft_memo dominates the latency budget (several seconds of Gemini Pro streaming); the cross-encoder rerank is second (~hundreds of ms on CPU). The obvious experiment: Gemini Flash for the first draft, escalate to Pro only when the critique loop fires, and measure the winrate cost with the ablation harness before shipping the trade."
+              body="The live trace records retrieval, drafting and critique durations. Measure latency and evidence quality together before changing model settings or reducing the evidence budget. Drafting already uses Gemini 3.8 Flash; further routing experiments need the same frozen cases and a new independent validation sample."
             />
           </div>
         </PipeSection>

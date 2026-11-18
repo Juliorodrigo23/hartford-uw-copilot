@@ -30,6 +30,7 @@ out/
 backend/data/raw/
 backend/data/processed/
 backend/data/chroma/
+backend/data/eval_runs/
 backend/data/synthesized/*.parquet
 backend/app/ml/artifacts/*.json
 backend/app/ml/artifacts/*.pkl

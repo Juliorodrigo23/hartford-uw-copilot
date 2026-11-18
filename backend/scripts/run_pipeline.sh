@@ -58,7 +58,7 @@ if [[ "$QUICK" == "1" ]]; then
   run scripts/07_run_evals.py --skip-generation
   run scripts/08_export_viz_data.py --skip-umap --with-fars
 else
-  run scripts/07_run_evals.py --ablations
+  run scripts/07_run_evals.py
   run scripts/08_export_viz_data.py --with-fars
 fi
 

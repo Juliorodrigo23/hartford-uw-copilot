@@ -22,10 +22,15 @@ class AgentState(TypedDict, total=False):
     submission_id: str | None
     user_message: str
     history: list[dict[str, str]]
+    # Internal evaluation only; ChatRequest forbids these public request fields.
+    benchmark_packet: dict[str, Any]
+    benchmark_safer: dict[str, Any]
+    benchmark_source_snapshot: dict[str, Any]
 
     # Parsed
     submission: Submission | None
     parse_notes: list[str]
+    source_snapshot: dict[str, Any] | None
 
     # Enrichment
     safer_profile: SAFERProfile | None
@@ -54,7 +59,11 @@ class AgentState(TypedDict, total=False):
     rubric_scores: dict[str, float]
     critique_judge: str  # "gpt-4o" | "gemini-2.5-flash" | "skipped" | "disabled"
     critique_error: str | None  # set when the judge errored and the gate passed open
+    critique_warning: str | None  # automatic provider substitution, with a valid verdict
     critique_provider_override: str | None  # "openai" | "gemini" | None
+    missing_documents: list[str]
+    draft_packet_hash: str
+    review_packet_hash: str
 
     # Tooling traces
     tool_calls: list[ToolCall]

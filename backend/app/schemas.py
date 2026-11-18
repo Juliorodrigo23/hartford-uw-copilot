@@ -9,9 +9,9 @@ from __future__ import annotations
 from datetime import date
 from decimal import Decimal
 from enum import Enum
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
 
-from pydantic import BaseModel, Field, ConfigDict, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class StrictBase(BaseModel):
@@ -34,7 +34,7 @@ class VehicleMix(StrictBase):
     other: float = Field(default=0.0, ge=0, le=1)
 
     @model_validator(mode="after")
-    def _normalize(self) -> "VehicleMix":
+    def _normalize(self) -> VehicleMix:
         s = self.tractor + self.straight_truck + self.trailer + self.other
         if s > 0 and abs(s - 1.0) > 1e-9:
             object.__setattr__(self, "tractor", self.tractor / s)
@@ -43,7 +43,7 @@ class VehicleMix(StrictBase):
             object.__setattr__(self, "other", self.other / s)
         return self
 
-    def normalized(self) -> "VehicleMix":
+    def normalized(self) -> VehicleMix:
         """Kept for backward compatibility; construction already normalizes."""
         return self
 
@@ -148,17 +148,36 @@ class CritiqueVerdict(BaseModel):
 
     model_config = ConfigDict(extra="ignore", populate_by_name=True)
 
-    pass_: bool = Field(alias="pass", default=True)
-    rubric_scores: dict[str, float] = Field(default_factory=dict)
+    pass_: bool = Field(alias="pass")
+    rubric_scores: dict[str, Annotated[float, Field(ge=1, le=5, allow_inf_nan=False)]] = Field(min_length=1)
     gaps: list[str] = Field(default_factory=list)
+    missing_documents: list[str] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def enforce_rubric(self) -> CritiqueVerdict:
+        required = {"factual_accuracy", "completeness", "calibration", "citations", "format"}
+        if set(self.rubric_scores) != required:
+            raise ValueError("all five rubric dimensions are required")
+        if self.gaps or any(score < 4 for score in self.rubric_scores.values()):
+            self.pass_ = False
+        return self
 
 
 class ChatRequest(StrictBase):
-    message: str
-    submission_id: str | None = None
-    history: list[dict[str, str]] = Field(default_factory=list)
+    message: str = Field(min_length=1, max_length=12000)
+    submission_id: str | None = Field(default=None, max_length=100)
+    history: list[dict[Literal["role", "content"], str]] = Field(default_factory=list, max_length=12)
     # "openai" / "gemini" / None — overrides the env-default critique judge
-    critique_provider: str | None = None
+    critique_provider: Literal["openai", "gemini"] | None = None
+
+    @model_validator(mode="after")
+    def bound_history(self) -> ChatRequest:
+        for turn in self.history:
+            if turn.get("role") not in ("user", "assistant"):
+                raise ValueError("history role must be user or assistant")
+            if len(turn.get("content", "")) > 12000:
+                raise ValueError("history content is too long")
+        return self
 
 
 class CorpusKind(str, Enum):

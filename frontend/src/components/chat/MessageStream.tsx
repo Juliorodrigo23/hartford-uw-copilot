@@ -72,10 +72,15 @@ export function MessageStream({
 // Lightweight Markdown-ish renderer: preserves headings, bullets, bold, code,
 // and turns `[1]` references into hover-able citation chips. Avoids pulling
 // in a full md parser.
-function renderMemo(text: string, citations: { ref: string }[]) {
+export function MemoContent({ text, citations }: { text: string; citations: { ref: string; snippet?: string }[] }) {
+  return renderMemo(text, citations);
+}
+
+function renderMemo(text: string, citations: { ref: string; snippet?: string }[]) {
   const lines = text.split("\n");
   const els: React.ReactNode[] = [];
   let bullets: React.ReactNode[] = [];
+  let code: string[] | null = null;
   function flushBullets() {
     if (bullets.length) {
       els.push(
@@ -87,9 +92,20 @@ function renderMemo(text: string, citations: { ref: string }[]) {
     }
   }
 
-  lines.forEach((raw, i) => {
+  for (const [i, raw] of lines.entries()) {
     const line = raw.trimEnd();
-    if (line.startsWith("## ")) {
+    if (line.startsWith("```")) {
+      flushBullets();
+      if (code !== null) {
+        els.push(<pre key={i} className="my-3 overflow-x-auto rounded-md border border-border bg-bg-panel p-3 font-mono text-xs">{code.join("\n")}</pre>);
+        code = null;
+      } else code = [];
+    } else if (code !== null) {
+      code.push(raw);
+    } else if (line === "---") {
+      flushBullets();
+      els.push(<hr key={i} className="my-4 border-border" />);
+    } else if (line.startsWith("## ")) {
       flushBullets();
       els.push(
         <h3 key={i} className="mt-3 text-base font-semibold text-ink">
@@ -103,7 +119,7 @@ function renderMemo(text: string, citations: { ref: string }[]) {
           {decorate(line.slice(2), citations)}
         </h2>,
       );
-    } else if (line.startsWith("- ")) {
+    } else if (/^[-*] /.test(line)) {
       bullets.push(<li key={i}>{decorate(line.slice(2), citations)}</li>);
     } else if (line.startsWith("**") && line.endsWith("**") && line.length > 4) {
       flushBullets();
@@ -123,12 +139,13 @@ function renderMemo(text: string, citations: { ref: string }[]) {
         </p>,
       );
     }
-  });
+  }
   flushBullets();
+  if (code !== null) els.push(<pre key="unfinished-code" className="overflow-x-auto font-mono text-xs">{code.join("\n")}</pre>);
   return els;
 }
 
-function decorate(line: string, citations: { ref: string }[]) {
+function decorate(line: string, citations: { ref: string; snippet?: string }[]) {
   // Replace **bold** and `code` and [n] references in order.
   const tokens: React.ReactNode[] = [];
   const re = /(\*\*[^*]+\*\*|`[^`]+`|\[\d+\])/g;
@@ -158,7 +175,7 @@ function decorate(line: string, citations: { ref: string }[]) {
           className={`mx-0.5 cursor-default rounded px-1 font-mono text-[10px] ${
             has ? "bg-info-500/20 text-info-400" : "text-ink-dim"
           }`}
-          title={has ? "see right panel for citation" : "citation not yet streamed"}
+          title={citations.find((c) => c.ref === t)?.snippet ?? (has ? "see evidence panel for citation" : "citation not yet streamed")}
         >
           {t}
         </sup>,

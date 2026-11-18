@@ -64,7 +64,7 @@ finalize → END      data_insufficient → END
 - **`analyze_loss_history`**: `loss_stats` (None when no loss run — absence is reported, not zeros) and `xgb_predict` (skippable via `disable_xgb`), both recorded as ToolCalls.
 - **`find_comparables`**: honors `disable_comparables`; queries with the REAL upstream evidence (SAFER OOS rates, computed loss stats), not median placeholders.
 - **`draft_memo`**: formats all evidence into `MEMO_TEMPLATE` (which now includes the user's question, conversation history, and prior critique gaps), labels heuristic predictions as heuristics in the prompt, streams Gemini Pro, increments `draft_iters`.
-- **`self_critique`**: honors `disable_critique`; resolves the judge (per-request override > env > auto), runs GPT-4o (falling back to Gemini Flash, recorded) and validates the verdict through `CritiqueVerdict`. Failure policy: FAIL OPEN, VISIBLY — the run finalizes but `critique_error` and `critique_judge="error:<judge>"` propagate to the UI.
+- **`self_critique`**: honors `disable_critique`; resolves the judge (per-request override > env > auto), runs the selected judge (OpenAI may fall back to Gemini only in auto mode, with a warning) and validates the verdict through `CritiqueVerdict`. Failure policy: PRESERVE AS UNREVIEWED — the run finalizes with critique_pass=false and `critique_error` and `critique_judge="error:<judge>"` propagated to the UI; no successful-review label is emitted.
 - **`finalize` / `data_insufficient`**: extract the machine-readable disposition + producer summary into a `Memo`; or emit the fixed "route to a human underwriter" memo.
 
 ### `app/llm/`

@@ -4,8 +4,9 @@ from __future__ import annotations
 
 from functools import lru_cache
 from pathlib import Path
+from typing import Literal
 
-from pydantic import Field
+from pydantic import AliasChoices, Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -20,10 +21,15 @@ class Settings(BaseSettings):
     )
 
     # GCP / Vertex
+    gemini_auth_mode: Literal["auto", "api_key", "adc"] = Field(default="auto", alias="GEMINI_AUTH_MODE")
+    gemini_api_backend: Literal["vertex", "developer"] = Field(default="developer", alias="GEMINI_API_BACKEND")
+    gemini_api_key: SecretStr = Field(
+        default="", validation_alias=AliasChoices("GEMINI_API_KEY", "GOOGLE_API_KEY")
+    )
     gcp_project_id: str = Field(default="", alias="GCP_PROJECT_ID")
-    gcp_location: str = Field(default="us-central1", alias="GCP_LOCATION")
-    vertex_model: str = Field(default="gemini-2.5-pro", alias="VERTEX_MODEL")
-    vertex_fast_model: str = Field(default="gemini-2.5-flash", alias="VERTEX_FAST_MODEL")
+    gcp_location: str = Field(default="global", alias="GCP_LOCATION")
+    vertex_model: str = Field(default="gemini-3.8-flash", alias="VERTEX_MODEL")
+    vertex_fast_model: str = Field(default="gemini-3.5-flash-lite", alias="VERTEX_FAST_MODEL")
     # "rest" (default) avoids loading grpc alongside chromadb's onnxruntime:
     # the two ship conflicting native abseil/protobuf symbols and their
     # coexistence segfaults the process on macOS arm64 (observed as exit 139
@@ -43,7 +49,15 @@ class Settings(BaseSettings):
     # Runtime critique provider. "openai" → GPT-4o (cross-family, costs more,
     # avoids Gemini self-judging bias). "gemini" → Gemini 2.5 Flash (cheap,
     # default). "auto" → openai when a key is present, otherwise gemini.
-    critique_provider: str = Field(default="auto", alias="CRITIQUE_PROVIDER")
+    critique_provider: Literal["auto", "openai", "gemini"] = Field(default="auto", alias="CRITIQUE_PROVIDER")
+
+    # Agent-based workspaces use the environment's returned tracer_session_name.
+    langsmith_tracing: bool = Field(default=False, alias="LANGSMITH_TRACING")
+    langsmith_api_key: SecretStr = Field(default="", alias="LANGSMITH_API_KEY")
+    langsmith_endpoint: str = Field(default="https://api.smith.langchain.com", alias="LANGSMITH_ENDPOINT")
+    langsmith_workspace_id: str = Field(default="", alias="LANGSMITH_WORKSPACE_ID")
+    langsmith_project: str = Field(default="underwriting-copilot", alias="LANGSMITH_PROJECT")
+    app_environment: str = Field(default="local", alias="APP_ENVIRONMENT")
 
     # Auth
     hmac_secret: str = Field(default="dev-only-replace-in-prod", alias="HMAC_SECRET")

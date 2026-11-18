@@ -1,248 +1,38 @@
-/**
- * Code snippets used in the walkthrough.
- *
- * These are VERBATIM excerpts from the backend files they cite. If you edit
- * the backend, update the excerpt (they are asserted against the real files
- * by backend/tests/test_snippets_match.py's spirit: keep them honest).
- */
-
-export const SNIPPETS: Record<string, { code: string; lang: "python" | "tsx" | "ts" | "yaml" | "dockerfile" | "json" | "bash"; file: string }> = {
-  pydantic_schemas: {
-    file: "backend/app/schemas.py",
-    lang: "python",
-    code: `class VehicleMix(StrictBase):
-    """Vehicle-type fractions. Auto-normalized to sum to 1.0 at construction."""
-
-    tractor: float = Field(ge=0, le=1)
-    straight_truck: float = Field(default=0.0, ge=0, le=1)
-    trailer: float = Field(default=0.0, ge=0, le=1)
-    other: float = Field(default=0.0, ge=0, le=1)
-
-    @model_validator(mode="after")
-    def _normalize(self) -> "VehicleMix":
-        s = self.tractor + self.straight_truck + self.trailer + self.other
-        if s > 0 and abs(s - 1.0) > 1e-9:
-            ...
-
-class Submission(StrictBase):
-    id: str
-    carrier_name: str
-    dot_number: str
-    fleet_size: int = Field(ge=1)
-    vehicle_mix: VehicleMix
-    states_of_operation: list[str]
-    effective_date: date
-    loss_run: list[LossYear]
-    broker_email: str
-    commodity: str = Field(default="general_freight")
-
-class Disposition(StrictBase):
-    label: Literal["decline", "quote_with_surcharge", "quote", "data_insufficient"]
-    confidence: float = Field(ge=0, le=1)
-    drivers: list[str]
-
-class Memo(StrictBase):
-    submission_id: str
-    disposition: Disposition
-    body_md: str
-    citations: list[Citation] = Field(default_factory=list)
-    producer_summary: str = ""
-    rubric_scores: dict[str, float] | None = None`,
+/** Generated verbatim from backend source by scripts/extract-snippets.mjs. */
+export const SNIPPETS = {
+  "pydantic_schemas": {
+    "file": "backend/app/schemas.py",
+    "lang": "python",
+    "code": "class VehicleMix(StrictBase):\n    \"\"\"Vehicle-type fractions. Auto-normalized to sum to 1.0 at construction.\n    An all-zero mix is left untouched (callers treat it as unknown).\"\"\"\n\n    tractor: float = Field(ge=0, le=1)\n    straight_truck: float = Field(default=0.0, ge=0, le=1)\n    trailer: float = Field(default=0.0, ge=0, le=1)\n    other: float = Field(default=0.0, ge=0, le=1)\n\n    @model_validator(mode=\"after\")\n    def _normalize(self) -> VehicleMix:\n        s = self.tractor + self.straight_truck + self.trailer + self.other\n        if s > 0 and abs(s - 1.0) > 1e-9:\n            object.__setattr__(self, \"tractor\", self.tractor / s)\n            object.__setattr__(self, \"straight_truck\", self.straight_truck / s)\n            object.__setattr__(self, \"trailer\", self.trailer / s)\n            object.__setattr__(self, \"other\", self.other / s)\n        return self\n\n    def normalized(self) -> VehicleMix:\n        \"\"\"Kept for backward compatibility; construction already normalizes.\"\"\"\n        return self\n\n\nclass Submission(StrictBase):\n    id: str\n    # Synthetic pseudonym used on the demo (a fabricated adverse loss run\n    # must never be published under a real company's name)…\n    carrier_name: str\n    dot_number: str\n    # …but the REAL SAFER identity is carried alongside for transparency,\n    # and fleet_size is derived from the real SAFER power-unit count so the\n    # submission never contradicts the federal record.\n    safer_legal_name: str | None = None\n    fleet_size: int = Field(ge=1)\n    vehicle_mix: VehicleMix\n    states_of_operation: list[str]\n    effective_date: date\n    loss_run: list[LossYear]\n    broker_email: str\n    commodity: str = Field(default=\"general_freight\")\n\n\nclass SAFERProfile(StrictBase):\n    legal_name: str\n    operating_status: str\n    power_units: int\n    drivers: int\n    crashes_24mo_total: int = 0\n    crashes_24mo_fatal: int = 0\n    crashes_24mo_injury: int = 0\n    crashes_24mo_towaway: int = 0\n    oos_rate_vehicle: float = 0.0\n    oos_rate_driver: float = 0.0\n    oos_rate_hazmat: float | None = None\n    basic_violations: dict[str, str] = Field(default_factory=dict)\n    raw_dot: str | None = None\n\n\nclass LossStats(StrictBase):\n    frequency_per_pu_per_yr: float\n    severity_avg_usd: Decimal\n    trend_3yr_pct: float\n    loss_ratio_3yr: float\n    # The loss ratio is computed against an assumed premium; surfacing the\n    # assumption keeps the memo honest about where the denominator comes from.\n    assumed_premium_per_pu_usd: int = 5500\n    n_years: int = 0\n\n\nclass XGBPrediction(StrictBase):\n    pred_claims_next_yr: float\n    pi_80: tuple[float, float]\n    shap_top: list[dict[str, Any]] = Field(default_factory=list)\n    # Provenance: \"xgboost\" when the trained booster produced the number,\n    # \"heuristic_fallback\" when model artifacts were unavailable. The memo\n    # prompt and the trace UI both surface this so a fallback is never\n    # presented as a model output.\n    source: Literal[\"xgboost\", \"heuristic_fallback\"] = \"xgboost\"\n    model_version: str | None = None"
   },
-
-  langgraph_builder: {
-    file: "backend/app/graph/builder.py",
-    lang: "python",
-    code: `def _wire(g: StateGraph) -> StateGraph:
-    g.add_node("parse_submission", parse_submission)
-    g.add_node("enrich_carrier", enrich_carrier)
-    g.add_node("retrieve_context", retrieve_context)
-    g.add_node("analyze_loss_history", analyze_loss_history)
-    g.add_node("find_comparables", find_comparables)
-    g.add_node("draft_memo", draft_memo)
-    g.add_node("self_critique", self_critique)
-    g.add_node("finalize", finalize)
-    g.add_node("data_insufficient", data_insufficient)
-
-    g.set_entry_point("parse_submission")
-    g.add_edge("parse_submission", "enrich_carrier")
-    g.add_conditional_edges(
-        "enrich_carrier",
-        after_enrich,
-        {"ok": "retrieve_context", "no_dot": "data_insufficient"},
-    )
-    g.add_edge("retrieve_context", "analyze_loss_history")
-    g.add_edge("analyze_loss_history", "find_comparables")
-    g.add_edge("find_comparables", "draft_memo")
-    g.add_edge("draft_memo", "self_critique")
-    g.add_conditional_edges(
-        "self_critique",
-        after_critique,
-        {"loop": "retrieve_context", "pass": "finalize"},
-    )
-    g.add_edge("finalize", END)
-    g.add_edge("data_insufficient", END)
-    return g
-
-
-def build_graph(checkpointer):
-    """Compile the underwriting graph against a caller-provided checkpointer."""
-    return _wire(StateGraph(AgentState)).compile(checkpointer=checkpointer)`,
+  "langgraph_builder": {
+    "file": "backend/app/graph/builder.py",
+    "lang": "python",
+    "code": "def _wire(g: StateGraph) -> StateGraph:\n    g.add_node(\"parse_submission\", parse_submission)\n    g.add_node(\"enrich_carrier\", enrich_carrier)\n    g.add_node(\"retrieve_context\", retrieve_context)\n    g.add_node(\"analyze_loss_history\", analyze_loss_history)\n    g.add_node(\"find_comparables\", find_comparables)\n    g.add_node(\"draft_memo\", draft_memo)\n    g.add_node(\"self_critique\", self_critique)\n    g.add_node(\"finalize\", finalize)\n    g.add_node(\"data_insufficient\", data_insufficient)\n\n    g.set_entry_point(\"parse_submission\")\n    g.add_edge(\"parse_submission\", \"enrich_carrier\")\n    g.add_conditional_edges(\n        \"enrich_carrier\",\n        after_enrich,\n        {\"ok\": \"retrieve_context\", \"no_dot\": \"data_insufficient\"},\n    )\n    g.add_edge(\"retrieve_context\", \"analyze_loss_history\")\n    g.add_edge(\"analyze_loss_history\", \"find_comparables\")\n    g.add_edge(\"find_comparables\", \"draft_memo\")\n    g.add_edge(\"draft_memo\", \"self_critique\")\n    g.add_conditional_edges(\n        \"self_critique\",\n        after_critique,\n        {\"loop\": \"retrieve_context\", \"pass\": \"finalize\"},\n    )\n    g.add_edge(\"finalize\", END)\n    g.add_edge(\"data_insufficient\", END)\n    return g\n\n\ndef build_graph(checkpointer):\n    \"\"\"Compile the underwriting graph against a caller-provided checkpointer.\"\"\"\n    return _wire(StateGraph(AgentState)).compile(checkpointer=checkpointer)"
   },
-
-  hybrid_retrieval: {
-    file: "backend/app/rag/hybrid_search.py",
-    lang: "python",
-    code: `def _rrf(rankings: list[list[Hit]]) -> list[Hit]:
-    """Reciprocal rank fusion. Returns deduped list with summed RRF scores."""
-    table: dict[str, list] = {}
-    for ranks in rankings:
-        for rank, (chunk_id, _score, text, src) in enumerate(ranks):
-            entry = table.get(chunk_id) or [chunk_id, 0.0, text, src]
-            entry[1] += 1.0 / (RRF_K + rank + 1)
-            table[chunk_id] = entry
-    fused = sorted(table.values(), key=lambda x: -x[1])
-    return [tuple(x) for x in fused]
-
-
-def _hybrid_search_sync(query, k_final, k_dense, k_bm25, rerank):
-    try:
-        emb = embed_query(query)
-    except Exception as e:
-        log.warning("embedding failed: %s — BM25-only fallback", e)
-        emb = None
-
-    rankings: list[list[Hit]] = []
-    if emb is not None:
-        rankings.append(_dense_search(emb, k_dense))
-    rankings.append(_bm25_search(query, k_bm25))
-    fused = _rrf(rankings)
-    if rerank:
-        fused = _rerank(query, fused, k_final)   # cross-encoder, top-50 → top-k
-    else:
-        fused = fused[:k_final]
-
-    return [
-        RetrievedChunk(doc_id=chunk_id, score=score, text=text, source=src or "unknown")
-        for (chunk_id, score, text, src) in fused
-    ]`,
+  "hybrid_retrieval": {
+    "file": "backend/app/rag/hybrid_search.py",
+    "lang": "python",
+    "code": "def _rrf(rankings: list[list[Hit]]) -> list[Hit]:\n    \"\"\"Reciprocal rank fusion. Returns deduped list with summed RRF scores.\"\"\"\n    table: dict[str, list] = {}\n    for ranks in rankings:\n        for rank, (chunk_id, _score, text, src) in enumerate(ranks):\n            entry = table.get(chunk_id) or [chunk_id, 0.0, text, src]\n            entry[1] += 1.0 / (RRF_K + rank + 1)\n            table[chunk_id] = entry\n    fused = sorted(table.values(), key=lambda x: -x[1])\n    return [tuple(x) for x in fused]  # type: ignore[return-value]\n\n\ndef _rerank(query: str, hits: list[Hit], k_final: int) -> list[Hit]:\n    if not hits:\n        return []\n    reranker = _reranker()\n    if reranker is None:\n        return hits[:k_final]\n    pairs = [(query, f\"Document: {_id}\\n{t}\") for _id, _s, t, _src in hits[:50]]\n    scores = np.asarray(reranker.predict(pairs), dtype=float).reshape(-1)\n    if scores.size != len(pairs):\n        log.warning(\n            \"cross-encoder returned %d scores for %d pairs; using fused ranking\",\n            scores.size,\n            len(pairs),\n        )\n        return hits[:k_final]\n    finite = np.isfinite(scores)\n    if not finite.all():\n        # Some ONNX/PyTorch combinations have produced an all-NaN result on\n        # otherwise valid passages. Never let those values cross the JSON\n        # boundary: the browser's JSON parser correctly rejects Python's\n        # non-standard `NaN` token and the visualization then looks missing.\n        log.warning(\n            \"cross-encoder returned %d non-finite scores; using fused ranking\",\n            int((~finite).sum()),\n        )\n        return hits[:k_final]\n    order = np.argsort(scores)[::-1][:k_final]\n    return [\n        (hits[i][0], float(scores[i]), hits[i][2], hits[i][3]) for i in order\n    ]\n\n\n@traceable(name=\"hybrid_search\", run_type=\"retriever\")\nasync def hybrid_search(\n    query: str,\n    k_final: int = DEFAULT_K_FINAL,\n    k_dense: int = DEFAULT_K_DENSE,\n    k_bm25: int = DEFAULT_K_BM25,\n    rerank: bool = True,\n    corpora: tuple[str, ...] | None = None,\n    route: bool = True,\n) -> list[RetrievedChunk]:\n    \"\"\"Public entrypoint. Async wrapper around the (CPU-bound) hybrid pipeline.\"\"\"\n    loop = asyncio.get_running_loop()\n    scope = corpora if corpora is not None else (route_corpora(query) if route else None)\n    return await loop.run_in_executor(None, _hybrid_search_sync, query, k_final, k_dense, k_bm25, rerank, scope)\n\n\ndef _hybrid_search_sync(\n    query: str,\n    k_final: int,\n    k_dense: int,\n    k_bm25: int,\n    rerank: bool,\n    corpora: tuple[str, ...] | None = None,\n) -> list[RetrievedChunk]:\n    query = expand_query(query)\n    emb = None\n    if _dense_index_ready():\n        try:\n            emb = embed_query(query)\n        except Exception as e:\n            log.warning(\"embedding failed: %s — BM25-only fallback\", e)\n\n    rankings: list[list[Hit]] = []\n    if emb is not None:\n        rankings.append(_dense_search(emb, k_dense, corpora))\n    rankings.append(_bm25_search(query, k_bm25, corpora))\n    fused = _rrf(rankings)\n    if rerank:\n        fused = _rerank(query, fused, max(20, k_final * 4))\n    else:\n        fused = fused[:max(20, k_final * 4)]\n\n    # Prevent near-duplicate paragraphs from one annual report or accident\n    # report consuming the whole evidence budget. Keep ordering within scope.\n    selected = []\n    parent_counts: dict[str, int] = {}\n    for hit in fused:\n        parent = hit[0].split(\"#\")[0]\n        if parent_counts.get(parent, 0) >= 2:\n            continue\n        selected.append(hit)\n        parent_counts[parent] = parent_counts.get(parent, 0) + 1\n        if len(selected) >= k_final:\n            break\n\n    return [\n        RetrievedChunk(doc_id=chunk_id, score=score, text=text, source=src or \"unknown\")\n        for (chunk_id, score, text, src) in selected\n    ]"
   },
-
-  xgb_train: {
-    file: "backend/app/ml/train_xgb.py",
-    lang: "python",
-    code: `# An account is "adverse" when next-year claim frequency ≥ 5 claims / 100 PUs.
-ADVERSE_FREQ = 0.05
-
-def _fit_one(X: pd.DataFrame, y: pd.Series, features: list[str]):
-    dtrain = xgb.DMatrix(X[features].values, label=y.values, feature_names=features)
-    params = {
-        "objective": "count:poisson",
-        "eval_metric": "poisson-nloglik",
-        "max_depth": 5,
-        "learning_rate": 0.06,
-        "subsample": 0.8,
-        "colsample_bytree": 0.85,
-        "tree_method": "hist",
-    }
-    return xgb.train(params, dtrain, num_boost_round=350)
-
-# Classifier probability = exact Poisson tail P(N ≥ k | rate = prediction)
-def tail_prob(rate: np.ndarray) -> np.ndarray:
-    return poisson.sf(k_thresh - 1, mu=np.maximum(1e-9, rate))
-
-# Isotonic calibration fitted on OUT-OF-FOLD probabilities, saved with the model
-calibrator = IsotonicRegression(out_of_bounds="clip").fit(p_raw, y_bin)`,
+  "xgb_train": {
+    "file": "backend/app/ml/train_xgb.py",
+    "lang": "python",
+    "code": "def _fit_one(X: pd.DataFrame, y: pd.Series, features: list[str]):\n    import xgboost as xgb\n\n    dtrain = xgb.DMatrix(X[features].values, label=y.values, feature_names=features)\n    params = {\n        \"objective\": \"count:poisson\",\n        \"eval_metric\": \"poisson-nloglik\",\n        \"max_depth\": 5,\n        \"learning_rate\": 0.06,\n        \"subsample\": 0.8,\n        \"colsample_bytree\": 0.85,\n        \"tree_method\": \"hist\",\n    }\n    return xgb.train(params, dtrain, num_boost_round=350)"
   },
-
-  monte_carlo_py: {
-    file: "backend/app/ml/risk_simulation.py",
-    lang: "python",
-    code: `def aggregate_loss_distribution(
-    lambda_claims: float,
-    severity_mu_log: float,
-    severity_sigma_log: float,
-    n_sims: int = 10_000,
-    seed: int = 42,
-) -> SimResult:
-    rng = np.random.default_rng(seed)
-    counts = rng.poisson(lambda_claims, size=n_sims)
-    out = np.zeros(n_sims, dtype=float)
-    for i, n in enumerate(counts):
-        if n:
-            out[i] = float(rng.lognormal(severity_mu_log, severity_sigma_log, size=n).sum())
-    sorted_ = np.sort(out)
-    n = len(sorted_)
-    var95 = float(sorted_[int(0.95 * (n - 1))])
-    var99 = float(sorted_[int(0.99 * (n - 1))])
-    tvar95 = float(sorted_[int(0.95 * n):].mean()) if int(0.95 * n) < n else var95
-    return SimResult(samples=out, mean=float(out.mean()), var95=var95, tvar95=tvar95, var99=var99)`,
+  "monte_carlo_py": {
+    "file": "backend/app/ml/risk_simulation.py",
+    "lang": "python",
+    "code": "def aggregate_loss_distribution(\n    lambda_claims: float,\n    severity_mu_log: float,\n    severity_sigma_log: float,\n    n_sims: int = 10_000,\n    seed: int = 42,\n) -> SimResult:\n    rng = np.random.default_rng(seed)\n    counts = rng.poisson(lambda_claims, size=n_sims)\n    out = np.zeros(n_sims, dtype=float)\n    for i, n in enumerate(counts):\n        if n:\n            out[i] = float(rng.lognormal(severity_mu_log, severity_sigma_log, size=n).sum())\n    sorted_ = np.sort(out)\n    n = len(sorted_)\n    var95 = float(sorted_[int(0.95 * (n - 1))])\n    var99 = float(sorted_[int(0.99 * (n - 1))])\n    tvar95 = float(sorted_[int(0.95 * n) :].mean()) if int(0.95 * n) < n else var95\n    return SimResult(samples=out, mean=float(out.mean()), var95=var95, tvar95=tvar95, var99=var99)"
   },
-
-  vertex_client: {
-    file: "backend/app/llm/vertex_client.py",
-    lang: "python",
-    code: `def gemini(
-    *,
-    model: str | None = None,
-    temperature: float = 0.1,
-    max_output_tokens: int = 4096,
-    streaming: bool = True,
-) -> "ChatVertexAI":
-    """Authentication uses Application Default Credentials: local dev via
-    \`gcloud auth application-default login\`, Cloud Run via the attached
-    service account."""
-    from langchain_google_vertexai import ChatVertexAI
-
-    return ChatVertexAI(
-        model_name=model or settings.vertex_model,
-        project=settings.gcp_project_id or None,
-        location=settings.gcp_location,
-        temperature=temperature,
-        max_output_tokens=max_output_tokens,
-        streaming=streaming,
-    )
-
-
-def gemini_fast() -> "ChatVertexAI":
-    """Cheap structured-extraction calls (parse_submission, self_critique)."""
-    return cached_gemini(settings.vertex_fast_model, 0.0)`,
+  "vertex_client": {
+    "file": "backend/app/llm/vertex_client.py",
+    "lang": "python",
+    "code": "def gemini(\n    *,\n    model: str | None = None,\n    temperature: float = 0.1,\n    max_output_tokens: int = 4096,\n    streaming: bool = True,\n) -> GeminiChat:\n    \"\"\"Return a Gemini chat client using the selected authentication mode.\n\n    An explicit API-key mode requires a key and never falls back to ADC.\n    Auto mode prefers an available key; ADC remains available explicitly.\n    \"\"\"\n    if gemini_auth_mode() == \"api_key\":\n        key = settings.gemini_api_key.get_secret_value().strip()\n        if not key:\n            raise RuntimeError(\"GEMINI_API_KEY is required when GEMINI_AUTH_MODE=api_key\")\n        return ApiKeyGemini(\n            api_key=key,\n            backend=settings.gemini_api_backend,\n            model=model or settings.vertex_model,\n            temperature=temperature,\n            max_output_tokens=max_output_tokens,\n        )\n\n    from langchain_google_vertexai import ChatVertexAI\n\n    return ChatVertexAI(\n        model_name=model or settings.vertex_model,\n        project=settings.gcp_project_id or None,\n        location=settings.gcp_location,\n        temperature=temperature,\n        max_output_tokens=max_output_tokens,\n        streaming=streaming,\n        # REST by default — see config.vertex_api_transport for the grpc/onnx\n        # native-symbol clash this avoids.\n        api_transport=settings.vertex_api_transport,\n        max_retries=1,\n    )"
   },
-
-  llm_judge: {
-    file: "backend/app/llm/judge_client.py",
-    lang: "python",
-    code: `class JudgeUnavailable(RuntimeError):
-    """Raised when the eval-track judge cannot run (no API key)."""
-
-
-def judge_memo(memo: str, ground_truth: dict[str, Any], n_runs: int = 3) -> dict[str, float]:
-    """Run the judge n times. Return median scores per dimension.
-
-    Raises JudgeUnavailable when OpenAI is not configured, so callers can
-    mark the track as skipped instead of recording fake zeros.
-    """
-    client = _client()
-    dims = ["factual_accuracy", "completeness", "calibration", "citations", "format"]
-    runs: list[dict[str, int]] = []
-    for _ in range(n_runs):
-        r = client.chat.completions.create(
-            model=settings.openai_judge_model,
-            response_format={"type": "json_object"},
-            temperature=0.0,
-            messages=[
-                {"role": "system", "content": JUDGE_SYSTEM},
-                {"role": "user", "content": JUDGE_PROMPT.format(
-                    memo=memo, ground_truth=json.dumps(ground_truth, indent=2)
-                )},
-            ],
-        )
-        try:
-            runs.append(json.loads(r.choices[0].message.content or "{}"))
-        except json.JSONDecodeError:
-            continue
-    if not runs:
-        raise JudgeUnavailable("judge returned no parseable responses")
-    return {k: float(statistics.median([float(r.get(k, 0)) for r in runs])) for k in dims}`,
-  },
-};
+  "llm_judge": {
+    "file": "backend/app/eval/scoring.py",
+    "lang": "python",
+    "code": "@traceable(name=\"grade-evidence\", run_type=\"chain\")\nasync def grade_memo(memo: str, evidence: dict, references: list[dict]) -> dict:\n    prompt = \"\"\"Evaluate this memo against the actual evidence and frozen factual assertions.\nThe assertions are provisional, source-checked regression criteria, not expert-approved\nunderwriting decisions. Accept semantically equivalent language and sensible rounding.\nA negated or contradicted assertion is NOT covered. A mere keyword mention is insufficient.\nDo not penalize a memo for properly acknowledging a missing document. Supplied synthetic\nannual aggregates are distinct from verified carrier loss-run documents. Broker claims\nare unverified assertions, not inspected MVRs or attachments. Public crash involvement\ndoes not establish fault, insurance claims, or loss payments. BASIC Not Public is unknown.\nOnly [n] external references in retrieved_evidence are valid. Submission, SAFER and\ncalculation facts can use named source labels without an external citation. Verify any\n[n]-cited material assertion against the complete passage. Industry reports do not\nestablish account-specific facts. Requests and clearly conditional scenarios are not\nasserted facts and must not count as unsupported claims.\nReturn JSON with exactly:\nassertions: [{id, covered: boolean, reason: short evidence-based explanation}] for EVERY\nreference assertion exactly once;\nmaterial_claims: [{claim: a concise atomic factual claim from the memo, supported: boolean,\nreason: source path/ref or why unsupported}] covering its material factual claims;\nrubric_scores: {factual_accuracy, completeness, calibration, citations, format}, each 1..5.\nCalibration here means appropriate evidence-limited language, not actuarial calibration.\nNo preference for verbosity; no invented source material.\n\"\"\"\n    payload = {\"memo\": memo, \"complete_evidence\": evidence, \"reference_assertions\": references}\n    async with AsyncOpenAI(api_key=settings.openai_api_key, max_retries=1) as raw:\n        client = trace_openai(raw)\n        response = await client.chat.completions.create(\n            model=settings.openai_judge_model,\n            response_format={\"type\": \"json_object\"},\n            temperature=0,\n            messages=[\n                {\"role\": \"system\", \"content\": prompt},\n                {\"role\": \"user\", \"content\": json.dumps(payload, ensure_ascii=False)},\n            ],\n            max_tokens=6000,\n            timeout=100,\n        )\n    grade = validate_grade(json.loads(response.choices[0].message.content or \"{}\"), references)\n    return summarize_grade(grade, memo, evidence)"
+  }
+} as const;

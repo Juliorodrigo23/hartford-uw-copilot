@@ -17,7 +17,7 @@ apply_platform_workarounds()  # before torch/onnx load lazily at first request
 
 from app.config import settings  # noqa: E402
 from app.graph.builder import build_graph  # noqa: E402
-from app.observability.tracing import maybe_enable_langfuse  # noqa: E402
+from app.observability.tracing import flush_traces, tracing_client  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)-7s %(name)s: %(message)s")
 log = logging.getLogger("uw-copilot")
@@ -60,12 +60,12 @@ def _warm_models_blocking() -> None:
             from app.rag.embeddings import embed_query
 
             embed_query("warmup")
-            _reranker()
-            app_state["models_warm"] = True
-            log.info("retrieval models warm in %.1fs", _t.time() - t0)
         else:
             log.info("dense index empty — no models to warm (BM25-only mode)")
-            app_state["models_warm"] = True  # nothing to warm counts as warm
+        # BM25-only mode still reranks candidates; warm that path too.
+        _reranker()
+        app_state["models_warm"] = True
+        log.info("retrieval models warm in %.1fs", _t.time() - t0)
     except Exception as e:
         log.error("model warmup failed after %.1fs: %s", _t.time() - t0, e)
 
@@ -92,7 +92,7 @@ async def lifespan(app: FastAPI):
     settings.data_dir.mkdir(parents=True, exist_ok=True)
     async with AsyncSqliteSaver.from_conn_string(str(settings.checkpoint_db)) as saver:
         app.state.graph = build_graph(saver)
-        maybe_enable_langfuse()
+        log.info("LangSmith tracing configured=%s", tracing_client() is not None)
         warmup = (
             _asyncio.get_running_loop().run_in_executor(None, _warm_models_blocking)
             if settings.warm_rag_models
@@ -112,6 +112,7 @@ async def lifespan(app: FastAPI):
             # dangling Future. The warmup function catches/logs its own errors.
             if warmup is not None and not warmup.done():
                 warmup.cancel()
+            await flush_traces()
 
 
 def create_app() -> FastAPI:
@@ -175,25 +176,51 @@ def create_app() -> FastAPI:
     def health() -> dict[str, str]:
         return {"status": "ok", "version": "0.2.0"}
 
+    @app.get("/ready")
+    def ready():
+        if settings.warm_rag_models and not app_state["models_warm"]:
+            return JSONResponse({"status": "warming"}, status_code=503)
+        return {"status": "ready"}
+
     @app.get("/diag")
     def diag() -> dict:
         """One-stop audit of the running instance: what data shipped, whether
         the models are warm, and how long this container has been alive.
         Read-only; this is the first URL to check when chat misbehaves."""
+        from app.llm.evidence import PACKET_VERSION
+        from app.llm.vertex_client import gemini_auth_mode
+        from app.rag.hybrid_search import reference_documents
+
         out: dict = {
             "version": "0.2.0",
             "uptime_s": round(time.time() - app_state["started_at"], 1),
             "models_warm": app_state["models_warm"],
             "model_warmup_enabled": settings.warm_rag_models,
             "vertex_model": settings.vertex_model,
+            "gemini_auth_mode": gemini_auth_mode(),
+            "gemini_api_backend": settings.gemini_api_backend,
+            "gemini_api_key_configured": bool(settings.gemini_api_key.get_secret_value()),
+            "vertex_fast_model": settings.vertex_fast_model,
+            "vertex_location": settings.gcp_location,
+            "critique_provider": settings.critique_provider,
+            "openai_judge_model": settings.openai_judge_model,
+            "openai_configured": bool(settings.openai_api_key),
+            "packet_context_version": PACKET_VERSION,
+            "supplemental_reference_chunks": len(reference_documents()),
+            "langsmith_configured": tracing_client() is not None,
+            "langsmith_project": settings.langsmith_project if settings.langsmith_tracing else None,
             "vertex_transport": settings.vertex_api_transport,
             "checkpoint_db_exists": settings.checkpoint_db.exists(),
         }
+        warmup = getattr(app.state, "model_warmup", None)
         try:
             from app.rag.hybrid_search import COLLECTIONS
             from app.rag.store import get_or_create
 
-            out["index_chunks"] = {name: get_or_create(name).count() for name in COLLECTIONS}
+            out["index_chunks"] = (
+                "warming" if warmup is not None and not warmup.done()
+                else {name: get_or_create(name).count() for name in COLLECTIONS}
+            )
         except Exception as e:
             out["index_chunks"] = f"error: {e}"
         try:

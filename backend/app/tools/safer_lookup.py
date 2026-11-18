@@ -27,6 +27,7 @@ from pathlib import Path
 
 import httpx
 from bs4 import BeautifulSoup
+from langsmith import traceable
 from tenacity import retry, stop_after_attempt, wait_exponential_jitter
 
 from app.config import settings
@@ -46,6 +47,8 @@ QC_URL = "https://mobile.fmcsa.dot.gov/qc/services/carriers/{dot}"
 
 
 def _cache_path(dot: str) -> Path:
+    if not re.fullmatch(r"[0-9]{1,8}", dot):
+        raise ValueError("DOT must contain 1 to 8 ASCII digits")
     return CACHE_DIR / f"{dot}.json"
 
 
@@ -312,6 +315,7 @@ async def _fetch_snapshot(dot: str) -> str | None:
 # Public entrypoint
 # ---------------------------------------------------------------------------
 
+@traceable(name="safer_lookup", run_type="tool")
 async def safer_lookup(dot: str) -> SAFERProfile | None:
     """Resolve a DOT number to a VALIDATED carrier profile, or None.
 
@@ -319,6 +323,10 @@ async def safer_lookup(dot: str) -> SAFERProfile | None:
     A profile that fails `_is_garbage` is treated as unresolved: not cached,
     not returned. Callers route unresolved carriers to data_insufficient.
     """
+    dot = str(dot).strip()
+    if not re.fullmatch(r"[0-9]{1,8}", dot):
+        log.warning("invalid DOT number rejected before cache/network access")
+        return None
     p = _cache_path(dot)
     if p.exists():
         try:

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 from datetime import date
@@ -10,30 +11,36 @@ from langchain_core.messages import HumanMessage, SystemMessage
 
 from app.graph.state import AgentState
 from app.llm.prompts.parse import PARSE_SYSTEM, PARSE_USER
+from app.llm.text import response_text
 from app.llm.vertex_client import gemini_fast
 from app.schemas import Submission, VehicleMix
-from app.tools.submissions import load_submission
+from app.tools.submissions import load_submission, source_snapshot
 
 log = logging.getLogger(__name__)
 
 
 async def parse_submission(state: AgentState) -> AgentState:
     """Resolve the submission either by id (preferred) or by parsing user text."""
+    if state.get("benchmark_packet"):
+        return {"submission":Submission.model_validate(state["benchmark_packet"]),
+                "source_snapshot":state.get("benchmark_source_snapshot"),
+                "parse_notes":["frozen synthetic benchmark packet; no live source substitution"]}
     sub_id = state.get("submission_id")
     if sub_id:
         sub = load_submission(sub_id)
         if sub:
-            return {"submission": sub, "parse_notes": [f"loaded submission {sub_id} from disk"]}
+            return {"submission": sub, "source_snapshot": source_snapshot(sub), "parse_notes": [f"loaded submission {sub_id} from disk"]}
 
     # Free-form text path: ask Gemini-Flash to extract.
     user_msg = state.get("user_message", "")
-    llm = gemini_fast()
     try:
-        resp = await llm.ainvoke([
-            SystemMessage(content=PARSE_SYSTEM),
-            HumanMessage(content=PARSE_USER.format(broker_email=user_msg, packet_excerpt="(not provided)")),
-        ])
-        text = resp.content if isinstance(resp.content, str) else str(resp.content)
+        llm = gemini_fast()
+        async with asyncio.timeout(40):
+            resp = await llm.ainvoke([
+                SystemMessage(content=PARSE_SYSTEM),
+                HumanMessage(content=PARSE_USER.format(broker_email=user_msg, packet_excerpt="(not provided)")),
+            ])
+        text = response_text(resp.content)
         # Extract JSON
         start = text.find("{")
         end = text.rfind("}")

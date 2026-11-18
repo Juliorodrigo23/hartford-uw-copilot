@@ -84,6 +84,19 @@ for (const name of names.sort()) {
   }
 }
 
+// A measured snapshot travels with isolated frontend deployments. It is an
+// exported full benchmark, never simulated fallback scores.
+if (!names.includes("eval_results.json")) {
+  const snapshot = path.join(scriptDir, "eval_results.snapshot.json");
+  try {
+    const measured = parseStrictJson(await fs.readFile(snapshot, "utf8"), snapshot);
+    if (measured.schema_version !== 2 || measured.configuration?.scope !== "full" || measured.task_level?.status !== "ok" || measured.generation?.status !== "ok" || !Number.isInteger(measured.task_level?.n_expected) || measured.task_level.n_expected < 1 || measured.task_level?.n_cases !== measured.task_level?.n_expected) throw new Error("Evaluation snapshot is not a complete measured run");
+    await atomicWriteJson("eval_results.json", measured);
+  } catch (error) {
+    if (error.code !== "ENOENT") throw error;
+  }
+}
+
 if (!retrievalInstalled) {
   const payload = validateRetrieval(
     parseStrictJson(await fs.readFile(retrievalSeed, "utf8"), retrievalSeed),
@@ -94,3 +107,21 @@ if (!retrievalInstalled) {
 }
 
 console.log(`[data:sync] copied ${copied} strict export(s) into ${targetDir}`);
+
+// Full synthetic packets remain available in isolated frontend deployments.
+// The index used by the chat picker intentionally omits the broker email and
+// annual loss records, so it is not sufficient for the package viewer.
+let fullPackets;
+try {
+  fullPackets = await fs.readFile(path.join(repoRoot, "backend/data/synthesized/submissions.json"), "utf8");
+} catch (error) {
+  if (error.code !== "ENOENT") throw error;
+  fullPackets = await fs.readFile(path.join(scriptDir, "submissions.seed.json"), "utf8");
+}
+const packets = parseStrictJson(fullPackets, "full submission packets");
+if (!Array.isArray(packets.submissions) || !packets.submissions.length || packets.submissions.some((s) => !s.id || typeof s.broker_email !== "string" || !Array.isArray(s.loss_run))) {
+  throw new Error("Full submission packets are missing required fields");
+}
+await atomicWriteJson("submissions_full.json", { ...packets, provenance: { kind: "synthetic", note: "Synthetic submissions and losses linked to saved public SAFER snapshots." } });
+await atomicWriteJson("submission_schema.json", parseStrictJson(await fs.readFile(path.join(scriptDir, "submission.schema.json"), "utf8"), "submission schema"));
+console.log(`[data:sync] installed ${packets.submissions.length} complete synthetic packets and their input schema`);

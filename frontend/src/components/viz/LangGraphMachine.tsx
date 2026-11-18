@@ -50,7 +50,7 @@ const NODES: Node[] = [
   { id: "retrieve_context", label: "Retrieve · Hybrid RAG", pos: { x: 470, y: 70 }, kind: "rag", ms: 380 },
   { id: "analyze_loss_history", label: "Loss history · XGB", pos: { x: 280, y: 200 }, kind: "ml", ms: 95 },
   { id: "find_comparables", label: "Comparable accounts", pos: { x: 470, y: 200 }, kind: "rag", ms: 130 },
-  { id: "draft_memo", label: "Draft memo · Gemini 2.0", pos: { x: 660, y: 70 }, kind: "llm", ms: 4200 },
+  { id: "draft_memo", label: "Draft memo · Gemini", pos: { x: 660, y: 70 }, kind: "llm", ms: 4200 },
   { id: "self_critique", label: "Self-critique · rubric", pos: { x: 660, y: 200 }, kind: "router", ms: 1900 },
   { id: "finalize", label: "Finalize · structured", pos: { x: 850, y: 135 }, kind: "terminal", ms: 110 },
   { id: "data_insufficient", label: "Data insufficient", pos: { x: 280, y: 320 }, kind: "terminal", ms: 60 },

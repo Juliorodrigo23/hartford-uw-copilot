@@ -26,6 +26,7 @@ export function Header() {
           <NavLink href="/">Overview</NavLink>
           <NavLink href="/architecture">Architecture</NavLink>
           <NavLink href="/pipeline">Pipeline</NavLink>
+          <NavLink href="/package">Submission package</NavLink>
           <NavLink href="/chat">Live demo</NavLink>
         </nav>
 

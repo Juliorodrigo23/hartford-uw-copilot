@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import { NextRequest } from "next/server";
+import { guardChat } from "@/lib/chat-guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -24,11 +25,14 @@ const BACKEND_URL = process.env.BACKEND_URL?.trim().replace(/\/+$/, "");
 const HMAC_SECRET = process.env.HMAC_SECRET;
 
 export async function POST(req: NextRequest) {
+  const guarded = await guardChat(req);
+  if (guarded instanceof Response) return guarded;
   if (!BACKEND_URL) {
     // No live backend configured — tell the client to use the recorded
     // demo replay served by /api/chat.
     return Response.json({ demo: true }, { headers: { "cache-control": "no-store" } });
   }
+  if (!HMAC_SECRET) return Response.json({ error: "Live chat signing is not configured." }, { status: 503 });
   let backendUrl: URL;
   try {
     backendUrl = new URL(BACKEND_URL);
@@ -41,7 +45,7 @@ export async function POST(req: NextRequest) {
       { status: 503 },
     );
   }
-  const body = await req.text();
+  const { body } = guarded;
   const ts = Date.now().toString();
   const sig = HMAC_SECRET
     ? crypto.createHmac("sha256", HMAC_SECRET).update(ts + body).digest("hex")

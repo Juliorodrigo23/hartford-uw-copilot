@@ -57,7 +57,7 @@ export function AboutMe() {
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3 text-sm">
-            <Stat label="LLM" value="Gemini 2.5 Pro" />
+            <Stat label="LLM" value="Gemini 3.8 Flash" />
             <Stat label="Judge" value="GPT-4o (cross-family)" />
             <Stat label="RAG" value="Chroma + BM25 + RRF" />
             <Stat label="Rerank" value="ms-marco MiniLM" />

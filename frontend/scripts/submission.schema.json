@@ -1,0 +1,154 @@
+{
+  "$defs": {
+    "LossYear": {
+      "additionalProperties": false,
+      "properties": {
+        "year": {
+          "maximum": 2100,
+          "minimum": 1990,
+          "title": "Year",
+          "type": "integer"
+        },
+        "claims": {
+          "minimum": 0,
+          "title": "Claims",
+          "type": "integer"
+        },
+        "incurred_usd": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Incurred Usd"
+        }
+      },
+      "required": [
+        "year",
+        "claims",
+        "incurred_usd"
+      ],
+      "title": "LossYear",
+      "type": "object"
+    },
+    "VehicleMix": {
+      "additionalProperties": false,
+      "description": "Vehicle-type fractions. Auto-normalized to sum to 1.0 at construction.\nAn all-zero mix is left untouched (callers treat it as unknown).",
+      "properties": {
+        "tractor": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Tractor",
+          "type": "number"
+        },
+        "straight_truck": {
+          "default": 0.0,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Straight Truck",
+          "type": "number"
+        },
+        "trailer": {
+          "default": 0.0,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Trailer",
+          "type": "number"
+        },
+        "other": {
+          "default": 0.0,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Other",
+          "type": "number"
+        }
+      },
+      "required": [
+        "tractor"
+      ],
+      "title": "VehicleMix",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "carrier_name": {
+      "title": "Carrier Name",
+      "type": "string"
+    },
+    "dot_number": {
+      "title": "Dot Number",
+      "type": "string"
+    },
+    "safer_legal_name": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Safer Legal Name"
+    },
+    "fleet_size": {
+      "minimum": 1,
+      "title": "Fleet Size",
+      "type": "integer"
+    },
+    "vehicle_mix": {
+      "$ref": "#/$defs/VehicleMix"
+    },
+    "states_of_operation": {
+      "items": {
+        "type": "string"
+      },
+      "title": "States Of Operation",
+      "type": "array"
+    },
+    "effective_date": {
+      "format": "date",
+      "title": "Effective Date",
+      "type": "string"
+    },
+    "loss_run": {
+      "items": {
+        "$ref": "#/$defs/LossYear"
+      },
+      "title": "Loss Run",
+      "type": "array"
+    },
+    "broker_email": {
+      "title": "Broker Email",
+      "type": "string"
+    },
+    "commodity": {
+      "default": "general_freight",
+      "title": "Commodity",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "carrier_name",
+    "dot_number",
+    "fleet_size",
+    "vehicle_mix",
+    "states_of_operation",
+    "effective_date",
+    "loss_run",
+    "broker_email"
+  ],
+  "title": "Submission",
+  "type": "object"
+}

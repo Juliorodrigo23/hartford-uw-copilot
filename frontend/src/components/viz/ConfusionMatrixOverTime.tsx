@@ -81,7 +81,7 @@ export function ConfusionMatrixOverTime() {
         <div className="font-mono text-2xs uppercase tracking-[0.18em] text-ink-dim">
           Confusion matrix over model versions
         </div>
-        <DataBadge kind="live" note="out-of-fold" />
+        <DataBadge kind="live" note="historical synthetic export; calibrated v3 uses calibration fit rows" />
         <div className="ml-auto flex items-center gap-1 rounded-md border border-border bg-bg-card p-1 text-xs">
           {versions.map((mv, i) => (
             <button

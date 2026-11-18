@@ -4,14 +4,24 @@ from __future__ import annotations
 
 import logging
 from functools import lru_cache
+from threading import RLock
 
 from app.config import settings
 
 log = logging.getLogger(__name__)
+_client_lock = RLock()
+
+
+def get_client():
+    # lru_cache alone permits concurrent cache misses. Chroma's singleton
+    # RustBindingsAPI can then be observed before its bindings are initialized
+    # by a competing warmup/diagnostic request.
+    with _client_lock:
+        return _get_client()
 
 
 @lru_cache(maxsize=1)
-def get_client():
+def _get_client():
     import chromadb
 
     settings.chroma_path.mkdir(parents=True, exist_ok=True)

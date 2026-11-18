@@ -40,7 +40,20 @@ async def retrieve_context(state: AgentState) -> AgentState:
     if iters > 0 and gaps:
         query += " · GAP: " + "; ".join(gaps)
 
-    chunks = await hybrid_search(query=query, k_final=10)
+    sub = state.get("submission")
+    commodity = sub.commodity if sub else "commercial trucking"
+    # Each branch has its own evidence purpose and budget. Public references
+    # remain context; they must never be presented as this carrier's history.
+    plans = [
+        (f"commercial vehicle driver safety inspection maintenance crash investigation {commodity} {state.get('user_message', '')}", ("ntsb",), 4),
+        (f"FMCSA {commodity} insurance operating authority crash fault BASIC percentile hours of service", ("industry",), 4),
+        (f"trucking {commodity} insurance claims premium driver retention risk-factor disclosures", ("10k",), 2),
+    ]
+    chunks = []
+    for scoped_query, corpora, budget in plans:
+        if iters > 0 and gaps:
+            scoped_query += " " + "; ".join(gaps)
+        chunks.extend(await hybrid_search(query=scoped_query, k_final=budget, corpora=corpora))
     if not chunks:
         log.warning(
             "no chunks retrieved for query=%r — if this is unexpected, "

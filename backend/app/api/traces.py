@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException, Request
 
+from app.api.auth import verify_hmac
+
 router = APIRouter()
 
 
@@ -16,10 +18,11 @@ async def get_trace(run_id: str, request: Request):
     replay/scrub a completed run.
     """
     graph = request.app.state.graph
+    await verify_hmac(request)
     try:
         snapshot = await graph.aget_state({"configurable": {"thread_id": run_id}})
-    except Exception as e:
-        raise HTTPException(status_code=404, detail=f"trace not found: {e}")
+    except Exception:
+        raise HTTPException(status_code=404, detail="trace not found") from None
     if snapshot is None or not snapshot.values:
         raise HTTPException(status_code=404, detail="trace not found")
     return {

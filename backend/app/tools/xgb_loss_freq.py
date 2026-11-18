@@ -13,6 +13,7 @@ import logging
 from functools import lru_cache
 
 import numpy as np
+from langsmith import traceable
 
 from app.config import settings
 from app.schemas import SAFERProfile, Submission, XGBPrediction
@@ -104,6 +105,7 @@ def _fallback(sub: Submission, safer: SAFERProfile | None) -> XGBPrediction:
     )
 
 
+@traceable(name="xgb_loss_freq", run_type="tool")
 def xgb_predict(sub: Submission, safer: SAFERProfile | None) -> XGBPrediction:
     booster, feat_names, version, pi_mult = _load_model()
     if booster is None:

@@ -1,113 +1,96 @@
-"""Track 1 — Retrieval evaluation.
-
-Every result carries a `status`:
-  ok       — metrics were computed against the golden set
-  skipped  — prerequisites missing (no golden set / empty index); no metrics
-The runner NEVER emits zero-filled metrics for a track that didn't run.
-"""
+"""Source-checked passage retrieval and explicit no-evidence evaluation."""
 
 from __future__ import annotations
 
-import json
-import logging
-import math
-from pathlib import Path
-
-from app.config import settings
+from app.eval.benchmark import load_benchmark, validate_retrieval_references
 from app.rag.hybrid_search import hybrid_search
-
-log = logging.getLogger(__name__)
-
-
-GOLDEN = Path(settings.data_dir).parent / "app" / "eval" / "golden_set" / "retrieval_questions.json"
 
 
 def _recall_at_k(retrieved: list[str], relevant: set[str], k: int) -> float:
-    top = retrieved[:k]
-    return len(set(top) & relevant) / max(1, len(relevant))
+    return len(set(retrieved[:k]) & relevant) / max(1, len(relevant))
 
 
 def _mrr(retrieved: list[str], relevant: set[str]) -> float:
-    for i, doc_id in enumerate(retrieved, start=1):
-        if doc_id in relevant:
-            return 1.0 / i
-    return 0.0
+    return next((1 / i for i, key in enumerate(retrieved, 1) if key in relevant), 0.0)
 
 
 def _ndcg(retrieved: list[str], relevant: set[str], k: int = 10) -> float:
-    dcg = 0.0
-    for i, doc_id in enumerate(retrieved[:k], start=1):
-        if doc_id in relevant:
-            dcg += 1.0 / math.log2(i + 1)
-    ideal = sum(1.0 / math.log2(i + 1) for i in range(1, min(k, len(relevant)) + 1))
+    import math
+
+    dcg = sum(1 / math.log2(i + 1) for i, key in enumerate(retrieved[:k], 1) if key in relevant)
+    ideal = sum(1 / math.log2(i + 1) for i in range(1, min(k, len(relevant)) + 1))
     return dcg / ideal if ideal else 0.0
 
 
-async def evaluate_retrieval(k_final: int = 10) -> dict:
-    if not GOLDEN.exists():
-        log.warning("no golden retrieval set at %s", GOLDEN)
-        return {"status": "skipped", "reason": f"golden set missing at {GOLDEN}"}
+def _avg(values):
+    return sum(values) / len(values) if values else None
 
-    qs = json.loads(GOLDEN.read_text())["questions"]
 
-    # Coverage gate: the golden set labels CHUNK ids. If most labeled ids no
-    # longer exist in the built index (corpus rebuilt, chunk boundaries
-    # moved), scoring would silently measure staleness, not retrieval
-    # quality. Refuse and say so.
-    bm25_path = settings.data_dir / "processed" / "bm25_corpus.json"
-    if bm25_path.exists():
-        index_ids = {d["id"] for d in json.loads(bm25_path.read_text())["docs"]}
-        labeled = {i for q in qs for i in q["relevant_doc_ids"]}
-        missing = labeled - index_ids
-        if labeled and len(missing) / len(labeled) > 0.5:
-            return {
-                "status": "skipped",
-                "reason": (
-                    f"golden set is stale: {len(missing)}/{len(labeled)} labeled chunk ids "
-                    "are not in the built index — relabel retrieval_questions.json "
-                    "against the current corpus before scoring"
-                ),
-            }
-
-    recall5: list[float] = []
-    recall10: list[float] = []
-    mrrs: list[float] = []
-    ndcgs: list[float] = []
-    by_corpus: dict[str, list[float]] = {}
-    any_hits = False
-    for q in qs:
+async def evaluate_retrieval(k_final: int = 10, split: str | None = None) -> dict:
+    data = load_benchmark("retrieval_questions")
+    validate_retrieval_references(data)
+    questions = [q for q in data["questions"] if not split or q["split"] == split]
+    rows = []
+    for q in questions:
+        chunks = await hybrid_search(q["query"], k_final=max(k_final, 10))
+        ids = [chunk.doc_id for chunk in chunks]
+        # Adjacent overlapping chunks are equivalent only when the exact
+        # reference quotation occurs in that SAME source document.
+        scored_ids = list(ids)
+        for ref in q["references"]:
+            for i, hit in enumerate(chunks):
+                if hit.doc_id.split("#")[0] == ref["doc_id"].split("#")[0] and " ".join(
+                    ref["quote"].split()
+                ) in " ".join(hit.text.split()):
+                    scored_ids[i] = ref["doc_id"]
         relevant = set(q["relevant_doc_ids"])
-        chunks = await hybrid_search(q["query"], k_final=max(10, k_final))
-        if chunks:
-            any_hits = True
-        ids = [c.doc_id for c in chunks]
-        recall5.append(_recall_at_k(ids, relevant, 5))
-        recall10.append(_recall_at_k(ids, relevant, 10))
-        mrrs.append(_mrr(ids, relevant))
-        ndcgs.append(_ndcg(ids, relevant, 10))
-        c = q.get("corpus", "all")
-        by_corpus.setdefault(c, []).append(_recall_at_k(ids, relevant, 10))
-
-    if not any_hits:
-        # The index is empty or unreachable. Zeros here would be a lie about
-        # retrieval quality; it's an infrastructure failure, so say so.
-        return {
-            "status": "skipped",
-            "reason": "index returned no chunks for any query — run scripts/02-04 first",
+        row = {
+            "id": q["id"],
+            "query": q["query"],
+            "corpus": q["corpus"],
+            "split": q["split"],
+            "retrieved_ids": ids,
+            "reference_ids": sorted(relevant),
         }
-
-    by_corpus_out = [{"corpus": c, "recall_at_10": _avg(v), "n": len(v)} for c, v in by_corpus.items()]
-
+        if q.get("expected_abstention"):
+            row["abstention_correct"] = not chunks
+        else:
+            row.update(
+                {
+                    "recall_at_5": _recall_at_k(scored_ids, relevant, 5),
+                    "recall_at_10": _recall_at_k(scored_ids, relevant, 10),
+                    "mrr": _mrr(scored_ids, relevant),
+                    "ndcg_at_10": _ndcg(scored_ids, relevant),
+                }
+            )
+        rows.append(row)
+    answerable = [r for r in rows if "recall_at_10" in r]
+    negatives = [r for r in rows if "abstention_correct" in r]
     return {
         "status": "ok",
-        "recall_at_5": _avg(recall5),
-        "recall_at_10": _avg(recall10),
-        "mrr": _avg(mrrs),
-        "ndcg_at_10": _avg(ndcgs),
-        "by_corpus": by_corpus_out,
-        "n_questions": len(qs),
+        "method": "source-checked passage anchors; exact-quote overlap within the same source accepted",
+        **{
+            key: _avg([r[key] for r in answerable])
+            for key in ["recall_at_5", "recall_at_10", "mrr", "ndcg_at_10"]
+        },
+        "n_questions": len(rows),
+        "n_answerable": len(answerable),
+        "n_no_evidence": len(negatives),
+        "abstention_accuracy": _avg([r["abstention_correct"] for r in negatives]),
+        "by_corpus": [
+            {
+                "corpus": c,
+                "recall_at_10": _avg([r["recall_at_10"] for r in answerable if r["corpus"] == c]),
+                "n": sum(r["corpus"] == c for r in answerable),
+            }
+            for c in sorted({r["corpus"] for r in answerable})
+        ],
+        "by_split": {
+            s: {
+                "n": sum(r["split"] == s for r in rows),
+                "recall_at_10": _avg([r["recall_at_10"] for r in answerable if r["split"] == s]),
+            }
+            for s in ["development", "holdout"]
+        },
+        "per_question": rows,
     }
-
-
-def _avg(xs: list[float]) -> float:
-    return sum(xs) / max(1, len(xs))

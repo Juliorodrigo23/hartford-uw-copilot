@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import { NextRequest } from "next/server";
+import { guardChat } from "@/lib/chat-guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -12,25 +13,6 @@ export const maxDuration = 300;
 
 const BACKEND_URL = process.env.BACKEND_URL?.trim().replace(/\/+$/, "");
 const HMAC_SECRET = process.env.HMAC_SECRET;
-const configuredRate = Number.parseInt(process.env.RATE_LIMIT_PER_HOUR ?? "20", 10);
-const RATE = Number.isFinite(configuredRate) && configuredRate > 0 ? configuredRate : 20;
-
-// Proxy-level rate limiter. In-memory and therefore PER SERVERLESS INSTANCE:
-// it resets on cold starts and is not shared across instances. It exists as
-// a cheap first line; the backend applies its own per-minute limit
-// (RATE_LIMIT_PER_MIN) authoritative for the service.
-const buckets = new Map<string, { count: number; resetAt: number }>();
-function rateLimit(ip: string): { allowed: boolean; remaining: number } {
-  const now = Date.now();
-  const b = buckets.get(ip);
-  if (!b || b.resetAt < now) {
-    buckets.set(ip, { count: 1, resetAt: now + 60 * 60 * 1000 });
-    return { allowed: true, remaining: RATE - 1 };
-  }
-  if (b.count >= RATE) return { allowed: false, remaining: 0 };
-  b.count += 1;
-  return { allowed: true, remaining: RATE - b.count };
-}
 
 export async function POST(req: NextRequest) {
   // Recruiter walkthroughs can request the clearly labeled recorded trace
@@ -40,16 +22,10 @@ export async function POST(req: NextRequest) {
     return demoStream("walkthrough");
   }
 
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "anon";
-  const rl = rateLimit(ip);
-  if (!rl.allowed) {
-    return Response.json(
-      { error: "Rate limit hit. Try again in an hour." },
-      { status: 429, headers: { "retry-after": "3600" } },
-    );
-  }
-
-  const body = await req.text();
+  const guarded = await guardChat(req);
+  if (guarded instanceof Response) return guarded;
+  const { body } = guarded;
+  const rl = { remaining: guarded.remaining };
 
   if (!BACKEND_URL) {
     // No backend configured: stream a RECORDED REPLAY. The stream announces
@@ -57,6 +33,7 @@ export async function POST(req: NextRequest) {
     // it is never presented as a live agent run.
     return demoStream("backend-unconfigured");
   }
+  if (!HMAC_SECRET) return Response.json({ error: "Live chat signing is not configured." }, { status: 503 });
 
   const ts = Date.now().toString();
   const sig = HMAC_SECRET

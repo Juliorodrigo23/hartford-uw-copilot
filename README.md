@@ -14,7 +14,7 @@ An observable, evaluation-first commercial auto underwriting system. It turns a 
 | --- | --- |
 | Agent workflow | Nine typed LangGraph nodes, two conditional routers, a bounded repair loop, and durable SQLite checkpoints |
 | Retrieval | Chroma dense search with `BAAI/bge-large-en-v1.5` + BM25 + reciprocal rank fusion (`k=60`) + cross-encoder reranking from 50 candidates to 10 |
-| Generative AI | Gemini 2.5 Pro drafts the memo through Vertex AI; Gemini 2.5 Flash handles fast-model duties and provides the fallback critic |
+| Generative AI | Gemini 3.8 Flash drafts through the Google Gemini API; Gemini 3.5 Flash Lite handles parsing and optional critique |
 | Independent critique | GPT-4o critiques Gemini drafts when an OpenAI key is configured, reducing same-model judging bias |
 | Classical ML | XGBoost loss-frequency prediction with isotonic calibration and SHAP feature attribution |
 | Evidence and tools | FMCSA carrier enrichment, NTSB narratives, SEC 10-K risk factors, loss calculations, and comparable-account search |
@@ -32,7 +32,7 @@ flowchart LR
     B -->|DOT missing| X["Data insufficient"]
     C --> D["Analyze loss history<br/>XGBoost + SHAP"]
     D --> E["Find comparables"]
-    E --> F["Draft memo<br/>Gemini 2.5 Pro"]
+    E --> F["Draft memo<br/>Gemini 3.8 Flash"]
     F --> G["Self-critique<br/>GPT-4o or Gemini Flash"]
     G -->|evidence gaps and budget remains| C
     G -->|pass or loop limit| H["Finalize typed package"]
@@ -42,11 +42,14 @@ flowchart LR
 
 ### Model authentication
 
-Gemini does not use a personal API key in this deployment. The backend calls Gemini through Google Vertex AI:
+The deployed Gemini calls use an API key stored in Google Secret Manager. Set `GEMINI_AUTH_MODE=api_key`, `GEMINI_API_BACKEND=developer`, and `GEMINI_API_KEY` for a Google AI Studio key. Vertex AI express keys are supported with `GEMINI_API_BACKEND=vertex`. API-key calls omit project/location and never fall back to ADC when a key is missing.
 
-- Local development uses Google Application Default Credentials from `gcloud auth application-default login`.
-- Cloud Run uses its attached service account, which has the Vertex AI User role.
-- `OPENAI_API_KEY` is separate. It enables the cross-family GPT-4o critic and LLM-as-judge evaluation; if it is absent, runtime critique falls back to Gemini 2.5 Flash.
+- `GEMINI_AUTH_MODE=adc` explicitly selects the Google Cloud credential/service-account path instead.
+- `GEMINI_AUTH_MODE=auto` prefers a configured API key, otherwise uses ADC.
+- Google API-key billing belongs to the project associated with that key.
+- `OPENAI_API_KEY` is separate. It enables the cross-family GPT-4o critic and LLM-as-judge evaluation. In `auto` mode, an unavailable OpenAI judge triggers an announced Gemini 3.5 Flash Lite fallback. Explicit OpenAI/Gemini selections never substitute a different provider.
+- Cloud Run keeps one warm instance and gates startup on `/ready` until retrieval warmup finishes. This incurs ongoing idle-instance charges.
+- The saved sample run below predates the November 2026 model migration; its recorded timings and metrics are historical.
 
 ## Retrieval and evidence flow
 
@@ -80,27 +83,37 @@ The repository includes a captured end-to-end `SUB-001` trace. It is a reproduci
 
 The recorded outcome is illustrative decision support for a synthetic alias linked to a public carrier profile. It is not a real carrier decision.
 
-## Evaluation, including the misses
+## Versioned evidence evaluation
 
-`backend/scripts/07_run_evals.py` runs three independent tracks and records `ok` or `skipped` explicitly—missing results are never backfilled with invented values.
+`backend/scripts/07_run_evals.py` runs the v2 source-evidence benchmark once,
+reuses its outputs across metrics, and publishes linked LangSmith experiments.
+The frozen set has 20 synthetic packets (14 development and six carrier-disjoint
+holdout cases) plus 20 retrieval questions (18 answerable and two no-source checks).
 
-| Track | Latest tracked result | Scope |
-| --- | ---: | --- |
-| Retrieval | recall@10 **40.0%** · MRR **0.199** · nDCG@10 **0.233** | 10 golden questions |
-| Generation | **80%** pairwise win rate over the baseline | 5 cases, multi-judge runs |
-| Task level | red-flag recall **33.3%** · hallucination rate **20.0%** | 5 synthetic cases |
+References were checked against the source text and frozen account records by
+the coding agent. **Underwriter validation is pending.** Assertions measure
+factual evidence handling, not actuarially correct quote/decline decisions.
 
-The task-level sample is intentionally small and the misses are visible. These numbers are evidence for iteration, not production-readiness claims.
+The dashboard reports passage recall/MRR/nDCG, semantic assertion coverage,
+unsupported material claims, citation-ID validity, disposition JSON validity,
+completed/expected cases, and paired single-shot baseline results. Individual
+claims and grading reasons remain inspectable in LangSmith. Missing documents
+are separate from defects in a memo. Unrun component ablations are labeled as such.
 
-The ablation suite re-runs the agent as:
+Latest measured Linux run (2026-11-18):
 
-- full system;
-- without self-critique;
-- without RAG;
-- without comparable-account search;
-- without the XGBoost loss-frequency tool.
+| Metric | Agent | Single-shot baseline |
+| --- | ---: | ---: |
+| Reference assertion coverage | 131/131 | 131/131 |
+| Unsupported checked claims | 1/140 (0.7%) | 2/114 (1.8%) |
+| Completed cases | 20/20 | 20/20 |
 
-That makes it possible to test whether each component changes retrieval, red-flag recall, or hallucination behavior instead of assuming that a more complex graph is automatically better.
+Retrieval recovered 16/18 specified supporting passages in the top ten and passed both no-source checks. Six carrier-disjoint holdout cases covered all reference assertions. These provisional factual tests do not establish underwriting accuracy or statistically robust superiority over the baseline.
+
+The retired July draft-label/keyword scores are not directly comparable with v2.
+See [docs/evaluation.md](docs/evaluation.md) for definitions and limitations and
+the [live dashboard](https://uwcopilothartford.vercel.app/hartford/pipeline#evaluation)
+for the published measured run.
 
 ## Repository map
 
@@ -125,14 +138,15 @@ frontend/
 ### Prerequisites
 
 - Python 3.11+, [uv](https://docs.astral.sh/uv/), Node.js, and pnpm
-- A Google Cloud project with Vertex AI enabled
+- A funded Gemini API key, or a Google Cloud project with Vertex AI enabled for ADC mode
 - Optional: an FMCSA web key for live carrier lookup
 - Optional: an OpenAI key for the GPT-4o critic and generation evaluation
 
 ```bash
 # Repository root
 cp .env.example .env
-gcloud auth application-default login
+# Fill GEMINI_API_KEY and optionally OPENAI_API_KEY in .env
+# For ADC mode instead: set GEMINI_AUTH_MODE=adc and run gcloud auth application-default login
 
 # Backend
 cd backend
@@ -162,7 +176,7 @@ When the corpus, submissions, and model are already current, refresh from evalua
 
 ```bash
 cd backend
-uv run python scripts/07_run_evals.py --ablations
+uv run python scripts/07_run_evals.py
 uv run python scripts/08_export_viz_data.py --skip-umap
 uv run python scripts/09_capture_showcase.py --submission SUB-001
 ```
@@ -200,6 +214,9 @@ vercel --prod
 
 See [DEPLOY.md](./DEPLOY.md) for environment variables, secret setup, signed proxy requests, and health checks.
 
+See [docs/langsmith.md](./docs/langsmith.md) to connect graph, tool, Gemini and
+OpenAI traces to a LangSmith workspace and verify a production run.
+
 ## Provenance and responsible use
 
 - FMCSA SAFER profiles, NTSB accident narratives, NHTSA/FARS aggregates, and SEC filings are public-source evidence.
@@ -209,3 +226,7 @@ See [DEPLOY.md](./DEPLOY.md) for environment variables, secret setup, signed pro
 - This portfolio system has not been validated for production insurance decisions.
 
 Built by [Julio Contreras](https://juliooo.com).
+
+## Submission package and underwriter briefing
+
+The **Submission package** navigation tab opens `/package`. Its views show the account briefing and complete memo, the full broker packet and analysis evidence, and the exact submission schema plus a clearly labeled individual-claim format reference. The saved packet contains annual loss aggregates; it does not contain fabricated individual claim files or missing ACORD/MVR attachments. Completed live runs link to `/package?run=<run_id>` and load their exact checkpoint through an authenticated server proxy. The recorded SUB-001 sample remains available without making model calls.

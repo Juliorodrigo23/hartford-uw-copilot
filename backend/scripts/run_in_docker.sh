@@ -7,7 +7,7 @@
 # That conflict does not exist on Linux — which is also exactly what Cloud
 # Run executes, so evals run here are measured in the production environment.
 #
-#   ./scripts/run_in_docker.sh scripts/07_run_evals.py --ablations
+#   ./scripts/run_in_docker.sh scripts/07_run_evals.py
 #   ./scripts/run_in_docker.sh scripts/08_export_viz_data.py --with-fars
 #   ./scripts/run_in_docker.sh scripts/09_capture_showcase.py --submission SUB-001
 #

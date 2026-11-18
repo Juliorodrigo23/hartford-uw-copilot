@@ -11,9 +11,12 @@ import asyncio
 import json
 import logging
 import math
+import re
 from functools import lru_cache
+from pathlib import Path
 
 import numpy as np
+from langsmith import traceable
 
 from app.config import settings
 from app.rag.embeddings import embed_query
@@ -33,18 +36,56 @@ DEFAULT_K_FINAL = 10
 Hit = tuple[str, float, str, str]
 
 
+def tokenize(text: str) -> list[str]:
+    return re.findall(r"[a-z0-9]+", text.lower())
+
+
+def expand_query(query: str) -> str:
+    additions = []
+    for pattern, expansion in [
+        (r"\boos\b", "out of service vehicle inspection maintenance"),
+        (r"\bhazmat\b", "hazardous materials"),
+        (r"\bhos\b", "hours of service fatigue driving"),
+    ]:
+        if re.search(pattern, query, re.I):
+            additions.append(expansion)
+    return query + " " + " ".join(additions)
+
+
+def route_corpora(query: str) -> tuple[str, ...] | None:
+    q = query.lower()
+    if any(s in q for s in ("iso commercial", "iso business", "policy exclusion", "coverage form", "acord")):
+        return ("forms",)
+    if any(s in q for s in ("fmcsa", "hours of service", "hos regulation", "basic percentile", "crash fault")):
+        return ("industry",)
+    if "ntsb" in q:
+        return ("ntsb",)
+    if any(s in q for s in ("10-k", "annual report", "risk-factor disclosure", "werner", "knight-swift")):
+        return ("10k",)
+    return None
+
+
+def reference_documents() -> list[dict]:
+    return json.loads(Path(__file__).with_name("reference_sources.json").read_text())["docs"]
+
+
+def all_documents() -> list[dict]:
+    path = settings.data_dir / "processed" / "bm25_corpus.json"
+    docs = json.loads(path.read_text())["docs"] if path.exists() else []
+    by_id = {d["id"]: d for d in docs}
+    by_id.update({d["id"]: d for d in reference_documents()})
+    return list(by_id.values())
+
+
 @lru_cache(maxsize=1)
 def _bm25():
     """Load a single concatenated BM25 over all corpora."""
     from rank_bm25 import BM25Okapi
 
-    bm25_path = settings.data_dir / "processed" / "bm25_corpus.json"
-    if not bm25_path.exists():
-        log.warning("BM25 corpus not found at %s — run scripts/04_build_index.py", bm25_path)
+    docs = all_documents()
+    if not docs:
         return None, []
-    raw = json.loads(bm25_path.read_text())
-    docs: list[dict] = raw["docs"]
-    tokens = [d["text"].lower().split() for d in docs]
+    tokens = [tokenize(d["id"] + " " + d["text"]) for d in docs]
     return BM25Okapi(tokens), docs
 
 
@@ -80,10 +121,12 @@ def _reranker():
         return None
 
 
-def _dense_search(query_emb: np.ndarray, k: int) -> list[Hit]:
+def _dense_search(query_emb: np.ndarray, k: int, corpora: tuple[str, ...] | None = None) -> list[Hit]:
     """Search every collection and merge."""
     out: list[Hit] = []
     for name in COLLECTIONS:
+        if corpora is not None and name not in corpora:
+            continue
         try:
             col = get_or_create(name)
         except Exception as e:
@@ -112,11 +155,13 @@ def _dense_search(query_emb: np.ndarray, k: int) -> list[Hit]:
     return out[:k]
 
 
-def _bm25_search(query: str, k: int) -> list[Hit]:
+def _bm25_search(query: str, k: int, corpora: tuple[str, ...] | None = None) -> list[Hit]:
     bm25, docs = _bm25()
     if bm25 is None or not docs:
         return []
-    scores = bm25.get_scores(query.lower().split())
+    scores = bm25.get_scores(tokenize(query))
+    if corpora is not None:
+        scores = np.asarray([score if doc.get("source") in corpora else -np.inf for score, doc in zip(scores, docs, strict=True)])
     top = np.argsort(scores)[::-1][:k]
     # NOTE: keyed by chunk id ("id"), not the parent document id, so that
     # RRF dedup against dense hits and golden-set matching are exact.
@@ -145,7 +190,7 @@ def _rerank(query: str, hits: list[Hit], k_final: int) -> list[Hit]:
     reranker = _reranker()
     if reranker is None:
         return hits[:k_final]
-    pairs = [(query, t) for _id, _s, t, _src in hits[:50]]
+    pairs = [(query, f"Document: {_id}\n{t}") for _id, _s, t, _src in hits[:50]]
     scores = np.asarray(reranker.predict(pairs), dtype=float).reshape(-1)
     if scores.size != len(pairs):
         log.warning(
@@ -171,16 +216,20 @@ def _rerank(query: str, hits: list[Hit], k_final: int) -> list[Hit]:
     ]
 
 
+@traceable(name="hybrid_search", run_type="retriever")
 async def hybrid_search(
     query: str,
     k_final: int = DEFAULT_K_FINAL,
     k_dense: int = DEFAULT_K_DENSE,
     k_bm25: int = DEFAULT_K_BM25,
     rerank: bool = True,
+    corpora: tuple[str, ...] | None = None,
+    route: bool = True,
 ) -> list[RetrievedChunk]:
     """Public entrypoint. Async wrapper around the (CPU-bound) hybrid pipeline."""
     loop = asyncio.get_running_loop()
-    return await loop.run_in_executor(None, _hybrid_search_sync, query, k_final, k_dense, k_bm25, rerank)
+    scope = corpora if corpora is not None else (route_corpora(query) if route else None)
+    return await loop.run_in_executor(None, _hybrid_search_sync, query, k_final, k_dense, k_bm25, rerank, scope)
 
 
 def _hybrid_search_sync(
@@ -189,7 +238,9 @@ def _hybrid_search_sync(
     k_dense: int,
     k_bm25: int,
     rerank: bool,
+    corpora: tuple[str, ...] | None = None,
 ) -> list[RetrievedChunk]:
+    query = expand_query(query)
     emb = None
     if _dense_index_ready():
         try:
@@ -199,17 +250,30 @@ def _hybrid_search_sync(
 
     rankings: list[list[Hit]] = []
     if emb is not None:
-        rankings.append(_dense_search(emb, k_dense))
-    rankings.append(_bm25_search(query, k_bm25))
+        rankings.append(_dense_search(emb, k_dense, corpora))
+    rankings.append(_bm25_search(query, k_bm25, corpora))
     fused = _rrf(rankings)
     if rerank:
-        fused = _rerank(query, fused, k_final)
+        fused = _rerank(query, fused, max(20, k_final * 4))
     else:
-        fused = fused[:k_final]
+        fused = fused[:max(20, k_final * 4)]
+
+    # Prevent near-duplicate paragraphs from one annual report or accident
+    # report consuming the whole evidence budget. Keep ordering within scope.
+    selected = []
+    parent_counts: dict[str, int] = {}
+    for hit in fused:
+        parent = hit[0].split("#")[0]
+        if parent_counts.get(parent, 0) >= 2:
+            continue
+        selected.append(hit)
+        parent_counts[parent] = parent_counts.get(parent, 0) + 1
+        if len(selected) >= k_final:
+            break
 
     return [
         RetrievedChunk(doc_id=chunk_id, score=score, text=text, source=src or "unknown")
-        for (chunk_id, score, text, src) in fused
+        for (chunk_id, score, text, src) in selected
     ]
 
 

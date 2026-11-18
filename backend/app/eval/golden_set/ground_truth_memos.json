@@ -1,59 +1,3223 @@
 {
-  "version": 1,
-  "description": "Hand-curated ground-truth memo expectations. The agent's memo is scored on whether it surfaces the listed red flags and avoids the must-not-claim items.",
+  "version": "uw-evidence-v2.0",
+  "created_at": "2026-11-18",
+  "review_status": "agent_source_checked; underwriter_validation_pending",
+  "reviewer": "Codex: checked assertion values against frozen packet and retrieval quotations against source text",
+  "limitations": [
+    "Synthetic submissions and loss aggregates; no verified claim files or earned premium.",
+    "Reference assertions evaluate evidence handling, not actuarial correctness or quote/decline accuracy.",
+    "Retrieval labels are specified supporting passages, not exhaustive relevance judgments.",
+    "Scores are not directly comparable with the July keyword/draft-label benchmark."
+  ],
   "cases": [
     {
-      "submission_id": "SUB-001",
-      "ground_truth": {
-        "expected_disposition": ["decline", "quote_with_surcharge"],
-        "expected_redflags": [
-          "OOS",
-          "BASIC",
-          "vehicle maintenance",
-          "trend"
+      "id": "SUB-001",
+      "inputs": {
+        "submission_id": "SUB-001",
+        "packet_sha256": "579fa437b2f86579a2bdb4ee0f565e794d0d0a1b877f8459a29d1c3a3d665486",
+        "safer_sha256": "f1e42f15db982724950533d3d2a667d977d5ed4db198f99327317865d107eaea",
+        "split": "development",
+        "submission": {
+          "id": "SUB-001",
+          "carrier_name": "ABC Transport Inc",
+          "dot_number": "185040",
+          "safer_legal_name": "UNITED PETROLEUM TRANSPORTS INC",
+          "fleet_size": 619,
+          "vehicle_mix": {
+            "tractor": 0.86,
+            "straight_truck": 0.1,
+            "trailer": 0.0,
+            "other": 0.04
+          },
+          "states_of_operation": [
+            "WA",
+            "OR",
+            "ID",
+            "MT"
+          ],
+          "effective_date": "2026-08-10",
+          "loss_run": [
+            {
+              "year": 2021,
+              "claims": 39,
+              "incurred_usd": "4641489"
+            },
+            {
+              "year": 2022,
+              "claims": 40,
+              "incurred_usd": "3765388"
+            },
+            {
+              "year": 2023,
+              "claims": 41,
+              "incurred_usd": "4064455"
+            },
+            {
+              "year": 2024,
+              "claims": 43,
+              "incurred_usd": "5317122"
+            },
+            {
+              "year": 2025,
+              "claims": 44,
+              "incurred_usd": "6094700"
+            }
+          ],
+          "broker_email": "Team —\n\nLooking for a Hartford quote on ABC Transport Inc (DOT 185040). They run 619 power units, mostly out of WA/MT corridors. 5-yr loss run attached, MVRs are clean for the most part. Renewal effective in 30 days. Producer is Mike at Lockton.\n\n—J.",
+          "commodity": "general_freight"
+        },
+        "source_snapshot": {
+          "legal_name": "UNITED PETROLEUM TRANSPORTS INC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 604,
+          "drivers": 712,
+          "crashes_24mo_total": 41,
+          "crashes_24mo_fatal": 2,
+          "crashes_24mo_injury": 14,
+          "crashes_24mo_towaway": 25,
+          "oos_rate_vehicle": 0.14613778705636743,
+          "oos_rate_driver": 0.008712487899322363,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "185040"
+        },
+        "safer_profile": {
+          "legal_name": "UNITED PETROLEUM TRANSPORTS INC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 604,
+          "drivers": 712,
+          "crashes_24mo_total": 41,
+          "crashes_24mo_fatal": 2,
+          "crashes_24mo_injury": 14,
+          "crashes_24mo_towaway": 25,
+          "oos_rate_vehicle": 0.14613778705636743,
+          "oos_rate_driver": 0.008712487899322363,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "185040"
+        }
+      },
+      "reference_outputs": {
+        "assertions": [
+          {
+            "id": "annual_history",
+            "description": "Recognize that 5 years of annual loss aggregates ARE supplied. Describe that annual claim counts increases from 39 in 2021 to 44 in 2025, or give the consistent computed trend. Do not call the supplied history absent.",
+            "evidence_paths": [
+              "submission.loss_run"
+            ]
+          },
+          {
+            "id": "oos_observations",
+            "description": "Discuss vehicle out-of-service observations (14.61%) and driver observations (0.87%) accurately, allowing normal rounding. Do not invent national averages or interpret private BASIC percentiles as measured values.",
+            "evidence_paths": [
+              "safer_profile.oos_rate_vehicle",
+              "safer_profile.oos_rate_driver"
+            ]
+          },
+          {
+            "id": "commodity_and_identity",
+            "description": "Identify the submitted commodity as general_freight, distinguish the demo alias from the public legal identity, and flag submitted fleet size 619 versus public power units 604 as a reconciliation question when they differ. Do not infer actual cargo solely from the carrier name.",
+            "evidence_paths": [
+              "submission.commodity",
+              "submission.fleet_size",
+              "submission.safer_legal_name",
+              "safer_profile.power_units"
+            ]
+          },
+          {
+            "id": "premium_assumption",
+            "description": "If a loss ratio is given, disclose that premium is assumed (5500 USD per power unit per year) and actual earned premium is absent. Alternatively avoid a loss ratio and request actual premium. Do not describe the denominator as verified.",
+            "evidence_paths": [
+              "loss_statistics.assumed_premium_per_pu_usd",
+              "document_inventory.actual_earned_premium"
+            ]
+          },
+          {
+            "id": "missing_documents",
+            "description": "Distinguish supplied synthetic annual aggregates and broker assertions from absent verified carrier loss documents and individual claim files; request verification. A broker saying MVRs are clean is not an inspected MVR file. Acknowledge the record limitation without fabricating missing attachments.",
+            "evidence_paths": [
+              "submission.broker_email",
+              "document_inventory"
+            ]
+          },
+          {
+            "id": "basic_unknown",
+            "description": "Treat BASIC entries marked Not Public as unknown, not zero or clean; do not invent percentile scores or violations. It is acceptable to note that private BASIC details must be obtained from the carrier.",
+            "evidence_paths": [
+              "safer_profile.basic_violations"
+            ]
+          },
+          {
+            "id": "fatal_involvement",
+            "description": "Surface 2 fatal-involvement crash(es) in the 24-month public snapshot as material. Crash involvement does not establish fault or a paid insurance loss.",
+            "evidence_paths": [
+              "safer_profile.crashes_24mo_fatal"
+            ]
+          }
         ],
-        "must_not_claim": [
-          "no concerns",
-          "low risk",
-          "best in class"
+        "disposition_policy": "Assess evidence handling and valid schema; no expert-approved quote/decline target."
+      },
+      "metadata": {
+        "split": "development",
+        "carrier_group": "185040",
+        "review_status": "agent_source_checked; underwriter_validation_pending"
+      }
+    },
+    {
+      "id": "SUB-002",
+      "inputs": {
+        "submission_id": "SUB-002",
+        "packet_sha256": "6423e4be42e67e6d7c4e1fbb87d53fcd5a63189f2cefbc0d37712c033abee873",
+        "safer_sha256": "115f6423d9dc790971f467ac72d28bc94ccd9d311567d31bd8be0d33409b55a9",
+        "split": "development",
+        "submission": {
+          "id": "SUB-002",
+          "carrier_name": "Cascadia Freight Inc",
+          "dot_number": "171830",
+          "safer_legal_name": "KA BULK TRANSPORT LLC",
+          "fleet_size": 572,
+          "vehicle_mix": {
+            "tractor": 0.74,
+            "straight_truck": 0.06,
+            "trailer": 0.18,
+            "other": 0.02
+          },
+          "states_of_operation": [
+            "MS",
+            "AL",
+            "GA",
+            "FL"
+          ],
+          "effective_date": "2026-08-30",
+          "loss_run": [
+            {
+              "year": 2021,
+              "claims": 35,
+              "incurred_usd": "3125132"
+            },
+            {
+              "year": 2022,
+              "claims": 37,
+              "incurred_usd": "4490314"
+            },
+            {
+              "year": 2023,
+              "claims": 38,
+              "incurred_usd": "5025156"
+            },
+            {
+              "year": 2024,
+              "claims": 40,
+              "incurred_usd": "5326520"
+            },
+            {
+              "year": 2025,
+              "claims": 41,
+              "incurred_usd": "5413342"
+            }
+          ],
+          "broker_email": "New submission — Cascadia Freight Inc (171830). Solid mid-market account in the MS corridor. Fleet 572 PUs, general freight, no hazmat. Loss runs decent. Ready for your quote at the earliest.",
+          "commodity": "tank"
+        },
+        "source_snapshot": {
+          "legal_name": "KA BULK TRANSPORT LLC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 581,
+          "drivers": 605,
+          "crashes_24mo_total": 0,
+          "crashes_24mo_fatal": 0,
+          "crashes_24mo_injury": 0,
+          "crashes_24mo_towaway": 0,
+          "oos_rate_vehicle": 0.0,
+          "oos_rate_driver": 0.0,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "171830"
+        },
+        "safer_profile": {
+          "legal_name": "KA BULK TRANSPORT LLC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 581,
+          "drivers": 605,
+          "crashes_24mo_total": 0,
+          "crashes_24mo_fatal": 0,
+          "crashes_24mo_injury": 0,
+          "crashes_24mo_towaway": 0,
+          "oos_rate_vehicle": 0.0,
+          "oos_rate_driver": 0.0,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "171830"
+        }
+      },
+      "reference_outputs": {
+        "assertions": [
+          {
+            "id": "annual_history",
+            "description": "Recognize that 5 years of annual loss aggregates ARE supplied. Describe that annual claim counts increases from 35 in 2021 to 41 in 2025, or give the consistent computed trend. Do not call the supplied history absent.",
+            "evidence_paths": [
+              "submission.loss_run"
+            ]
+          },
+          {
+            "id": "oos_observations",
+            "description": "Discuss vehicle out-of-service observations (0.00%) and driver observations (0.00%) accurately, allowing normal rounding. Do not invent national averages or interpret private BASIC percentiles as measured values.",
+            "evidence_paths": [
+              "safer_profile.oos_rate_vehicle",
+              "safer_profile.oos_rate_driver"
+            ]
+          },
+          {
+            "id": "commodity_and_identity",
+            "description": "Identify the submitted commodity as tank, distinguish the demo alias from the public legal identity, and flag submitted fleet size 572 versus public power units 581 as a reconciliation question when they differ. Do not infer actual cargo solely from the carrier name.",
+            "evidence_paths": [
+              "submission.commodity",
+              "submission.fleet_size",
+              "submission.safer_legal_name",
+              "safer_profile.power_units"
+            ]
+          },
+          {
+            "id": "premium_assumption",
+            "description": "If a loss ratio is given, disclose that premium is assumed (5500 USD per power unit per year) and actual earned premium is absent. Alternatively avoid a loss ratio and request actual premium. Do not describe the denominator as verified.",
+            "evidence_paths": [
+              "loss_statistics.assumed_premium_per_pu_usd",
+              "document_inventory.actual_earned_premium"
+            ]
+          },
+          {
+            "id": "missing_documents",
+            "description": "Distinguish supplied synthetic annual aggregates and broker assertions from absent verified carrier loss documents and individual claim files; request verification. A broker saying MVRs are clean is not an inspected MVR file. Acknowledge the record limitation without fabricating missing attachments.",
+            "evidence_paths": [
+              "submission.broker_email",
+              "document_inventory"
+            ]
+          },
+          {
+            "id": "basic_unknown",
+            "description": "Treat BASIC entries marked Not Public as unknown, not zero or clean; do not invent percentile scores or violations. It is acceptable to note that private BASIC details must be obtained from the carrier.",
+            "evidence_paths": [
+              "safer_profile.basic_violations"
+            ]
+          }
         ],
-        "expected_reference_corpora": ["ntsb", "10k"]
+        "disposition_policy": "Assess evidence handling and valid schema; no expert-approved quote/decline target."
+      },
+      "metadata": {
+        "split": "development",
+        "carrier_group": "171830",
+        "review_status": "agent_source_checked; underwriter_validation_pending"
       }
     },
     {
-      "submission_id": "SUB-002",
-      "ground_truth": {
-        "expected_disposition": ["quote", "quote_with_surcharge"],
-        "expected_redflags": [],
-        "must_not_claim": ["decline"],
-        "expected_reference_corpora": ["10k", "industry"]
+      "id": "SUB-003",
+      "inputs": {
+        "submission_id": "SUB-003",
+        "packet_sha256": "1afc385cab0f3af910027e206d11b7f269520dd0a73a965436837ce94335eb22",
+        "safer_sha256": "ca5388fbd774c197123668a81f4fd71fabae5b9a491efd6b76f475040de9c790",
+        "split": "holdout",
+        "submission": {
+          "id": "SUB-003",
+          "carrier_name": "Magnolia Tank Lines Inc",
+          "dot_number": "184405",
+          "safer_legal_name": "J & M TANK LINES INC",
+          "fleet_size": 445,
+          "vehicle_mix": {
+            "tractor": 0.86,
+            "straight_truck": 0.1,
+            "trailer": 0.0,
+            "other": 0.04
+          },
+          "states_of_operation": [
+            "WA",
+            "OR",
+            "ID",
+            "MT"
+          ],
+          "effective_date": "2026-08-08",
+          "loss_run": [
+            {
+              "year": 2021,
+              "claims": 13,
+              "incurred_usd": "1031994"
+            },
+            {
+              "year": 2022,
+              "claims": 14,
+              "incurred_usd": "1083890"
+            },
+            {
+              "year": 2023,
+              "claims": 14,
+              "incurred_usd": "1322763"
+            },
+            {
+              "year": 2024,
+              "claims": 15,
+              "incurred_usd": "1393069"
+            },
+            {
+              "year": 2025,
+              "claims": 15,
+              "incurred_usd": "1399475"
+            }
+          ],
+          "broker_email": "Hi — please see attached for Magnolia Tank Lines Inc, USDOT 184405. 445 units, 4 states (WA, OR, ID, MT). They came off ABC Insurance after a tough year on freq. Loss runs and MVRs in the packet. Need terms by Friday.\n\nThanks,\nProducer",
+          "commodity": "general_freight"
+        },
+        "source_snapshot": {
+          "legal_name": "J & M TANK LINES INC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 438,
+          "drivers": 374,
+          "crashes_24mo_total": 28,
+          "crashes_24mo_fatal": 0,
+          "crashes_24mo_injury": 11,
+          "crashes_24mo_towaway": 17,
+          "oos_rate_vehicle": 0.15979381443298968,
+          "oos_rate_driver": 0.008174386920980926,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "184405"
+        },
+        "safer_profile": {
+          "legal_name": "J & M TANK LINES INC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 438,
+          "drivers": 374,
+          "crashes_24mo_total": 28,
+          "crashes_24mo_fatal": 0,
+          "crashes_24mo_injury": 11,
+          "crashes_24mo_towaway": 17,
+          "oos_rate_vehicle": 0.15979381443298968,
+          "oos_rate_driver": 0.008174386920980926,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "184405"
+        }
+      },
+      "reference_outputs": {
+        "assertions": [
+          {
+            "id": "annual_history",
+            "description": "Recognize that 5 years of annual loss aggregates ARE supplied. Describe that annual claim counts increases from 13 in 2021 to 15 in 2025, or give the consistent computed trend. Do not call the supplied history absent.",
+            "evidence_paths": [
+              "submission.loss_run"
+            ]
+          },
+          {
+            "id": "oos_observations",
+            "description": "Discuss vehicle out-of-service observations (15.98%) and driver observations (0.82%) accurately, allowing normal rounding. Do not invent national averages or interpret private BASIC percentiles as measured values.",
+            "evidence_paths": [
+              "safer_profile.oos_rate_vehicle",
+              "safer_profile.oos_rate_driver"
+            ]
+          },
+          {
+            "id": "commodity_and_identity",
+            "description": "Identify the submitted commodity as general_freight, distinguish the demo alias from the public legal identity, and flag submitted fleet size 445 versus public power units 438 as a reconciliation question when they differ. Do not infer actual cargo solely from the carrier name.",
+            "evidence_paths": [
+              "submission.commodity",
+              "submission.fleet_size",
+              "submission.safer_legal_name",
+              "safer_profile.power_units"
+            ]
+          },
+          {
+            "id": "premium_assumption",
+            "description": "If a loss ratio is given, disclose that premium is assumed (5500 USD per power unit per year) and actual earned premium is absent. Alternatively avoid a loss ratio and request actual premium. Do not describe the denominator as verified.",
+            "evidence_paths": [
+              "loss_statistics.assumed_premium_per_pu_usd",
+              "document_inventory.actual_earned_premium"
+            ]
+          },
+          {
+            "id": "missing_documents",
+            "description": "Distinguish supplied synthetic annual aggregates and broker assertions from absent verified carrier loss documents and individual claim files; request verification. A broker saying MVRs are clean is not an inspected MVR file. Acknowledge the record limitation without fabricating missing attachments.",
+            "evidence_paths": [
+              "submission.broker_email",
+              "document_inventory"
+            ]
+          },
+          {
+            "id": "basic_unknown",
+            "description": "Treat BASIC entries marked Not Public as unknown, not zero or clean; do not invent percentile scores or violations. It is acceptable to note that private BASIC details must be obtained from the carrier.",
+            "evidence_paths": [
+              "safer_profile.basic_violations"
+            ]
+          }
+        ],
+        "disposition_policy": "Assess evidence handling and valid schema; no expert-approved quote/decline target."
+      },
+      "metadata": {
+        "split": "holdout",
+        "carrier_group": "184405",
+        "review_status": "agent_source_checked; underwriter_validation_pending"
       }
     },
     {
-      "submission_id": "SUB-003",
-      "ground_truth": {
-        "expected_disposition": ["quote_with_surcharge", "decline"],
-        "expected_redflags": ["hazmat", "fatal"],
-        "must_not_claim": ["routine", "low risk"],
-        "expected_reference_corpora": ["ntsb", "forms"]
+      "id": "SUB-004",
+      "inputs": {
+        "submission_id": "SUB-004",
+        "packet_sha256": "dcf3064340c00dc3eeb9344cd4232f0248b3c03fce6dbce87e5bc4ca528fb29e",
+        "safer_sha256": "944f4c8113b64aab9d54a50ca4e118ad439a7a2c394c3aff7e63aca41cecb601",
+        "split": "development",
+        "submission": {
+          "id": "SUB-004",
+          "carrier_name": "Heartland LTL Inc",
+          "dot_number": "229047",
+          "safer_legal_name": "WILLIAMS TANK LINES LLC",
+          "fleet_size": 322,
+          "vehicle_mix": {
+            "tractor": 0.86,
+            "straight_truck": 0.1,
+            "trailer": 0.0,
+            "other": 0.04
+          },
+          "states_of_operation": [
+            "TN",
+            "KY",
+            "VA"
+          ],
+          "effective_date": "2026-08-30",
+          "loss_run": [
+            {
+              "year": 2021,
+              "claims": 10,
+              "incurred_usd": "895691"
+            },
+            {
+              "year": 2022,
+              "claims": 10,
+              "incurred_usd": "912905"
+            },
+            {
+              "year": 2023,
+              "claims": 10,
+              "incurred_usd": "816877"
+            },
+            {
+              "year": 2024,
+              "claims": 11,
+              "incurred_usd": "1083612"
+            },
+            {
+              "year": 2025,
+              "claims": 11,
+              "incurred_usd": "1106377"
+            }
+          ],
+          "broker_email": "New submission — Heartland LTL Inc (229047). Solid mid-market account in the TN corridor. Fleet 322 PUs, general freight, no hazmat. Loss runs decent. Ready for your quote at the earliest.",
+          "commodity": "general_freight"
+        },
+        "source_snapshot": {
+          "legal_name": "WILLIAMS TANK LINES LLC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 316,
+          "drivers": 347,
+          "crashes_24mo_total": 16,
+          "crashes_24mo_fatal": 0,
+          "crashes_24mo_injury": 7,
+          "crashes_24mo_towaway": 9,
+          "oos_rate_vehicle": 0.06484149855907781,
+          "oos_rate_driver": 0.003194888178913738,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "229047"
+        },
+        "safer_profile": {
+          "legal_name": "WILLIAMS TANK LINES LLC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 316,
+          "drivers": 347,
+          "crashes_24mo_total": 16,
+          "crashes_24mo_fatal": 0,
+          "crashes_24mo_injury": 7,
+          "crashes_24mo_towaway": 9,
+          "oos_rate_vehicle": 0.06484149855907781,
+          "oos_rate_driver": 0.003194888178913738,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "229047"
+        }
+      },
+      "reference_outputs": {
+        "assertions": [
+          {
+            "id": "annual_history",
+            "description": "Recognize that 5 years of annual loss aggregates ARE supplied. Describe that annual claim counts increases from 10 in 2021 to 11 in 2025, or give the consistent computed trend. Do not call the supplied history absent.",
+            "evidence_paths": [
+              "submission.loss_run"
+            ]
+          },
+          {
+            "id": "oos_observations",
+            "description": "Discuss vehicle out-of-service observations (6.48%) and driver observations (0.32%) accurately, allowing normal rounding. Do not invent national averages or interpret private BASIC percentiles as measured values.",
+            "evidence_paths": [
+              "safer_profile.oos_rate_vehicle",
+              "safer_profile.oos_rate_driver"
+            ]
+          },
+          {
+            "id": "commodity_and_identity",
+            "description": "Identify the submitted commodity as general_freight, distinguish the demo alias from the public legal identity, and flag submitted fleet size 322 versus public power units 316 as a reconciliation question when they differ. Do not infer actual cargo solely from the carrier name.",
+            "evidence_paths": [
+              "submission.commodity",
+              "submission.fleet_size",
+              "submission.safer_legal_name",
+              "safer_profile.power_units"
+            ]
+          },
+          {
+            "id": "premium_assumption",
+            "description": "If a loss ratio is given, disclose that premium is assumed (5500 USD per power unit per year) and actual earned premium is absent. Alternatively avoid a loss ratio and request actual premium. Do not describe the denominator as verified.",
+            "evidence_paths": [
+              "loss_statistics.assumed_premium_per_pu_usd",
+              "document_inventory.actual_earned_premium"
+            ]
+          },
+          {
+            "id": "missing_documents",
+            "description": "Distinguish supplied synthetic annual aggregates and broker assertions from absent verified carrier loss documents and individual claim files; request verification. A broker saying MVRs are clean is not an inspected MVR file. Acknowledge the record limitation without fabricating missing attachments.",
+            "evidence_paths": [
+              "submission.broker_email",
+              "document_inventory"
+            ]
+          },
+          {
+            "id": "basic_unknown",
+            "description": "Treat BASIC entries marked Not Public as unknown, not zero or clean; do not invent percentile scores or violations. It is acceptable to note that private BASIC details must be obtained from the carrier.",
+            "evidence_paths": [
+              "safer_profile.basic_violations"
+            ]
+          }
+        ],
+        "disposition_policy": "Assess evidence handling and valid schema; no expert-approved quote/decline target."
+      },
+      "metadata": {
+        "split": "development",
+        "carrier_group": "229047",
+        "review_status": "agent_source_checked; underwriter_validation_pending"
       }
     },
     {
-      "submission_id": "SUB-004",
-      "ground_truth": {
-        "expected_disposition": ["quote_with_surcharge"],
-        "expected_redflags": ["driver shortage", "trend"],
-        "must_not_claim": ["no concerns"],
-        "expected_reference_corpora": ["10k"]
+      "id": "SUB-005",
+      "inputs": {
+        "submission_id": "SUB-005",
+        "packet_sha256": "5726413501e5666c037ad51f409bc8a6f035178f1c170a63ddc561657219cd61",
+        "safer_sha256": "9d13f6737919b6d579abb86f3a1fb3080b30bfeb1ad50659a59067b8503210e7",
+        "split": "development",
+        "submission": {
+          "id": "SUB-005",
+          "carrier_name": "Liberty Auto Transport Inc",
+          "dot_number": "890682",
+          "safer_legal_name": "ANDERSEN DISTRIBUTION INC",
+          "fleet_size": 265,
+          "vehicle_mix": {
+            "tractor": 0.86,
+            "straight_truck": 0.1,
+            "trailer": 0.0,
+            "other": 0.04
+          },
+          "states_of_operation": [
+            "NJ",
+            "PA",
+            "NY",
+            "CT"
+          ],
+          "effective_date": "2026-08-17",
+          "loss_run": [
+            {
+              "year": 2021,
+              "claims": 16,
+              "incurred_usd": "1751861"
+            },
+            {
+              "year": 2022,
+              "claims": 17,
+              "incurred_usd": "1597667"
+            },
+            {
+              "year": 2023,
+              "claims": 18,
+              "incurred_usd": "2073582"
+            },
+            {
+              "year": 2024,
+              "claims": 18,
+              "incurred_usd": "2476432"
+            },
+            {
+              "year": 2025,
+              "claims": 19,
+              "incurred_usd": "2736433"
+            }
+          ],
+          "broker_email": "Team —\n\nLooking for a Hartford quote on Liberty Auto Transport Inc (DOT 890682). They run 265 power units, mostly out of NJ/CT corridors. 5-yr loss run attached, MVRs are clean for the most part. Renewal effective in 30 days. Producer is Mike at Lockton.\n\n—J.",
+          "commodity": "hazmat"
+        },
+        "source_snapshot": {
+          "legal_name": "ANDERSEN DISTRIBUTION INC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 267,
+          "drivers": 269,
+          "crashes_24mo_total": 11,
+          "crashes_24mo_fatal": 1,
+          "crashes_24mo_injury": 5,
+          "crashes_24mo_towaway": 5,
+          "oos_rate_vehicle": 0.16393442622950818,
+          "oos_rate_driver": 0.007272727272727273,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "890682"
+        },
+        "safer_profile": {
+          "legal_name": "ANDERSEN DISTRIBUTION INC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 267,
+          "drivers": 269,
+          "crashes_24mo_total": 11,
+          "crashes_24mo_fatal": 1,
+          "crashes_24mo_injury": 5,
+          "crashes_24mo_towaway": 5,
+          "oos_rate_vehicle": 0.16393442622950818,
+          "oos_rate_driver": 0.007272727272727273,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "890682"
+        }
+      },
+      "reference_outputs": {
+        "assertions": [
+          {
+            "id": "annual_history",
+            "description": "Recognize that 5 years of annual loss aggregates ARE supplied. Describe that annual claim counts increases from 16 in 2021 to 19 in 2025, or give the consistent computed trend. Do not call the supplied history absent.",
+            "evidence_paths": [
+              "submission.loss_run"
+            ]
+          },
+          {
+            "id": "oos_observations",
+            "description": "Discuss vehicle out-of-service observations (16.39%) and driver observations (0.73%) accurately, allowing normal rounding. Do not invent national averages or interpret private BASIC percentiles as measured values.",
+            "evidence_paths": [
+              "safer_profile.oos_rate_vehicle",
+              "safer_profile.oos_rate_driver"
+            ]
+          },
+          {
+            "id": "commodity_and_identity",
+            "description": "Identify the submitted commodity as hazmat, distinguish the demo alias from the public legal identity, and flag submitted fleet size 265 versus public power units 267 as a reconciliation question when they differ. Do not infer actual cargo solely from the carrier name.",
+            "evidence_paths": [
+              "submission.commodity",
+              "submission.fleet_size",
+              "submission.safer_legal_name",
+              "safer_profile.power_units"
+            ]
+          },
+          {
+            "id": "premium_assumption",
+            "description": "If a loss ratio is given, disclose that premium is assumed (5500 USD per power unit per year) and actual earned premium is absent. Alternatively avoid a loss ratio and request actual premium. Do not describe the denominator as verified.",
+            "evidence_paths": [
+              "loss_statistics.assumed_premium_per_pu_usd",
+              "document_inventory.actual_earned_premium"
+            ]
+          },
+          {
+            "id": "missing_documents",
+            "description": "Distinguish supplied synthetic annual aggregates and broker assertions from absent verified carrier loss documents and individual claim files; request verification. A broker saying MVRs are clean is not an inspected MVR file. Acknowledge the record limitation without fabricating missing attachments.",
+            "evidence_paths": [
+              "submission.broker_email",
+              "document_inventory"
+            ]
+          },
+          {
+            "id": "basic_unknown",
+            "description": "Treat BASIC entries marked Not Public as unknown, not zero or clean; do not invent percentile scores or violations. It is acceptable to note that private BASIC details must be obtained from the carrier.",
+            "evidence_paths": [
+              "safer_profile.basic_violations"
+            ]
+          },
+          {
+            "id": "fatal_involvement",
+            "description": "Surface 1 fatal-involvement crash(es) in the 24-month public snapshot as material. Crash involvement does not establish fault or a paid insurance loss.",
+            "evidence_paths": [
+              "safer_profile.crashes_24mo_fatal"
+            ]
+          },
+          {
+            "id": "hazmat_followup",
+            "description": "Address the submitted hazardous-materials exposure and request specific commodities, placarding/endorsement and applicable insurance/coverage verification. Do not invent a uniform liability requirement or assume coverage.",
+            "evidence_paths": [
+              "submission.commodity"
+            ]
+          }
+        ],
+        "disposition_policy": "Assess evidence handling and valid schema; no expert-approved quote/decline target."
+      },
+      "metadata": {
+        "split": "development",
+        "carrier_group": "890682",
+        "review_status": "agent_source_checked; underwriter_validation_pending"
       }
     },
     {
-      "submission_id": "SUB-005",
-      "ground_truth": {
-        "expected_disposition": ["quote_with_surcharge"],
-        "expected_redflags": ["violations"],
-        "must_not_claim": ["clean record"],
-        "expected_reference_corpora": ["ntsb", "10k"]
+      "id": "SUB-006",
+      "inputs": {
+        "submission_id": "SUB-006",
+        "packet_sha256": "e4b04a84e67d9eb79d0de4b78eecd7da44617b7077063482adf0c5c0f9ab361d",
+        "safer_sha256": "1d1bc9c845702a306add448b8da3e73944387b18212267d53b89aef2a26dc0f4",
+        "split": "holdout",
+        "submission": {
+          "id": "SUB-006",
+          "carrier_name": "Hill Country Logistics Inc",
+          "dot_number": "1805208",
+          "safer_legal_name": "DEDICATED DELIVERY PROFESSIONALS INC",
+          "fleet_size": 93,
+          "vehicle_mix": {
+            "tractor": 0.86,
+            "straight_truck": 0.1,
+            "trailer": 0.0,
+            "other": 0.04
+          },
+          "states_of_operation": [
+            "WA",
+            "OR",
+            "ID",
+            "MT"
+          ],
+          "effective_date": "2026-08-16",
+          "loss_run": [
+            {
+              "year": 2021,
+              "claims": 6,
+              "incurred_usd": "618011"
+            },
+            {
+              "year": 2022,
+              "claims": 6,
+              "incurred_usd": "632142"
+            },
+            {
+              "year": 2023,
+              "claims": 6,
+              "incurred_usd": "760584"
+            },
+            {
+              "year": 2024,
+              "claims": 7,
+              "incurred_usd": "868138"
+            },
+            {
+              "year": 2025,
+              "claims": 7,
+              "incurred_usd": "929439"
+            }
+          ],
+          "broker_email": "New submission — Hill Country Logistics Inc (1805208). Solid mid-market account in the WA corridor. Fleet 93 PUs, general freight, no hazmat. Loss runs decent. Ready for your quote at the earliest.",
+          "commodity": "hazmat"
+        },
+        "source_snapshot": {
+          "legal_name": "DEDICATED DELIVERY PROFESSIONALS INC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 91,
+          "drivers": 65,
+          "crashes_24mo_total": 1,
+          "crashes_24mo_fatal": 1,
+          "crashes_24mo_injury": 0,
+          "crashes_24mo_towaway": 0,
+          "oos_rate_vehicle": 0.11940298507462688,
+          "oos_rate_driver": 0.012195121951219513,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "1805208"
+        },
+        "safer_profile": {
+          "legal_name": "DEDICATED DELIVERY PROFESSIONALS INC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 91,
+          "drivers": 65,
+          "crashes_24mo_total": 1,
+          "crashes_24mo_fatal": 1,
+          "crashes_24mo_injury": 0,
+          "crashes_24mo_towaway": 0,
+          "oos_rate_vehicle": 0.11940298507462688,
+          "oos_rate_driver": 0.012195121951219513,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "1805208"
+        }
+      },
+      "reference_outputs": {
+        "assertions": [
+          {
+            "id": "annual_history",
+            "description": "Recognize that 5 years of annual loss aggregates ARE supplied. Describe that annual claim counts increases from 6 in 2021 to 7 in 2025, or give the consistent computed trend. Do not call the supplied history absent.",
+            "evidence_paths": [
+              "submission.loss_run"
+            ]
+          },
+          {
+            "id": "oos_observations",
+            "description": "Discuss vehicle out-of-service observations (11.94%) and driver observations (1.22%) accurately, allowing normal rounding. Do not invent national averages or interpret private BASIC percentiles as measured values.",
+            "evidence_paths": [
+              "safer_profile.oos_rate_vehicle",
+              "safer_profile.oos_rate_driver"
+            ]
+          },
+          {
+            "id": "commodity_and_identity",
+            "description": "Identify the submitted commodity as hazmat, distinguish the demo alias from the public legal identity, and flag submitted fleet size 93 versus public power units 91 as a reconciliation question when they differ. Do not infer actual cargo solely from the carrier name.",
+            "evidence_paths": [
+              "submission.commodity",
+              "submission.fleet_size",
+              "submission.safer_legal_name",
+              "safer_profile.power_units"
+            ]
+          },
+          {
+            "id": "premium_assumption",
+            "description": "If a loss ratio is given, disclose that premium is assumed (5500 USD per power unit per year) and actual earned premium is absent. Alternatively avoid a loss ratio and request actual premium. Do not describe the denominator as verified.",
+            "evidence_paths": [
+              "loss_statistics.assumed_premium_per_pu_usd",
+              "document_inventory.actual_earned_premium"
+            ]
+          },
+          {
+            "id": "missing_documents",
+            "description": "Distinguish supplied synthetic annual aggregates and broker assertions from absent verified carrier loss documents and individual claim files; request verification. A broker saying MVRs are clean is not an inspected MVR file. Acknowledge the record limitation without fabricating missing attachments.",
+            "evidence_paths": [
+              "submission.broker_email",
+              "document_inventory"
+            ]
+          },
+          {
+            "id": "basic_unknown",
+            "description": "Treat BASIC entries marked Not Public as unknown, not zero or clean; do not invent percentile scores or violations. It is acceptable to note that private BASIC details must be obtained from the carrier.",
+            "evidence_paths": [
+              "safer_profile.basic_violations"
+            ]
+          },
+          {
+            "id": "fatal_involvement",
+            "description": "Surface 1 fatal-involvement crash(es) in the 24-month public snapshot as material. Crash involvement does not establish fault or a paid insurance loss.",
+            "evidence_paths": [
+              "safer_profile.crashes_24mo_fatal"
+            ]
+          },
+          {
+            "id": "hazmat_followup",
+            "description": "Address the submitted hazardous-materials exposure and request specific commodities, placarding/endorsement and applicable insurance/coverage verification. Do not invent a uniform liability requirement or assume coverage.",
+            "evidence_paths": [
+              "submission.commodity"
+            ]
+          }
+        ],
+        "disposition_policy": "Assess evidence handling and valid schema; no expert-approved quote/decline target."
+      },
+      "metadata": {
+        "split": "holdout",
+        "carrier_group": "1805208",
+        "review_status": "agent_source_checked; underwriter_validation_pending"
+      }
+    },
+    {
+      "id": "SUB-007",
+      "inputs": {
+        "submission_id": "SUB-007",
+        "packet_sha256": "f952fdd8c71765598e24150201c3084cd871d624479ee3524b603107e722b823",
+        "safer_sha256": "d2d892d119a564dd2059c52688f6510602879a3eb44ea1c2bab236f1d8a89437",
+        "split": "development",
+        "submission": {
+          "id": "SUB-007",
+          "carrier_name": "Bayou Drayage Inc",
+          "dot_number": "1151662",
+          "safer_legal_name": "SO CAL PETROLEUM TRANSPORT INC",
+          "fleet_size": 85,
+          "vehicle_mix": {
+            "tractor": 0.86,
+            "straight_truck": 0.1,
+            "trailer": 0.0,
+            "other": 0.04
+          },
+          "states_of_operation": [
+            "TN",
+            "KY",
+            "VA"
+          ],
+          "effective_date": "2026-08-09",
+          "loss_run": [
+            {
+              "year": 2021,
+              "claims": 3,
+              "incurred_usd": "271874"
+            },
+            {
+              "year": 2022,
+              "claims": 3,
+              "incurred_usd": "271127"
+            },
+            {
+              "year": 2023,
+              "claims": 3,
+              "incurred_usd": "254968"
+            },
+            {
+              "year": 2024,
+              "claims": 3,
+              "incurred_usd": "303413"
+            },
+            {
+              "year": 2025,
+              "claims": 3,
+              "incurred_usd": "291821"
+            }
+          ],
+          "broker_email": "Hi — please see attached for Bayou Drayage Inc, USDOT 1151662. 85 units, 3 states (TN, KY, VA). They came off ABC Insurance after a tough year on freq. Loss runs and MVRs in the packet. Need terms by Friday.\n\nThanks,\nProducer",
+          "commodity": "general_freight"
+        },
+        "source_snapshot": {
+          "legal_name": "SO CAL PETROLEUM TRANSPORT INC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 84,
+          "drivers": 196,
+          "crashes_24mo_total": 6,
+          "crashes_24mo_fatal": 0,
+          "crashes_24mo_injury": 2,
+          "crashes_24mo_towaway": 4,
+          "oos_rate_vehicle": 0.028662420382165602,
+          "oos_rate_driver": 0.0,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "1151662"
+        },
+        "safer_profile": {
+          "legal_name": "SO CAL PETROLEUM TRANSPORT INC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 84,
+          "drivers": 196,
+          "crashes_24mo_total": 6,
+          "crashes_24mo_fatal": 0,
+          "crashes_24mo_injury": 2,
+          "crashes_24mo_towaway": 4,
+          "oos_rate_vehicle": 0.028662420382165602,
+          "oos_rate_driver": 0.0,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "1151662"
+        }
+      },
+      "reference_outputs": {
+        "assertions": [
+          {
+            "id": "annual_history",
+            "description": "Recognize that 5 years of annual loss aggregates ARE supplied. Describe that annual claim counts is flat from 3 in 2021 to 3 in 2025, or give the consistent computed trend. Do not call the supplied history absent.",
+            "evidence_paths": [
+              "submission.loss_run"
+            ]
+          },
+          {
+            "id": "oos_observations",
+            "description": "Discuss vehicle out-of-service observations (2.87%) and driver observations (0.00%) accurately, allowing normal rounding. Do not invent national averages or interpret private BASIC percentiles as measured values.",
+            "evidence_paths": [
+              "safer_profile.oos_rate_vehicle",
+              "safer_profile.oos_rate_driver"
+            ]
+          },
+          {
+            "id": "commodity_and_identity",
+            "description": "Identify the submitted commodity as general_freight, distinguish the demo alias from the public legal identity, and flag submitted fleet size 85 versus public power units 84 as a reconciliation question when they differ. Do not infer actual cargo solely from the carrier name.",
+            "evidence_paths": [
+              "submission.commodity",
+              "submission.fleet_size",
+              "submission.safer_legal_name",
+              "safer_profile.power_units"
+            ]
+          },
+          {
+            "id": "premium_assumption",
+            "description": "If a loss ratio is given, disclose that premium is assumed (5500 USD per power unit per year) and actual earned premium is absent. Alternatively avoid a loss ratio and request actual premium. Do not describe the denominator as verified.",
+            "evidence_paths": [
+              "loss_statistics.assumed_premium_per_pu_usd",
+              "document_inventory.actual_earned_premium"
+            ]
+          },
+          {
+            "id": "missing_documents",
+            "description": "Distinguish supplied synthetic annual aggregates and broker assertions from absent verified carrier loss documents and individual claim files; request verification. A broker saying MVRs are clean is not an inspected MVR file. Acknowledge the record limitation without fabricating missing attachments.",
+            "evidence_paths": [
+              "submission.broker_email",
+              "document_inventory"
+            ]
+          },
+          {
+            "id": "basic_unknown",
+            "description": "Treat BASIC entries marked Not Public as unknown, not zero or clean; do not invent percentile scores or violations. It is acceptable to note that private BASIC details must be obtained from the carrier.",
+            "evidence_paths": [
+              "safer_profile.basic_violations"
+            ]
+          }
+        ],
+        "disposition_policy": "Assess evidence handling and valid schema; no expert-approved quote/decline target."
+      },
+      "metadata": {
+        "split": "development",
+        "carrier_group": "1151662",
+        "review_status": "agent_source_checked; underwriter_validation_pending"
+      }
+    },
+    {
+      "id": "SUB-008",
+      "inputs": {
+        "submission_id": "SUB-008",
+        "packet_sha256": "2baebf11563fb674d3eb6d9e56643bd4bf9eb024a28572ffb80478106d0d3804",
+        "safer_sha256": "40c4283725fe18b33c9abb388a357d1a4f5c569716c4fe4d88b5c88bbb6c8260",
+        "split": "development",
+        "submission": {
+          "id": "SUB-008",
+          "carrier_name": "Sunbelt Carriers Inc",
+          "dot_number": "1606922",
+          "safer_legal_name": "BAILEY HEAVY EQUIPMENT HAULING INC",
+          "fleet_size": 73,
+          "vehicle_mix": {
+            "tractor": 0.86,
+            "straight_truck": 0.1,
+            "trailer": 0.0,
+            "other": 0.04
+          },
+          "states_of_operation": [
+            "TN",
+            "KY",
+            "VA"
+          ],
+          "effective_date": "2026-08-23",
+          "loss_run": [
+            {
+              "year": 2021,
+              "claims": 5,
+              "incurred_usd": "567023"
+            },
+            {
+              "year": 2022,
+              "claims": 5,
+              "incurred_usd": "537253"
+            },
+            {
+              "year": 2023,
+              "claims": 5,
+              "incurred_usd": "531941"
+            },
+            {
+              "year": 2024,
+              "claims": 5,
+              "incurred_usd": "593074"
+            },
+            {
+              "year": 2025,
+              "claims": 5,
+              "incurred_usd": "647293"
+            }
+          ],
+          "broker_email": "Team —\n\nLooking for a Hartford quote on Sunbelt Carriers Inc (DOT 1606922). They run 73 power units, mostly out of TN/VA corridors. 5-yr loss run attached, MVRs are clean for the most part. Renewal effective in 30 days. Producer is Mike at Lockton.\n\n—J.",
+          "commodity": "hazmat"
+        },
+        "source_snapshot": {
+          "legal_name": "BAILEY HEAVY EQUIPMENT HAULING INC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 74,
+          "drivers": 76,
+          "crashes_24mo_total": 5,
+          "crashes_24mo_fatal": 0,
+          "crashes_24mo_injury": 1,
+          "crashes_24mo_towaway": 4,
+          "oos_rate_vehicle": 0.0392156862745098,
+          "oos_rate_driver": 0.012048192771084338,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "1606922"
+        },
+        "safer_profile": {
+          "legal_name": "BAILEY HEAVY EQUIPMENT HAULING INC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 74,
+          "drivers": 76,
+          "crashes_24mo_total": 5,
+          "crashes_24mo_fatal": 0,
+          "crashes_24mo_injury": 1,
+          "crashes_24mo_towaway": 4,
+          "oos_rate_vehicle": 0.0392156862745098,
+          "oos_rate_driver": 0.012048192771084338,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "1606922"
+        }
+      },
+      "reference_outputs": {
+        "assertions": [
+          {
+            "id": "annual_history",
+            "description": "Recognize that 5 years of annual loss aggregates ARE supplied. Describe that annual claim counts is flat from 5 in 2021 to 5 in 2025, or give the consistent computed trend. Do not call the supplied history absent.",
+            "evidence_paths": [
+              "submission.loss_run"
+            ]
+          },
+          {
+            "id": "oos_observations",
+            "description": "Discuss vehicle out-of-service observations (3.92%) and driver observations (1.20%) accurately, allowing normal rounding. Do not invent national averages or interpret private BASIC percentiles as measured values.",
+            "evidence_paths": [
+              "safer_profile.oos_rate_vehicle",
+              "safer_profile.oos_rate_driver"
+            ]
+          },
+          {
+            "id": "commodity_and_identity",
+            "description": "Identify the submitted commodity as hazmat, distinguish the demo alias from the public legal identity, and flag submitted fleet size 73 versus public power units 74 as a reconciliation question when they differ. Do not infer actual cargo solely from the carrier name.",
+            "evidence_paths": [
+              "submission.commodity",
+              "submission.fleet_size",
+              "submission.safer_legal_name",
+              "safer_profile.power_units"
+            ]
+          },
+          {
+            "id": "premium_assumption",
+            "description": "If a loss ratio is given, disclose that premium is assumed (5500 USD per power unit per year) and actual earned premium is absent. Alternatively avoid a loss ratio and request actual premium. Do not describe the denominator as verified.",
+            "evidence_paths": [
+              "loss_statistics.assumed_premium_per_pu_usd",
+              "document_inventory.actual_earned_premium"
+            ]
+          },
+          {
+            "id": "missing_documents",
+            "description": "Distinguish supplied synthetic annual aggregates and broker assertions from absent verified carrier loss documents and individual claim files; request verification. A broker saying MVRs are clean is not an inspected MVR file. Acknowledge the record limitation without fabricating missing attachments.",
+            "evidence_paths": [
+              "submission.broker_email",
+              "document_inventory"
+            ]
+          },
+          {
+            "id": "basic_unknown",
+            "description": "Treat BASIC entries marked Not Public as unknown, not zero or clean; do not invent percentile scores or violations. It is acceptable to note that private BASIC details must be obtained from the carrier.",
+            "evidence_paths": [
+              "safer_profile.basic_violations"
+            ]
+          },
+          {
+            "id": "hazmat_followup",
+            "description": "Address the submitted hazardous-materials exposure and request specific commodities, placarding/endorsement and applicable insurance/coverage verification. Do not invent a uniform liability requirement or assume coverage.",
+            "evidence_paths": [
+              "submission.commodity"
+            ]
+          }
+        ],
+        "disposition_policy": "Assess evidence handling and valid schema; no expert-approved quote/decline target."
+      },
+      "metadata": {
+        "split": "development",
+        "carrier_group": "1606922",
+        "review_status": "agent_source_checked; underwriter_validation_pending"
+      }
+    },
+    {
+      "id": "SUB-009",
+      "inputs": {
+        "submission_id": "SUB-009",
+        "packet_sha256": "bf1202661f9f62d2a1f04c1cf47c9ddbf61023472f4226d3aec0e9c520efbe30",
+        "safer_sha256": "92eb4220fdafe5820eabc34577c00650e37232d391fb99258a348367a8ff4717",
+        "split": "holdout",
+        "submission": {
+          "id": "SUB-009",
+          "carrier_name": "Iron Range Freight Inc",
+          "dot_number": "1827085",
+          "safer_legal_name": "DELTA TANK LINES LLC",
+          "fleet_size": 72,
+          "vehicle_mix": {
+            "tractor": 0.86,
+            "straight_truck": 0.1,
+            "trailer": 0.0,
+            "other": 0.04
+          },
+          "states_of_operation": [
+            "IA",
+            "NE",
+            "MO",
+            "KS",
+            "IL",
+            "IN"
+          ],
+          "effective_date": "2026-08-08",
+          "loss_run": [
+            {
+              "year": 2021,
+              "claims": 2,
+              "incurred_usd": "156476"
+            },
+            {
+              "year": 2022,
+              "claims": 2,
+              "incurred_usd": "190458"
+            },
+            {
+              "year": 2023,
+              "claims": 2,
+              "incurred_usd": "171310"
+            },
+            {
+              "year": 2024,
+              "claims": 2,
+              "incurred_usd": "187335"
+            },
+            {
+              "year": 2025,
+              "claims": 2,
+              "incurred_usd": "211694"
+            }
+          ],
+          "broker_email": "Team —\n\nLooking for a Hartford quote on Iron Range Freight Inc (DOT 1827085). They run 72 power units, mostly out of IA/IN corridors. 5-yr loss run attached, MVRs are clean for the most part. Renewal effective in 30 days. Producer is Mike at Lockton.\n\n—J.",
+          "commodity": "general_freight"
+        },
+        "source_snapshot": {
+          "legal_name": "DELTA TANK LINES LLC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 69,
+          "drivers": 47,
+          "crashes_24mo_total": 3,
+          "crashes_24mo_fatal": 0,
+          "crashes_24mo_injury": 2,
+          "crashes_24mo_towaway": 1,
+          "oos_rate_vehicle": 0.041916167664670656,
+          "oos_rate_driver": 0.005649717514124294,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "1827085"
+        },
+        "safer_profile": {
+          "legal_name": "DELTA TANK LINES LLC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 69,
+          "drivers": 47,
+          "crashes_24mo_total": 3,
+          "crashes_24mo_fatal": 0,
+          "crashes_24mo_injury": 2,
+          "crashes_24mo_towaway": 1,
+          "oos_rate_vehicle": 0.041916167664670656,
+          "oos_rate_driver": 0.005649717514124294,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "1827085"
+        }
+      },
+      "reference_outputs": {
+        "assertions": [
+          {
+            "id": "annual_history",
+            "description": "Recognize that 5 years of annual loss aggregates ARE supplied. Describe that annual claim counts is flat from 2 in 2021 to 2 in 2025, or give the consistent computed trend. Do not call the supplied history absent.",
+            "evidence_paths": [
+              "submission.loss_run"
+            ]
+          },
+          {
+            "id": "oos_observations",
+            "description": "Discuss vehicle out-of-service observations (4.19%) and driver observations (0.56%) accurately, allowing normal rounding. Do not invent national averages or interpret private BASIC percentiles as measured values.",
+            "evidence_paths": [
+              "safer_profile.oos_rate_vehicle",
+              "safer_profile.oos_rate_driver"
+            ]
+          },
+          {
+            "id": "commodity_and_identity",
+            "description": "Identify the submitted commodity as general_freight, distinguish the demo alias from the public legal identity, and flag submitted fleet size 72 versus public power units 69 as a reconciliation question when they differ. Do not infer actual cargo solely from the carrier name.",
+            "evidence_paths": [
+              "submission.commodity",
+              "submission.fleet_size",
+              "submission.safer_legal_name",
+              "safer_profile.power_units"
+            ]
+          },
+          {
+            "id": "premium_assumption",
+            "description": "If a loss ratio is given, disclose that premium is assumed (5500 USD per power unit per year) and actual earned premium is absent. Alternatively avoid a loss ratio and request actual premium. Do not describe the denominator as verified.",
+            "evidence_paths": [
+              "loss_statistics.assumed_premium_per_pu_usd",
+              "document_inventory.actual_earned_premium"
+            ]
+          },
+          {
+            "id": "missing_documents",
+            "description": "Distinguish supplied synthetic annual aggregates and broker assertions from absent verified carrier loss documents and individual claim files; request verification. A broker saying MVRs are clean is not an inspected MVR file. Acknowledge the record limitation without fabricating missing attachments.",
+            "evidence_paths": [
+              "submission.broker_email",
+              "document_inventory"
+            ]
+          },
+          {
+            "id": "basic_unknown",
+            "description": "Treat BASIC entries marked Not Public as unknown, not zero or clean; do not invent percentile scores or violations. It is acceptable to note that private BASIC details must be obtained from the carrier.",
+            "evidence_paths": [
+              "safer_profile.basic_violations"
+            ]
+          }
+        ],
+        "disposition_policy": "Assess evidence handling and valid schema; no expert-approved quote/decline target."
+      },
+      "metadata": {
+        "split": "holdout",
+        "carrier_group": "1827085",
+        "review_status": "agent_source_checked; underwriter_validation_pending"
+      }
+    },
+    {
+      "id": "SUB-010",
+      "inputs": {
+        "submission_id": "SUB-010",
+        "packet_sha256": "9574145c25519ada580cf4b034cc257b7217caab9a3aceb304e51cd938e00fef",
+        "safer_sha256": "23b606a2ad82b26a6a4c9dbb653cdc95228f4d7e9fe0f7bcf2ad2551a5681945",
+        "split": "development",
+        "submission": {
+          "id": "SUB-010",
+          "carrier_name": "Great Plains Express Inc",
+          "dot_number": "2193193",
+          "safer_legal_name": "P&T TRANSPORT LLC",
+          "fleet_size": 65,
+          "vehicle_mix": {
+            "tractor": 0.86,
+            "straight_truck": 0.1,
+            "trailer": 0.0,
+            "other": 0.04
+          },
+          "states_of_operation": [
+            "WA",
+            "OR",
+            "ID",
+            "MT"
+          ],
+          "effective_date": "2026-08-09",
+          "loss_run": [
+            {
+              "year": 2021,
+              "claims": 4,
+              "incurred_usd": "403276"
+            },
+            {
+              "year": 2022,
+              "claims": 4,
+              "incurred_usd": "401017"
+            },
+            {
+              "year": 2023,
+              "claims": 4,
+              "incurred_usd": "509965"
+            },
+            {
+              "year": 2024,
+              "claims": 5,
+              "incurred_usd": "672480"
+            },
+            {
+              "year": 2025,
+              "claims": 5,
+              "incurred_usd": "732800"
+            }
+          ],
+          "broker_email": "Team —\n\nLooking for a Hartford quote on Great Plains Express Inc (DOT 2193193). They run 65 power units, mostly out of WA/MT corridors. 5-yr loss run attached, MVRs are clean for the most part. Renewal effective in 30 days. Producer is Mike at Lockton.\n\n—J.",
+          "commodity": "general_freight"
+        },
+        "source_snapshot": {
+          "legal_name": "P&T TRANSPORT LLC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 66,
+          "drivers": 77,
+          "crashes_24mo_total": 3,
+          "crashes_24mo_fatal": 0,
+          "crashes_24mo_injury": 0,
+          "crashes_24mo_towaway": 3,
+          "oos_rate_vehicle": 0.12359550561797754,
+          "oos_rate_driver": 0.010791366906474819,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "2193193"
+        },
+        "safer_profile": {
+          "legal_name": "P&T TRANSPORT LLC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 66,
+          "drivers": 77,
+          "crashes_24mo_total": 3,
+          "crashes_24mo_fatal": 0,
+          "crashes_24mo_injury": 0,
+          "crashes_24mo_towaway": 3,
+          "oos_rate_vehicle": 0.12359550561797754,
+          "oos_rate_driver": 0.010791366906474819,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "2193193"
+        }
+      },
+      "reference_outputs": {
+        "assertions": [
+          {
+            "id": "annual_history",
+            "description": "Recognize that 5 years of annual loss aggregates ARE supplied. Describe that annual claim counts increases from 4 in 2021 to 5 in 2025, or give the consistent computed trend. Do not call the supplied history absent.",
+            "evidence_paths": [
+              "submission.loss_run"
+            ]
+          },
+          {
+            "id": "oos_observations",
+            "description": "Discuss vehicle out-of-service observations (12.36%) and driver observations (1.08%) accurately, allowing normal rounding. Do not invent national averages or interpret private BASIC percentiles as measured values.",
+            "evidence_paths": [
+              "safer_profile.oos_rate_vehicle",
+              "safer_profile.oos_rate_driver"
+            ]
+          },
+          {
+            "id": "commodity_and_identity",
+            "description": "Identify the submitted commodity as general_freight, distinguish the demo alias from the public legal identity, and flag submitted fleet size 65 versus public power units 66 as a reconciliation question when they differ. Do not infer actual cargo solely from the carrier name.",
+            "evidence_paths": [
+              "submission.commodity",
+              "submission.fleet_size",
+              "submission.safer_legal_name",
+              "safer_profile.power_units"
+            ]
+          },
+          {
+            "id": "premium_assumption",
+            "description": "If a loss ratio is given, disclose that premium is assumed (5500 USD per power unit per year) and actual earned premium is absent. Alternatively avoid a loss ratio and request actual premium. Do not describe the denominator as verified.",
+            "evidence_paths": [
+              "loss_statistics.assumed_premium_per_pu_usd",
+              "document_inventory.actual_earned_premium"
+            ]
+          },
+          {
+            "id": "missing_documents",
+            "description": "Distinguish supplied synthetic annual aggregates and broker assertions from absent verified carrier loss documents and individual claim files; request verification. A broker saying MVRs are clean is not an inspected MVR file. Acknowledge the record limitation without fabricating missing attachments.",
+            "evidence_paths": [
+              "submission.broker_email",
+              "document_inventory"
+            ]
+          },
+          {
+            "id": "basic_unknown",
+            "description": "Treat BASIC entries marked Not Public as unknown, not zero or clean; do not invent percentile scores or violations. It is acceptable to note that private BASIC details must be obtained from the carrier.",
+            "evidence_paths": [
+              "safer_profile.basic_violations"
+            ]
+          }
+        ],
+        "disposition_policy": "Assess evidence handling and valid schema; no expert-approved quote/decline target."
+      },
+      "metadata": {
+        "split": "development",
+        "carrier_group": "2193193",
+        "review_status": "agent_source_checked; underwriter_validation_pending"
+      }
+    },
+    {
+      "id": "SUB-011",
+      "inputs": {
+        "submission_id": "SUB-011",
+        "packet_sha256": "a81674a71b0641d79ce26a0df7154b1d945f147c3fc4b50b9371895fbae9c733",
+        "safer_sha256": "14355f8640d553471d2a60b55ccd6266bb2c7402e12d3418f2ae9b533d06ffd5",
+        "split": "development",
+        "submission": {
+          "id": "SUB-011",
+          "carrier_name": "Apex Refrigerated Inc",
+          "dot_number": "1285259",
+          "safer_legal_name": "VAN DYK TANK LINES INC",
+          "fleet_size": 65,
+          "vehicle_mix": {
+            "tractor": 0.74,
+            "straight_truck": 0.06,
+            "trailer": 0.18,
+            "other": 0.02
+          },
+          "states_of_operation": [
+            "MS",
+            "AL",
+            "GA",
+            "FL"
+          ],
+          "effective_date": "2026-08-18",
+          "loss_run": [
+            {
+              "year": 2021,
+              "claims": 4,
+              "incurred_usd": "347686"
+            },
+            {
+              "year": 2022,
+              "claims": 4,
+              "incurred_usd": "494279"
+            },
+            {
+              "year": 2023,
+              "claims": 4,
+              "incurred_usd": "501010"
+            },
+            {
+              "year": 2024,
+              "claims": 5,
+              "incurred_usd": "608107"
+            },
+            {
+              "year": 2025,
+              "claims": 5,
+              "incurred_usd": "536267"
+            }
+          ],
+          "broker_email": "New submission — Apex Refrigerated Inc (1285259). Solid mid-market account in the MS corridor. Fleet 65 PUs, general freight, no hazmat. Loss runs decent. Ready for your quote at the earliest.",
+          "commodity": "tank"
+        },
+        "source_snapshot": {
+          "legal_name": "VAN DYK TANK LINES INC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 65,
+          "drivers": 102,
+          "crashes_24mo_total": 6,
+          "crashes_24mo_fatal": 0,
+          "crashes_24mo_injury": 1,
+          "crashes_24mo_towaway": 5,
+          "oos_rate_vehicle": 0.15196078431372548,
+          "oos_rate_driver": 0.006944444444444444,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "1285259"
+        },
+        "safer_profile": {
+          "legal_name": "VAN DYK TANK LINES INC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 65,
+          "drivers": 102,
+          "crashes_24mo_total": 6,
+          "crashes_24mo_fatal": 0,
+          "crashes_24mo_injury": 1,
+          "crashes_24mo_towaway": 5,
+          "oos_rate_vehicle": 0.15196078431372548,
+          "oos_rate_driver": 0.006944444444444444,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "1285259"
+        }
+      },
+      "reference_outputs": {
+        "assertions": [
+          {
+            "id": "annual_history",
+            "description": "Recognize that 5 years of annual loss aggregates ARE supplied. Describe that annual claim counts increases from 4 in 2021 to 5 in 2025, or give the consistent computed trend. Do not call the supplied history absent.",
+            "evidence_paths": [
+              "submission.loss_run"
+            ]
+          },
+          {
+            "id": "oos_observations",
+            "description": "Discuss vehicle out-of-service observations (15.20%) and driver observations (0.69%) accurately, allowing normal rounding. Do not invent national averages or interpret private BASIC percentiles as measured values.",
+            "evidence_paths": [
+              "safer_profile.oos_rate_vehicle",
+              "safer_profile.oos_rate_driver"
+            ]
+          },
+          {
+            "id": "commodity_and_identity",
+            "description": "Identify the submitted commodity as tank, distinguish the demo alias from the public legal identity, and flag submitted fleet size 65 versus public power units 65 as a reconciliation question when they differ. Do not infer actual cargo solely from the carrier name.",
+            "evidence_paths": [
+              "submission.commodity",
+              "submission.fleet_size",
+              "submission.safer_legal_name",
+              "safer_profile.power_units"
+            ]
+          },
+          {
+            "id": "premium_assumption",
+            "description": "If a loss ratio is given, disclose that premium is assumed (5500 USD per power unit per year) and actual earned premium is absent. Alternatively avoid a loss ratio and request actual premium. Do not describe the denominator as verified.",
+            "evidence_paths": [
+              "loss_statistics.assumed_premium_per_pu_usd",
+              "document_inventory.actual_earned_premium"
+            ]
+          },
+          {
+            "id": "missing_documents",
+            "description": "Distinguish supplied synthetic annual aggregates and broker assertions from absent verified carrier loss documents and individual claim files; request verification. A broker saying MVRs are clean is not an inspected MVR file. Acknowledge the record limitation without fabricating missing attachments.",
+            "evidence_paths": [
+              "submission.broker_email",
+              "document_inventory"
+            ]
+          },
+          {
+            "id": "basic_unknown",
+            "description": "Treat BASIC entries marked Not Public as unknown, not zero or clean; do not invent percentile scores or violations. It is acceptable to note that private BASIC details must be obtained from the carrier.",
+            "evidence_paths": [
+              "safer_profile.basic_violations"
+            ]
+          }
+        ],
+        "disposition_policy": "Assess evidence handling and valid schema; no expert-approved quote/decline target."
+      },
+      "metadata": {
+        "split": "development",
+        "carrier_group": "1285259",
+        "review_status": "agent_source_checked; underwriter_validation_pending"
+      }
+    },
+    {
+      "id": "SUB-012",
+      "inputs": {
+        "submission_id": "SUB-012",
+        "packet_sha256": "f0ea26d1e06d0bfa4657dd12805870d1bccdf56b7aa1e46c24108a6cac05b353",
+        "safer_sha256": "598dfb7737bdc16900ba346b856fb862d9932aa2a826f5fba49bf73804bb028e",
+        "split": "holdout",
+        "submission": {
+          "id": "SUB-012",
+          "carrier_name": "Lone Star Tankers Inc",
+          "dot_number": "3436903",
+          "safer_legal_name": "247 FLEET TRANSPORT LLC",
+          "fleet_size": 63,
+          "vehicle_mix": {
+            "tractor": 0.86,
+            "straight_truck": 0.1,
+            "trailer": 0.0,
+            "other": 0.04
+          },
+          "states_of_operation": [
+            "TN",
+            "KY",
+            "VA"
+          ],
+          "effective_date": "2026-08-24",
+          "loss_run": [
+            {
+              "year": 2021,
+              "claims": 4,
+              "incurred_usd": "438144"
+            },
+            {
+              "year": 2022,
+              "claims": 4,
+              "incurred_usd": "487773"
+            },
+            {
+              "year": 2023,
+              "claims": 4,
+              "incurred_usd": "496055"
+            },
+            {
+              "year": 2024,
+              "claims": 4,
+              "incurred_usd": "508243"
+            },
+            {
+              "year": 2025,
+              "claims": 5,
+              "incurred_usd": "534088"
+            }
+          ],
+          "broker_email": "New submission — Lone Star Tankers Inc (3436903). Solid mid-market account in the TN corridor. Fleet 63 PUs, general freight, no hazmat. Loss runs decent. Ready for your quote at the earliest.",
+          "commodity": "general_freight"
+        },
+        "source_snapshot": {
+          "legal_name": "247 FLEET TRANSPORT LLC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 61,
+          "drivers": 1,
+          "crashes_24mo_total": 0,
+          "crashes_24mo_fatal": 0,
+          "crashes_24mo_injury": 0,
+          "crashes_24mo_towaway": 0,
+          "oos_rate_vehicle": 0.0,
+          "oos_rate_driver": 0.0,
+          "oos_rate_hazmat": null,
+          "basic_violations": {},
+          "raw_dot": "3436903"
+        },
+        "safer_profile": {
+          "legal_name": "247 FLEET TRANSPORT LLC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 61,
+          "drivers": 1,
+          "crashes_24mo_total": 0,
+          "crashes_24mo_fatal": 0,
+          "crashes_24mo_injury": 0,
+          "crashes_24mo_towaway": 0,
+          "oos_rate_vehicle": 0.0,
+          "oos_rate_driver": 0.0,
+          "oos_rate_hazmat": null,
+          "basic_violations": {},
+          "raw_dot": "3436903"
+        }
+      },
+      "reference_outputs": {
+        "assertions": [
+          {
+            "id": "annual_history",
+            "description": "Recognize that 5 years of annual loss aggregates ARE supplied. Describe that annual claim counts increases from 4 in 2021 to 5 in 2025, or give the consistent computed trend. Do not call the supplied history absent.",
+            "evidence_paths": [
+              "submission.loss_run"
+            ]
+          },
+          {
+            "id": "oos_observations",
+            "description": "Discuss vehicle out-of-service observations (0.00%) and driver observations (0.00%) accurately, allowing normal rounding. Do not invent national averages or interpret private BASIC percentiles as measured values.",
+            "evidence_paths": [
+              "safer_profile.oos_rate_vehicle",
+              "safer_profile.oos_rate_driver"
+            ]
+          },
+          {
+            "id": "commodity_and_identity",
+            "description": "Identify the submitted commodity as general_freight, distinguish the demo alias from the public legal identity, and flag submitted fleet size 63 versus public power units 61 as a reconciliation question when they differ. Do not infer actual cargo solely from the carrier name.",
+            "evidence_paths": [
+              "submission.commodity",
+              "submission.fleet_size",
+              "submission.safer_legal_name",
+              "safer_profile.power_units"
+            ]
+          },
+          {
+            "id": "premium_assumption",
+            "description": "If a loss ratio is given, disclose that premium is assumed (5500 USD per power unit per year) and actual earned premium is absent. Alternatively avoid a loss ratio and request actual premium. Do not describe the denominator as verified.",
+            "evidence_paths": [
+              "loss_statistics.assumed_premium_per_pu_usd",
+              "document_inventory.actual_earned_premium"
+            ]
+          },
+          {
+            "id": "missing_documents",
+            "description": "Distinguish supplied synthetic annual aggregates and broker assertions from absent verified carrier loss documents and individual claim files; request verification. A broker saying MVRs are clean is not an inspected MVR file. Acknowledge the record limitation without fabricating missing attachments.",
+            "evidence_paths": [
+              "submission.broker_email",
+              "document_inventory"
+            ]
+          },
+          {
+            "id": "basic_unknown",
+            "description": "Treat BASIC entries marked Not Public as unknown, not zero or clean; do not invent percentile scores or violations. It is acceptable to note that private BASIC details must be obtained from the carrier.",
+            "evidence_paths": [
+              "safer_profile.basic_violations"
+            ]
+          }
+        ],
+        "disposition_policy": "Assess evidence handling and valid schema; no expert-approved quote/decline target."
+      },
+      "metadata": {
+        "split": "holdout",
+        "carrier_group": "3436903",
+        "review_status": "agent_source_checked; underwriter_validation_pending"
+      }
+    },
+    {
+      "id": "SUB-013",
+      "inputs": {
+        "submission_id": "SUB-013",
+        "packet_sha256": "317809d6ecec5293a02f10767aeb1cc6f5024732d14b2d53791276b4c6a8230e",
+        "safer_sha256": "bdcb7273f6c40ba7ccb6d4691e70bb06dda7a9245f06cc1af6f36c441ac891bd",
+        "split": "development",
+        "submission": {
+          "id": "SUB-013",
+          "carrier_name": "Northwest Reefer Inc",
+          "dot_number": "270666",
+          "safer_legal_name": "ALLIANCE TANK LINES LLC",
+          "fleet_size": 47,
+          "vehicle_mix": {
+            "tractor": 0.86,
+            "straight_truck": 0.1,
+            "trailer": 0.0,
+            "other": 0.04
+          },
+          "states_of_operation": [
+            "MN",
+            "WI",
+            "ND"
+          ],
+          "effective_date": "2026-08-12",
+          "loss_run": [
+            {
+              "year": 2021,
+              "claims": 3,
+              "incurred_usd": "288497"
+            },
+            {
+              "year": 2022,
+              "claims": 3,
+              "incurred_usd": "330125"
+            },
+            {
+              "year": 2023,
+              "claims": 3,
+              "incurred_usd": "304857"
+            },
+            {
+              "year": 2024,
+              "claims": 3,
+              "incurred_usd": "320174"
+            },
+            {
+              "year": 2025,
+              "claims": 3,
+              "incurred_usd": "336452"
+            }
+          ],
+          "broker_email": "Hi — please see attached for Northwest Reefer Inc, USDOT 270666. 47 units, 3 states (MN, WI, ND). They came off ABC Insurance after a tough year on freq. Loss runs and MVRs in the packet. Need terms by Friday.\n\nThanks,\nProducer",
+          "commodity": "hazmat"
+        },
+        "source_snapshot": {
+          "legal_name": "ALLIANCE TANK LINES LLC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 47,
+          "drivers": 47,
+          "crashes_24mo_total": 5,
+          "crashes_24mo_fatal": 0,
+          "crashes_24mo_injury": 1,
+          "crashes_24mo_towaway": 4,
+          "oos_rate_vehicle": 0.11971830985915492,
+          "oos_rate_driver": 0.012738853503184712,
+          "oos_rate_hazmat": null,
+          "basic_violations": {},
+          "raw_dot": "270666"
+        },
+        "safer_profile": {
+          "legal_name": "ALLIANCE TANK LINES LLC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 47,
+          "drivers": 47,
+          "crashes_24mo_total": 5,
+          "crashes_24mo_fatal": 0,
+          "crashes_24mo_injury": 1,
+          "crashes_24mo_towaway": 4,
+          "oos_rate_vehicle": 0.11971830985915492,
+          "oos_rate_driver": 0.012738853503184712,
+          "oos_rate_hazmat": null,
+          "basic_violations": {},
+          "raw_dot": "270666"
+        }
+      },
+      "reference_outputs": {
+        "assertions": [
+          {
+            "id": "annual_history",
+            "description": "Recognize that 5 years of annual loss aggregates ARE supplied. Describe that annual claim counts is flat from 3 in 2021 to 3 in 2025, or give the consistent computed trend. Do not call the supplied history absent.",
+            "evidence_paths": [
+              "submission.loss_run"
+            ]
+          },
+          {
+            "id": "oos_observations",
+            "description": "Discuss vehicle out-of-service observations (11.97%) and driver observations (1.27%) accurately, allowing normal rounding. Do not invent national averages or interpret private BASIC percentiles as measured values.",
+            "evidence_paths": [
+              "safer_profile.oos_rate_vehicle",
+              "safer_profile.oos_rate_driver"
+            ]
+          },
+          {
+            "id": "commodity_and_identity",
+            "description": "Identify the submitted commodity as hazmat, distinguish the demo alias from the public legal identity, and flag submitted fleet size 47 versus public power units 47 as a reconciliation question when they differ. Do not infer actual cargo solely from the carrier name.",
+            "evidence_paths": [
+              "submission.commodity",
+              "submission.fleet_size",
+              "submission.safer_legal_name",
+              "safer_profile.power_units"
+            ]
+          },
+          {
+            "id": "premium_assumption",
+            "description": "If a loss ratio is given, disclose that premium is assumed (5500 USD per power unit per year) and actual earned premium is absent. Alternatively avoid a loss ratio and request actual premium. Do not describe the denominator as verified.",
+            "evidence_paths": [
+              "loss_statistics.assumed_premium_per_pu_usd",
+              "document_inventory.actual_earned_premium"
+            ]
+          },
+          {
+            "id": "missing_documents",
+            "description": "Distinguish supplied synthetic annual aggregates and broker assertions from absent verified carrier loss documents and individual claim files; request verification. A broker saying MVRs are clean is not an inspected MVR file. Acknowledge the record limitation without fabricating missing attachments.",
+            "evidence_paths": [
+              "submission.broker_email",
+              "document_inventory"
+            ]
+          },
+          {
+            "id": "basic_unknown",
+            "description": "Treat BASIC entries marked Not Public as unknown, not zero or clean; do not invent percentile scores or violations. It is acceptable to note that private BASIC details must be obtained from the carrier.",
+            "evidence_paths": [
+              "safer_profile.basic_violations"
+            ]
+          },
+          {
+            "id": "hazmat_followup",
+            "description": "Address the submitted hazardous-materials exposure and request specific commodities, placarding/endorsement and applicable insurance/coverage verification. Do not invent a uniform liability requirement or assume coverage.",
+            "evidence_paths": [
+              "submission.commodity"
+            ]
+          }
+        ],
+        "disposition_policy": "Assess evidence handling and valid schema; no expert-approved quote/decline target."
+      },
+      "metadata": {
+        "split": "development",
+        "carrier_group": "270666",
+        "review_status": "agent_source_checked; underwriter_validation_pending"
+      }
+    },
+    {
+      "id": "SUB-014",
+      "inputs": {
+        "submission_id": "SUB-014",
+        "packet_sha256": "2ac7a892b37a69f4448eb7c26e19683175dd7b30f492c648b19229d7a8d3cdb9",
+        "safer_sha256": "ca4d2acf2e1718ae101e06c2943526199243148664fa0a6c385efd1cf49e87d4",
+        "split": "development",
+        "submission": {
+          "id": "SUB-014",
+          "carrier_name": "Mid-Atlantic Hauling Inc",
+          "dot_number": "502396",
+          "safer_legal_name": "DOUBLE D DISTRIBUTION INC",
+          "fleet_size": 43,
+          "vehicle_mix": {
+            "tractor": 0.86,
+            "straight_truck": 0.1,
+            "trailer": 0.0,
+            "other": 0.04
+          },
+          "states_of_operation": [
+            "WA",
+            "OR",
+            "ID",
+            "MT"
+          ],
+          "effective_date": "2026-08-23",
+          "loss_run": [
+            {
+              "year": 2021,
+              "claims": 3,
+              "incurred_usd": "364269"
+            },
+            {
+              "year": 2022,
+              "claims": 3,
+              "incurred_usd": "348631"
+            },
+            {
+              "year": 2023,
+              "claims": 3,
+              "incurred_usd": "396786"
+            },
+            {
+              "year": 2024,
+              "claims": 3,
+              "incurred_usd": "310995"
+            },
+            {
+              "year": 2025,
+              "claims": 3,
+              "incurred_usd": "383970"
+            }
+          ],
+          "broker_email": "New submission — Mid-Atlantic Hauling Inc (502396). Solid mid-market account in the WA corridor. Fleet 43 PUs, general freight, no hazmat. Loss runs decent. Ready for your quote at the earliest.",
+          "commodity": "general_freight"
+        },
+        "source_snapshot": {
+          "legal_name": "DOUBLE D DISTRIBUTION INC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 44,
+          "drivers": 40,
+          "crashes_24mo_total": 2,
+          "crashes_24mo_fatal": 0,
+          "crashes_24mo_injury": 0,
+          "crashes_24mo_towaway": 2,
+          "oos_rate_vehicle": 0.20512820512820515,
+          "oos_rate_driver": 0.010869565217391304,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "502396"
+        },
+        "safer_profile": {
+          "legal_name": "DOUBLE D DISTRIBUTION INC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 44,
+          "drivers": 40,
+          "crashes_24mo_total": 2,
+          "crashes_24mo_fatal": 0,
+          "crashes_24mo_injury": 0,
+          "crashes_24mo_towaway": 2,
+          "oos_rate_vehicle": 0.20512820512820515,
+          "oos_rate_driver": 0.010869565217391304,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "502396"
+        }
+      },
+      "reference_outputs": {
+        "assertions": [
+          {
+            "id": "annual_history",
+            "description": "Recognize that 5 years of annual loss aggregates ARE supplied. Describe that annual claim counts is flat from 3 in 2021 to 3 in 2025, or give the consistent computed trend. Do not call the supplied history absent.",
+            "evidence_paths": [
+              "submission.loss_run"
+            ]
+          },
+          {
+            "id": "oos_observations",
+            "description": "Discuss vehicle out-of-service observations (20.51%) and driver observations (1.09%) accurately, allowing normal rounding. Do not invent national averages or interpret private BASIC percentiles as measured values.",
+            "evidence_paths": [
+              "safer_profile.oos_rate_vehicle",
+              "safer_profile.oos_rate_driver"
+            ]
+          },
+          {
+            "id": "commodity_and_identity",
+            "description": "Identify the submitted commodity as general_freight, distinguish the demo alias from the public legal identity, and flag submitted fleet size 43 versus public power units 44 as a reconciliation question when they differ. Do not infer actual cargo solely from the carrier name.",
+            "evidence_paths": [
+              "submission.commodity",
+              "submission.fleet_size",
+              "submission.safer_legal_name",
+              "safer_profile.power_units"
+            ]
+          },
+          {
+            "id": "premium_assumption",
+            "description": "If a loss ratio is given, disclose that premium is assumed (5500 USD per power unit per year) and actual earned premium is absent. Alternatively avoid a loss ratio and request actual premium. Do not describe the denominator as verified.",
+            "evidence_paths": [
+              "loss_statistics.assumed_premium_per_pu_usd",
+              "document_inventory.actual_earned_premium"
+            ]
+          },
+          {
+            "id": "missing_documents",
+            "description": "Distinguish supplied synthetic annual aggregates and broker assertions from absent verified carrier loss documents and individual claim files; request verification. A broker saying MVRs are clean is not an inspected MVR file. Acknowledge the record limitation without fabricating missing attachments.",
+            "evidence_paths": [
+              "submission.broker_email",
+              "document_inventory"
+            ]
+          },
+          {
+            "id": "basic_unknown",
+            "description": "Treat BASIC entries marked Not Public as unknown, not zero or clean; do not invent percentile scores or violations. It is acceptable to note that private BASIC details must be obtained from the carrier.",
+            "evidence_paths": [
+              "safer_profile.basic_violations"
+            ]
+          }
+        ],
+        "disposition_policy": "Assess evidence handling and valid schema; no expert-approved quote/decline target."
+      },
+      "metadata": {
+        "split": "development",
+        "carrier_group": "502396",
+        "review_status": "agent_source_checked; underwriter_validation_pending"
+      }
+    },
+    {
+      "id": "SUB-015",
+      "inputs": {
+        "submission_id": "SUB-015",
+        "packet_sha256": "68e8eb5f69f10abf595681dc0fed0ea3e735a2a253acfeb56fb28ee4e68bf1e9",
+        "safer_sha256": "d02fa3707f643f3d2afe781876268b4304f3045d52145fedf5e90976d2af6ef0",
+        "split": "holdout",
+        "submission": {
+          "id": "SUB-015",
+          "carrier_name": "Coastal Cartage Inc",
+          "dot_number": "274904",
+          "safer_legal_name": "PS MARSTON ASSOCIATES LLC",
+          "fleet_size": 66,
+          "vehicle_mix": {
+            "tractor": 0.86,
+            "straight_truck": 0.1,
+            "trailer": 0.0,
+            "other": 0.04
+          },
+          "states_of_operation": [
+            "CA",
+            "NV",
+            "AZ"
+          ],
+          "effective_date": "2026-08-22",
+          "loss_run": [
+            {
+              "year": 2021,
+              "claims": 2,
+              "incurred_usd": "182339"
+            },
+            {
+              "year": 2022,
+              "claims": 2,
+              "incurred_usd": "155831"
+            },
+            {
+              "year": 2023,
+              "claims": 2,
+              "incurred_usd": "186852"
+            },
+            {
+              "year": 2024,
+              "claims": 2,
+              "incurred_usd": "189988"
+            },
+            {
+              "year": 2025,
+              "claims": 2,
+              "incurred_usd": "162057"
+            }
+          ],
+          "broker_email": "New submission — Coastal Cartage Inc (274904). Solid mid-market account in the CA corridor. Fleet 66 PUs, general freight, no hazmat. Loss runs decent. Ready for your quote at the earliest.",
+          "commodity": "general_freight"
+        },
+        "source_snapshot": {
+          "legal_name": "PS MARSTON ASSOCIATES LLC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 65,
+          "drivers": 76,
+          "crashes_24mo_total": 1,
+          "crashes_24mo_fatal": 0,
+          "crashes_24mo_injury": 1,
+          "crashes_24mo_towaway": 0,
+          "oos_rate_vehicle": 0.15384615384615385,
+          "oos_rate_driver": 0.0,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "274904"
+        },
+        "safer_profile": {
+          "legal_name": "PS MARSTON ASSOCIATES LLC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 65,
+          "drivers": 76,
+          "crashes_24mo_total": 1,
+          "crashes_24mo_fatal": 0,
+          "crashes_24mo_injury": 1,
+          "crashes_24mo_towaway": 0,
+          "oos_rate_vehicle": 0.15384615384615385,
+          "oos_rate_driver": 0.0,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "274904"
+        }
+      },
+      "reference_outputs": {
+        "assertions": [
+          {
+            "id": "annual_history",
+            "description": "Recognize that 5 years of annual loss aggregates ARE supplied. Describe that annual claim counts is flat from 2 in 2021 to 2 in 2025, or give the consistent computed trend. Do not call the supplied history absent.",
+            "evidence_paths": [
+              "submission.loss_run"
+            ]
+          },
+          {
+            "id": "oos_observations",
+            "description": "Discuss vehicle out-of-service observations (15.38%) and driver observations (0.00%) accurately, allowing normal rounding. Do not invent national averages or interpret private BASIC percentiles as measured values.",
+            "evidence_paths": [
+              "safer_profile.oos_rate_vehicle",
+              "safer_profile.oos_rate_driver"
+            ]
+          },
+          {
+            "id": "commodity_and_identity",
+            "description": "Identify the submitted commodity as general_freight, distinguish the demo alias from the public legal identity, and flag submitted fleet size 66 versus public power units 65 as a reconciliation question when they differ. Do not infer actual cargo solely from the carrier name.",
+            "evidence_paths": [
+              "submission.commodity",
+              "submission.fleet_size",
+              "submission.safer_legal_name",
+              "safer_profile.power_units"
+            ]
+          },
+          {
+            "id": "premium_assumption",
+            "description": "If a loss ratio is given, disclose that premium is assumed (5500 USD per power unit per year) and actual earned premium is absent. Alternatively avoid a loss ratio and request actual premium. Do not describe the denominator as verified.",
+            "evidence_paths": [
+              "loss_statistics.assumed_premium_per_pu_usd",
+              "document_inventory.actual_earned_premium"
+            ]
+          },
+          {
+            "id": "missing_documents",
+            "description": "Distinguish supplied synthetic annual aggregates and broker assertions from absent verified carrier loss documents and individual claim files; request verification. A broker saying MVRs are clean is not an inspected MVR file. Acknowledge the record limitation without fabricating missing attachments.",
+            "evidence_paths": [
+              "submission.broker_email",
+              "document_inventory"
+            ]
+          },
+          {
+            "id": "basic_unknown",
+            "description": "Treat BASIC entries marked Not Public as unknown, not zero or clean; do not invent percentile scores or violations. It is acceptable to note that private BASIC details must be obtained from the carrier.",
+            "evidence_paths": [
+              "safer_profile.basic_violations"
+            ]
+          }
+        ],
+        "disposition_policy": "Assess evidence handling and valid schema; no expert-approved quote/decline target."
+      },
+      "metadata": {
+        "split": "holdout",
+        "carrier_group": "274904",
+        "review_status": "agent_source_checked; underwriter_validation_pending"
+      }
+    },
+    {
+      "id": "SUB-016",
+      "inputs": {
+        "submission_id": "SUB-016",
+        "packet_sha256": "f7a86deef73ff930ea2c0ed7de8bf600a643cf291f30ef4f001aeb85cc816631",
+        "safer_sha256": "f1e42f15db982724950533d3d2a667d977d5ed4db198f99327317865d107eaea",
+        "split": "development",
+        "submission": {
+          "id": "SUB-016",
+          "carrier_name": "Frontier Distribution Inc",
+          "dot_number": "185040",
+          "safer_legal_name": "UNITED PETROLEUM TRANSPORTS INC",
+          "fleet_size": 576,
+          "vehicle_mix": {
+            "tractor": 0.86,
+            "straight_truck": 0.1,
+            "trailer": 0.0,
+            "other": 0.04
+          },
+          "states_of_operation": [
+            "MS",
+            "AL",
+            "GA",
+            "FL"
+          ],
+          "effective_date": "2026-08-23",
+          "loss_run": [
+            {
+              "year": 2021,
+              "claims": 35,
+              "incurred_usd": "3360374"
+            },
+            {
+              "year": 2022,
+              "claims": 37,
+              "incurred_usd": "4622662"
+            },
+            {
+              "year": 2023,
+              "claims": 39,
+              "incurred_usd": "4078184"
+            },
+            {
+              "year": 2024,
+              "claims": 40,
+              "incurred_usd": "5491576"
+            },
+            {
+              "year": 2025,
+              "claims": 41,
+              "incurred_usd": "4667875"
+            }
+          ],
+          "broker_email": "Team —\n\nLooking for a Hartford quote on Frontier Distribution Inc (DOT 185040). They run 576 power units, mostly out of MS/FL corridors. 5-yr loss run attached, MVRs are clean for the most part. Renewal effective in 30 days. Producer is Mike at Lockton.\n\n—J.",
+          "commodity": "hazmat"
+        },
+        "source_snapshot": {
+          "legal_name": "UNITED PETROLEUM TRANSPORTS INC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 604,
+          "drivers": 712,
+          "crashes_24mo_total": 41,
+          "crashes_24mo_fatal": 2,
+          "crashes_24mo_injury": 14,
+          "crashes_24mo_towaway": 25,
+          "oos_rate_vehicle": 0.14613778705636743,
+          "oos_rate_driver": 0.008712487899322363,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "185040"
+        },
+        "safer_profile": {
+          "legal_name": "UNITED PETROLEUM TRANSPORTS INC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 604,
+          "drivers": 712,
+          "crashes_24mo_total": 41,
+          "crashes_24mo_fatal": 2,
+          "crashes_24mo_injury": 14,
+          "crashes_24mo_towaway": 25,
+          "oos_rate_vehicle": 0.14613778705636743,
+          "oos_rate_driver": 0.008712487899322363,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "185040"
+        }
+      },
+      "reference_outputs": {
+        "assertions": [
+          {
+            "id": "annual_history",
+            "description": "Recognize that 5 years of annual loss aggregates ARE supplied. Describe that annual claim counts increases from 35 in 2021 to 41 in 2025, or give the consistent computed trend. Do not call the supplied history absent.",
+            "evidence_paths": [
+              "submission.loss_run"
+            ]
+          },
+          {
+            "id": "oos_observations",
+            "description": "Discuss vehicle out-of-service observations (14.61%) and driver observations (0.87%) accurately, allowing normal rounding. Do not invent national averages or interpret private BASIC percentiles as measured values.",
+            "evidence_paths": [
+              "safer_profile.oos_rate_vehicle",
+              "safer_profile.oos_rate_driver"
+            ]
+          },
+          {
+            "id": "commodity_and_identity",
+            "description": "Identify the submitted commodity as hazmat, distinguish the demo alias from the public legal identity, and flag submitted fleet size 576 versus public power units 604 as a reconciliation question when they differ. Do not infer actual cargo solely from the carrier name.",
+            "evidence_paths": [
+              "submission.commodity",
+              "submission.fleet_size",
+              "submission.safer_legal_name",
+              "safer_profile.power_units"
+            ]
+          },
+          {
+            "id": "premium_assumption",
+            "description": "If a loss ratio is given, disclose that premium is assumed (5500 USD per power unit per year) and actual earned premium is absent. Alternatively avoid a loss ratio and request actual premium. Do not describe the denominator as verified.",
+            "evidence_paths": [
+              "loss_statistics.assumed_premium_per_pu_usd",
+              "document_inventory.actual_earned_premium"
+            ]
+          },
+          {
+            "id": "missing_documents",
+            "description": "Distinguish supplied synthetic annual aggregates and broker assertions from absent verified carrier loss documents and individual claim files; request verification. A broker saying MVRs are clean is not an inspected MVR file. Acknowledge the record limitation without fabricating missing attachments.",
+            "evidence_paths": [
+              "submission.broker_email",
+              "document_inventory"
+            ]
+          },
+          {
+            "id": "basic_unknown",
+            "description": "Treat BASIC entries marked Not Public as unknown, not zero or clean; do not invent percentile scores or violations. It is acceptable to note that private BASIC details must be obtained from the carrier.",
+            "evidence_paths": [
+              "safer_profile.basic_violations"
+            ]
+          },
+          {
+            "id": "fatal_involvement",
+            "description": "Surface 2 fatal-involvement crash(es) in the 24-month public snapshot as material. Crash involvement does not establish fault or a paid insurance loss.",
+            "evidence_paths": [
+              "safer_profile.crashes_24mo_fatal"
+            ]
+          },
+          {
+            "id": "hazmat_followup",
+            "description": "Address the submitted hazardous-materials exposure and request specific commodities, placarding/endorsement and applicable insurance/coverage verification. Do not invent a uniform liability requirement or assume coverage.",
+            "evidence_paths": [
+              "submission.commodity"
+            ]
+          }
+        ],
+        "disposition_policy": "Assess evidence handling and valid schema; no expert-approved quote/decline target."
+      },
+      "metadata": {
+        "split": "development",
+        "carrier_group": "185040",
+        "review_status": "agent_source_checked; underwriter_validation_pending"
+      }
+    },
+    {
+      "id": "SUB-017",
+      "inputs": {
+        "submission_id": "SUB-017",
+        "packet_sha256": "17536bc95ef7fb2ac56b0d4e3b5d5d792a61c8421776a11859f4c1e184a2b7a1",
+        "safer_sha256": "115f6423d9dc790971f467ac72d28bc94ccd9d311567d31bd8be0d33409b55a9",
+        "split": "development",
+        "submission": {
+          "id": "SUB-017",
+          "carrier_name": "Big Sky Trucking Inc",
+          "dot_number": "171830",
+          "safer_legal_name": "KA BULK TRANSPORT LLC",
+          "fleet_size": 603,
+          "vehicle_mix": {
+            "tractor": 0.86,
+            "straight_truck": 0.1,
+            "trailer": 0.0,
+            "other": 0.04
+          },
+          "states_of_operation": [
+            "MS",
+            "AL",
+            "GA",
+            "FL"
+          ],
+          "effective_date": "2026-08-29",
+          "loss_run": [
+            {
+              "year": 2021,
+              "claims": 38,
+              "incurred_usd": "3972071"
+            },
+            {
+              "year": 2022,
+              "claims": 39,
+              "incurred_usd": "4046091"
+            },
+            {
+              "year": 2023,
+              "claims": 40,
+              "incurred_usd": "4522449"
+            },
+            {
+              "year": 2024,
+              "claims": 42,
+              "incurred_usd": "4605006"
+            },
+            {
+              "year": 2025,
+              "claims": 44,
+              "incurred_usd": "6016206"
+            }
+          ],
+          "broker_email": "Team —\n\nLooking for a Hartford quote on Big Sky Trucking Inc (DOT 171830). They run 603 power units, mostly out of MS/FL corridors. 5-yr loss run attached, MVRs are clean for the most part. Renewal effective in 30 days. Producer is Mike at Lockton.\n\n—J.",
+          "commodity": "general_freight"
+        },
+        "source_snapshot": {
+          "legal_name": "KA BULK TRANSPORT LLC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 581,
+          "drivers": 605,
+          "crashes_24mo_total": 0,
+          "crashes_24mo_fatal": 0,
+          "crashes_24mo_injury": 0,
+          "crashes_24mo_towaway": 0,
+          "oos_rate_vehicle": 0.0,
+          "oos_rate_driver": 0.0,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "171830"
+        },
+        "safer_profile": {
+          "legal_name": "KA BULK TRANSPORT LLC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 581,
+          "drivers": 605,
+          "crashes_24mo_total": 0,
+          "crashes_24mo_fatal": 0,
+          "crashes_24mo_injury": 0,
+          "crashes_24mo_towaway": 0,
+          "oos_rate_vehicle": 0.0,
+          "oos_rate_driver": 0.0,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "171830"
+        }
+      },
+      "reference_outputs": {
+        "assertions": [
+          {
+            "id": "annual_history",
+            "description": "Recognize that 5 years of annual loss aggregates ARE supplied. Describe that annual claim counts increases from 38 in 2021 to 44 in 2025, or give the consistent computed trend. Do not call the supplied history absent.",
+            "evidence_paths": [
+              "submission.loss_run"
+            ]
+          },
+          {
+            "id": "oos_observations",
+            "description": "Discuss vehicle out-of-service observations (0.00%) and driver observations (0.00%) accurately, allowing normal rounding. Do not invent national averages or interpret private BASIC percentiles as measured values.",
+            "evidence_paths": [
+              "safer_profile.oos_rate_vehicle",
+              "safer_profile.oos_rate_driver"
+            ]
+          },
+          {
+            "id": "commodity_and_identity",
+            "description": "Identify the submitted commodity as general_freight, distinguish the demo alias from the public legal identity, and flag submitted fleet size 603 versus public power units 581 as a reconciliation question when they differ. Do not infer actual cargo solely from the carrier name.",
+            "evidence_paths": [
+              "submission.commodity",
+              "submission.fleet_size",
+              "submission.safer_legal_name",
+              "safer_profile.power_units"
+            ]
+          },
+          {
+            "id": "premium_assumption",
+            "description": "If a loss ratio is given, disclose that premium is assumed (5500 USD per power unit per year) and actual earned premium is absent. Alternatively avoid a loss ratio and request actual premium. Do not describe the denominator as verified.",
+            "evidence_paths": [
+              "loss_statistics.assumed_premium_per_pu_usd",
+              "document_inventory.actual_earned_premium"
+            ]
+          },
+          {
+            "id": "missing_documents",
+            "description": "Distinguish supplied synthetic annual aggregates and broker assertions from absent verified carrier loss documents and individual claim files; request verification. A broker saying MVRs are clean is not an inspected MVR file. Acknowledge the record limitation without fabricating missing attachments.",
+            "evidence_paths": [
+              "submission.broker_email",
+              "document_inventory"
+            ]
+          },
+          {
+            "id": "basic_unknown",
+            "description": "Treat BASIC entries marked Not Public as unknown, not zero or clean; do not invent percentile scores or violations. It is acceptable to note that private BASIC details must be obtained from the carrier.",
+            "evidence_paths": [
+              "safer_profile.basic_violations"
+            ]
+          }
+        ],
+        "disposition_policy": "Assess evidence handling and valid schema; no expert-approved quote/decline target."
+      },
+      "metadata": {
+        "split": "development",
+        "carrier_group": "171830",
+        "review_status": "agent_source_checked; underwriter_validation_pending"
+      }
+    },
+    {
+      "id": "SUB-018",
+      "inputs": {
+        "submission_id": "SUB-018",
+        "packet_sha256": "336d3739f846fef99522d2395313a7472e4a4411e43eb785ffa3238fde3e8b10",
+        "safer_sha256": "ca5388fbd774c197123668a81f4fd71fabae5b9a491efd6b76f475040de9c790",
+        "split": "holdout",
+        "submission": {
+          "id": "SUB-018",
+          "carrier_name": "Peach State Freight Inc",
+          "dot_number": "184405",
+          "safer_legal_name": "J & M TANK LINES INC",
+          "fleet_size": 445,
+          "vehicle_mix": {
+            "tractor": 0.86,
+            "straight_truck": 0.1,
+            "trailer": 0.0,
+            "other": 0.04
+          },
+          "states_of_operation": [
+            "IA",
+            "NE",
+            "MO",
+            "KS",
+            "IL",
+            "IN"
+          ],
+          "effective_date": "2026-08-14",
+          "loss_run": [
+            {
+              "year": 2021,
+              "claims": 28,
+              "incurred_usd": "2847724"
+            },
+            {
+              "year": 2022,
+              "claims": 29,
+              "incurred_usd": "3630790"
+            },
+            {
+              "year": 2023,
+              "claims": 30,
+              "incurred_usd": "3163062"
+            },
+            {
+              "year": 2024,
+              "claims": 31,
+              "incurred_usd": "4167349"
+            },
+            {
+              "year": 2025,
+              "claims": 32,
+              "incurred_usd": "3849653"
+            }
+          ],
+          "broker_email": "New submission — Peach State Freight Inc (184405). Solid mid-market account in the IA corridor. Fleet 445 PUs, general freight, no hazmat. Loss runs decent. Ready for your quote at the earliest.",
+          "commodity": "general_freight"
+        },
+        "source_snapshot": {
+          "legal_name": "J & M TANK LINES INC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 438,
+          "drivers": 374,
+          "crashes_24mo_total": 28,
+          "crashes_24mo_fatal": 0,
+          "crashes_24mo_injury": 11,
+          "crashes_24mo_towaway": 17,
+          "oos_rate_vehicle": 0.15979381443298968,
+          "oos_rate_driver": 0.008174386920980926,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "184405"
+        },
+        "safer_profile": {
+          "legal_name": "J & M TANK LINES INC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 438,
+          "drivers": 374,
+          "crashes_24mo_total": 28,
+          "crashes_24mo_fatal": 0,
+          "crashes_24mo_injury": 11,
+          "crashes_24mo_towaway": 17,
+          "oos_rate_vehicle": 0.15979381443298968,
+          "oos_rate_driver": 0.008174386920980926,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "184405"
+        }
+      },
+      "reference_outputs": {
+        "assertions": [
+          {
+            "id": "annual_history",
+            "description": "Recognize that 5 years of annual loss aggregates ARE supplied. Describe that annual claim counts increases from 28 in 2021 to 32 in 2025, or give the consistent computed trend. Do not call the supplied history absent.",
+            "evidence_paths": [
+              "submission.loss_run"
+            ]
+          },
+          {
+            "id": "oos_observations",
+            "description": "Discuss vehicle out-of-service observations (15.98%) and driver observations (0.82%) accurately, allowing normal rounding. Do not invent national averages or interpret private BASIC percentiles as measured values.",
+            "evidence_paths": [
+              "safer_profile.oos_rate_vehicle",
+              "safer_profile.oos_rate_driver"
+            ]
+          },
+          {
+            "id": "commodity_and_identity",
+            "description": "Identify the submitted commodity as general_freight, distinguish the demo alias from the public legal identity, and flag submitted fleet size 445 versus public power units 438 as a reconciliation question when they differ. Do not infer actual cargo solely from the carrier name.",
+            "evidence_paths": [
+              "submission.commodity",
+              "submission.fleet_size",
+              "submission.safer_legal_name",
+              "safer_profile.power_units"
+            ]
+          },
+          {
+            "id": "premium_assumption",
+            "description": "If a loss ratio is given, disclose that premium is assumed (5500 USD per power unit per year) and actual earned premium is absent. Alternatively avoid a loss ratio and request actual premium. Do not describe the denominator as verified.",
+            "evidence_paths": [
+              "loss_statistics.assumed_premium_per_pu_usd",
+              "document_inventory.actual_earned_premium"
+            ]
+          },
+          {
+            "id": "missing_documents",
+            "description": "Distinguish supplied synthetic annual aggregates and broker assertions from absent verified carrier loss documents and individual claim files; request verification. A broker saying MVRs are clean is not an inspected MVR file. Acknowledge the record limitation without fabricating missing attachments.",
+            "evidence_paths": [
+              "submission.broker_email",
+              "document_inventory"
+            ]
+          },
+          {
+            "id": "basic_unknown",
+            "description": "Treat BASIC entries marked Not Public as unknown, not zero or clean; do not invent percentile scores or violations. It is acceptable to note that private BASIC details must be obtained from the carrier.",
+            "evidence_paths": [
+              "safer_profile.basic_violations"
+            ]
+          }
+        ],
+        "disposition_policy": "Assess evidence handling and valid schema; no expert-approved quote/decline target."
+      },
+      "metadata": {
+        "split": "holdout",
+        "carrier_group": "184405",
+        "review_status": "agent_source_checked; underwriter_validation_pending"
+      }
+    },
+    {
+      "id": "SUB-019",
+      "inputs": {
+        "submission_id": "SUB-019",
+        "packet_sha256": "556ca710cc26e608c4e48f678312e6eb2cf30ac04f558c46ea5bc858350d1581",
+        "safer_sha256": "944f4c8113b64aab9d54a50ca4e118ad439a7a2c394c3aff7e63aca41cecb601",
+        "split": "development",
+        "submission": {
+          "id": "SUB-019",
+          "carrier_name": "Old North Freightways Inc",
+          "dot_number": "229047",
+          "safer_legal_name": "WILLIAMS TANK LINES LLC",
+          "fleet_size": 319,
+          "vehicle_mix": {
+            "tractor": 0.74,
+            "straight_truck": 0.06,
+            "trailer": 0.18,
+            "other": 0.02
+          },
+          "states_of_operation": [
+            "CA",
+            "NV",
+            "AZ"
+          ],
+          "effective_date": "2026-08-18",
+          "loss_run": [
+            {
+              "year": 2021,
+              "claims": 10,
+              "incurred_usd": "673528"
+            },
+            {
+              "year": 2022,
+              "claims": 10,
+              "incurred_usd": "918632"
+            },
+            {
+              "year": 2023,
+              "claims": 10,
+              "incurred_usd": "972758"
+            },
+            {
+              "year": 2024,
+              "claims": 11,
+              "incurred_usd": "1142790"
+            },
+            {
+              "year": 2025,
+              "claims": 11,
+              "incurred_usd": "1116856"
+            }
+          ],
+          "broker_email": "Team —\n\nLooking for a Hartford quote on Old North Freightways Inc (DOT 229047). They run 319 power units, mostly out of CA/AZ corridors. 5-yr loss run attached, MVRs are clean for the most part. Renewal effective in 30 days. Producer is Mike at Lockton.\n\n—J.",
+          "commodity": "tank"
+        },
+        "source_snapshot": {
+          "legal_name": "WILLIAMS TANK LINES LLC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 316,
+          "drivers": 347,
+          "crashes_24mo_total": 16,
+          "crashes_24mo_fatal": 0,
+          "crashes_24mo_injury": 7,
+          "crashes_24mo_towaway": 9,
+          "oos_rate_vehicle": 0.06484149855907781,
+          "oos_rate_driver": 0.003194888178913738,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "229047"
+        },
+        "safer_profile": {
+          "legal_name": "WILLIAMS TANK LINES LLC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 316,
+          "drivers": 347,
+          "crashes_24mo_total": 16,
+          "crashes_24mo_fatal": 0,
+          "crashes_24mo_injury": 7,
+          "crashes_24mo_towaway": 9,
+          "oos_rate_vehicle": 0.06484149855907781,
+          "oos_rate_driver": 0.003194888178913738,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "229047"
+        }
+      },
+      "reference_outputs": {
+        "assertions": [
+          {
+            "id": "annual_history",
+            "description": "Recognize that 5 years of annual loss aggregates ARE supplied. Describe that annual claim counts increases from 10 in 2021 to 11 in 2025, or give the consistent computed trend. Do not call the supplied history absent.",
+            "evidence_paths": [
+              "submission.loss_run"
+            ]
+          },
+          {
+            "id": "oos_observations",
+            "description": "Discuss vehicle out-of-service observations (6.48%) and driver observations (0.32%) accurately, allowing normal rounding. Do not invent national averages or interpret private BASIC percentiles as measured values.",
+            "evidence_paths": [
+              "safer_profile.oos_rate_vehicle",
+              "safer_profile.oos_rate_driver"
+            ]
+          },
+          {
+            "id": "commodity_and_identity",
+            "description": "Identify the submitted commodity as tank, distinguish the demo alias from the public legal identity, and flag submitted fleet size 319 versus public power units 316 as a reconciliation question when they differ. Do not infer actual cargo solely from the carrier name.",
+            "evidence_paths": [
+              "submission.commodity",
+              "submission.fleet_size",
+              "submission.safer_legal_name",
+              "safer_profile.power_units"
+            ]
+          },
+          {
+            "id": "premium_assumption",
+            "description": "If a loss ratio is given, disclose that premium is assumed (5500 USD per power unit per year) and actual earned premium is absent. Alternatively avoid a loss ratio and request actual premium. Do not describe the denominator as verified.",
+            "evidence_paths": [
+              "loss_statistics.assumed_premium_per_pu_usd",
+              "document_inventory.actual_earned_premium"
+            ]
+          },
+          {
+            "id": "missing_documents",
+            "description": "Distinguish supplied synthetic annual aggregates and broker assertions from absent verified carrier loss documents and individual claim files; request verification. A broker saying MVRs are clean is not an inspected MVR file. Acknowledge the record limitation without fabricating missing attachments.",
+            "evidence_paths": [
+              "submission.broker_email",
+              "document_inventory"
+            ]
+          },
+          {
+            "id": "basic_unknown",
+            "description": "Treat BASIC entries marked Not Public as unknown, not zero or clean; do not invent percentile scores or violations. It is acceptable to note that private BASIC details must be obtained from the carrier.",
+            "evidence_paths": [
+              "safer_profile.basic_violations"
+            ]
+          }
+        ],
+        "disposition_policy": "Assess evidence handling and valid schema; no expert-approved quote/decline target."
+      },
+      "metadata": {
+        "split": "development",
+        "carrier_group": "229047",
+        "review_status": "agent_source_checked; underwriter_validation_pending"
+      }
+    },
+    {
+      "id": "SUB-020",
+      "inputs": {
+        "submission_id": "SUB-020",
+        "packet_sha256": "0925a13f86019e35ae8b3f7e4b6ef04b1e20dd0e02de9b281b4359e6d13c67a2",
+        "safer_sha256": "9d13f6737919b6d579abb86f3a1fb3080b30bfeb1ad50659a59067b8503210e7",
+        "split": "development",
+        "submission": {
+          "id": "SUB-020",
+          "carrier_name": "Granite Mountain Logistics Inc",
+          "dot_number": "890682",
+          "safer_legal_name": "ANDERSEN DISTRIBUTION INC",
+          "fleet_size": 262,
+          "vehicle_mix": {
+            "tractor": 0.86,
+            "straight_truck": 0.1,
+            "trailer": 0.0,
+            "other": 0.04
+          },
+          "states_of_operation": [
+            "NJ",
+            "PA",
+            "NY",
+            "CT"
+          ],
+          "effective_date": "2026-08-18",
+          "loss_run": [
+            {
+              "year": 2021,
+              "claims": 16,
+              "incurred_usd": "1531324"
+            },
+            {
+              "year": 2022,
+              "claims": 17,
+              "incurred_usd": "1995227"
+            },
+            {
+              "year": 2023,
+              "claims": 17,
+              "incurred_usd": "1917763"
+            },
+            {
+              "year": 2024,
+              "claims": 18,
+              "incurred_usd": "1957448"
+            },
+            {
+              "year": 2025,
+              "claims": 19,
+              "incurred_usd": "2282454"
+            }
+          ],
+          "broker_email": "Hi — please see attached for Granite Mountain Logistics Inc, USDOT 890682. 262 units, 4 states (NJ, PA, NY, CT). They came off ABC Insurance after a tough year on freq. Loss runs and MVRs in the packet. Need terms by Friday.\n\nThanks,\nProducer",
+          "commodity": "hazmat"
+        },
+        "source_snapshot": {
+          "legal_name": "ANDERSEN DISTRIBUTION INC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 267,
+          "drivers": 269,
+          "crashes_24mo_total": 11,
+          "crashes_24mo_fatal": 1,
+          "crashes_24mo_injury": 5,
+          "crashes_24mo_towaway": 5,
+          "oos_rate_vehicle": 0.16393442622950818,
+          "oos_rate_driver": 0.007272727272727273,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "890682"
+        },
+        "safer_profile": {
+          "legal_name": "ANDERSEN DISTRIBUTION INC",
+          "operating_status": "AUTHORIZED",
+          "power_units": 267,
+          "drivers": 269,
+          "crashes_24mo_total": 11,
+          "crashes_24mo_fatal": 1,
+          "crashes_24mo_injury": 5,
+          "crashes_24mo_towaway": 5,
+          "oos_rate_vehicle": 0.16393442622950818,
+          "oos_rate_driver": 0.007272727272727273,
+          "oos_rate_hazmat": null,
+          "basic_violations": {
+            "Unsafe Driving": "percentile Not Public",
+            "Hours-of-Service Compliance": "percentile Not Public",
+            "Driver Fitness": "percentile Not Public",
+            "Controlled Substances/&#8203;Alcohol": "percentile Not Public",
+            "Vehicle Maintenance": "percentile Not Public"
+          },
+          "raw_dot": "890682"
+        }
+      },
+      "reference_outputs": {
+        "assertions": [
+          {
+            "id": "annual_history",
+            "description": "Recognize that 5 years of annual loss aggregates ARE supplied. Describe that annual claim counts increases from 16 in 2021 to 19 in 2025, or give the consistent computed trend. Do not call the supplied history absent.",
+            "evidence_paths": [
+              "submission.loss_run"
+            ]
+          },
+          {
+            "id": "oos_observations",
+            "description": "Discuss vehicle out-of-service observations (16.39%) and driver observations (0.73%) accurately, allowing normal rounding. Do not invent national averages or interpret private BASIC percentiles as measured values.",
+            "evidence_paths": [
+              "safer_profile.oos_rate_vehicle",
+              "safer_profile.oos_rate_driver"
+            ]
+          },
+          {
+            "id": "commodity_and_identity",
+            "description": "Identify the submitted commodity as hazmat, distinguish the demo alias from the public legal identity, and flag submitted fleet size 262 versus public power units 267 as a reconciliation question when they differ. Do not infer actual cargo solely from the carrier name.",
+            "evidence_paths": [
+              "submission.commodity",
+              "submission.fleet_size",
+              "submission.safer_legal_name",
+              "safer_profile.power_units"
+            ]
+          },
+          {
+            "id": "premium_assumption",
+            "description": "If a loss ratio is given, disclose that premium is assumed (5500 USD per power unit per year) and actual earned premium is absent. Alternatively avoid a loss ratio and request actual premium. Do not describe the denominator as verified.",
+            "evidence_paths": [
+              "loss_statistics.assumed_premium_per_pu_usd",
+              "document_inventory.actual_earned_premium"
+            ]
+          },
+          {
+            "id": "missing_documents",
+            "description": "Distinguish supplied synthetic annual aggregates and broker assertions from absent verified carrier loss documents and individual claim files; request verification. A broker saying MVRs are clean is not an inspected MVR file. Acknowledge the record limitation without fabricating missing attachments.",
+            "evidence_paths": [
+              "submission.broker_email",
+              "document_inventory"
+            ]
+          },
+          {
+            "id": "basic_unknown",
+            "description": "Treat BASIC entries marked Not Public as unknown, not zero or clean; do not invent percentile scores or violations. It is acceptable to note that private BASIC details must be obtained from the carrier.",
+            "evidence_paths": [
+              "safer_profile.basic_violations"
+            ]
+          },
+          {
+            "id": "fatal_involvement",
+            "description": "Surface 1 fatal-involvement crash(es) in the 24-month public snapshot as material. Crash involvement does not establish fault or a paid insurance loss.",
+            "evidence_paths": [
+              "safer_profile.crashes_24mo_fatal"
+            ]
+          },
+          {
+            "id": "hazmat_followup",
+            "description": "Address the submitted hazardous-materials exposure and request specific commodities, placarding/endorsement and applicable insurance/coverage verification. Do not invent a uniform liability requirement or assume coverage.",
+            "evidence_paths": [
+              "submission.commodity"
+            ]
+          }
+        ],
+        "disposition_policy": "Assess evidence handling and valid schema; no expert-approved quote/decline target."
+      },
+      "metadata": {
+        "split": "development",
+        "carrier_group": "890682",
+        "review_status": "agent_source_checked; underwriter_validation_pending"
       }
     }
   ]

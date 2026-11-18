@@ -23,10 +23,11 @@ const NODES = [
 export type TraceEvent =
   | { kind: "node_enter"; node: string; t_ms: number }
   | { kind: "node_exit"; node: string; t_ms: number }
+  | { kind: "model_route"; role: "draft" | "critique"; provider: string; model: string }
   | { kind: "tool_call"; id: string; name: string; input: unknown }
   | { kind: "tool_result"; id: string; name: string; output: unknown; ms: number }
   | { kind: "citation"; ref: string; doc_id: string; snippet: string }
-  | { kind: "critique_judge"; judge: string; iter: number; passed?: boolean; error?: string | null; gaps?: string[] };
+  | { kind: "critique_judge"; judge: string; iter: number; passed?: boolean; error?: string | null; warning?: string | null; gaps?: string[]; missingDocuments?: string[] };
 
 export function AgentTracePanel({
   events,
@@ -48,6 +49,7 @@ export function AgentTracePanel({
   const citations = events.filter((e): e is Extract<TraceEvent, { kind: "citation" }> => e.kind === "citation");
   const judges = events.filter((e): e is Extract<TraceEvent, { kind: "critique_judge" }> => e.kind === "critique_judge");
   const lastJudge = judges[judges.length - 1];
+  const generator = events.find((e) => e.kind === "model_route" && e.role === "draft");
 
   return (
     <div className="card flex h-full flex-col p-3">
@@ -55,6 +57,11 @@ export function AgentTracePanel({
         <Cpu size={12} /> {recorded ? "recorded trace replay" : "live agent trace"}
       </div>
 
+      {generator?.kind === "model_route" && (
+        <div className="mb-2 rounded-md border border-border px-2 py-1.5 font-mono text-2xs text-ink-muted">
+          Draft: {generator.model}
+        </div>
+      )}
       {lastJudge && (
         <div
           className={`mb-2 flex flex-col gap-1 rounded-md border px-2 py-1.5 text-2xs ${
@@ -69,7 +76,7 @@ export function AgentTracePanel({
             <Scale size={11} />
             critique: {lastJudge.judge}
             {judges.length > 1 ? ` · iter ${lastJudge.iter}` : ""}
-            {lastJudge.passed === false && " · flagged gaps → redrafting"}
+            {lastJudge.passed === false && !lastJudge.error && " · review gaps found"}
             {!lastJudge.error && lastJudge.judge.startsWith("gpt") && " · cross-family"}
           </span>
           {lastJudge.error && (
@@ -77,6 +84,8 @@ export function AgentTracePanel({
               ⚠ judge unavailable — this memo was NOT quality-checked ({lastJudge.error})
             </span>
           )}
+          {lastJudge.warning && <span>{lastJudge.warning}</span>}
+          {!!lastJudge.missingDocuments?.length && <span className="text-2xs opacity-90">Broker documents still required: {lastJudge.missingDocuments.join("; ")}</span>}
           {!lastJudge.error && (lastJudge.gaps?.length ?? 0) > 0 && (
             <span className="text-2xs opacity-90">gaps: {lastJudge.gaps!.join("; ")}</span>
           )}

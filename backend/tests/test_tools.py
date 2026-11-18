@@ -75,12 +75,14 @@ def test_judge_raises_without_key(monkeypatch):
 
 def test_critique_verdict_parses_judge_json():
     v = CritiqueVerdict.model_validate(
-        {"pass": False, "rubric_scores": {"format": 5}, "gaps": ["missing OOS driver"], "extra": "ignored"}
+        {"pass": False, "rubric_scores": {k: 5 for k in ("factual_accuracy", "completeness", "calibration", "citations", "format")}, "gaps": ["missing OOS driver"], "extra": "ignored"}
     )
     assert v.pass_ is False
     assert v.gaps == ["missing OOS driver"]
 
 
-def test_critique_verdict_defaults():
-    v = CritiqueVerdict.model_validate({})
-    assert v.pass_ is True and v.rubric_scores == {} and v.gaps == []
+def test_empty_critique_cannot_be_treated_as_a_pass():
+    from pydantic import ValidationError
+
+    with pytest.raises(ValidationError):
+        CritiqueVerdict.model_validate({})

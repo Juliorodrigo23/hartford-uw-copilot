@@ -19,10 +19,11 @@ export type ChatEvent =
   | { type: "tool_result"; name: string; output: unknown; id: string; ms: number }
   | { type: "node_enter"; node: string; t_ms: number }
   | { type: "node_exit"; node: string; t_ms: number }
+  | { type: "model_route"; role: "draft" | "critique"; provider: string; model: string }
   | { type: "citation"; ref: string; docId: string; snippet: string }
-  | { type: "critique_judge"; judge: string; iter: number; passed: boolean; error: string | null; gaps: string[] }
+  | { type: "critique_judge"; judge: string; iter: number; passed: boolean; error: string | null; warning: string | null; gaps: string[]; missingDocuments: string[] }
   | { type: "demo_notice"; message: string }
-  | { type: "final"; memo: string; runId: string }
+  | { type: "final"; memo: string; runId: string; reviewStatus?: "passed" | "unreviewed" | "needs_review" }
   | { type: "error"; message: string };
 
 export async function* parseSSE(
@@ -104,6 +105,8 @@ function parseChunk(chunk: string): ChatEvent | null {
         return { type: "node_enter", node: obj.node, t_ms: obj.t_ms ?? 0 };
       case "node_exit":
         return { type: "node_exit", node: obj.node, t_ms: obj.t_ms ?? 0 };
+      case "model_route":
+        return { type: "model_route", role: obj.role, provider: obj.provider, model: obj.model };
       case "citation":
         return { type: "citation", ref: obj.ref, docId: obj.doc_id, snippet: obj.snippet };
       case "critique_judge":
@@ -113,12 +116,14 @@ function parseChunk(chunk: string): ChatEvent | null {
           iter: obj.iter ?? 0,
           passed: obj.passed ?? true,
           error: obj.error ?? null,
+          warning: obj.warning ?? null,
           gaps: obj.gaps ?? [],
+          missingDocuments: obj.missing_documents ?? [],
         };
       case "demo_notice":
         return { type: "demo_notice", message: obj.message ?? "demo replay" };
       case "final":
-        return { type: "final", memo: obj.memo ?? "", runId: obj.run_id ?? "" };
+        return { type: "final", memo: obj.memo ?? "", runId: obj.run_id ?? "", reviewStatus: obj.review_status };
       case "error":
         return { type: "error", message: obj.message ?? "unknown error" };
     }

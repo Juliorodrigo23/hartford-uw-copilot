@@ -18,7 +18,7 @@ from app.tools.submissions import load_submission
 
 log = logging.getLogger(__name__)
 
-GOLDEN = Path(settings.data_dir).parent / "app" / "eval" / "golden_set" / "ground_truth_memos.json"
+GOLDEN = Path(settings.data_dir).parent / "app" / "eval" / "golden_set" / "ground_truth_memos.v1.json"
 
 
 def _term_present(memo: str, term: str) -> bool:

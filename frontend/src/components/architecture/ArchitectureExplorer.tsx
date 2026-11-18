@@ -49,7 +49,7 @@ const NODES: GraphNode[] = [
     reads: ["submission_id", "user_message"],
     writes: ["submission", "parse_notes"],
     summary: "Loads a known packet by ID or extracts an ad-hoc packet into the strict Submission schema.",
-    implementation: "Gemini 2.5 Flash extraction → JSON parse → Pydantic validation. A missing DOT produces submission=None.",
+    implementation: "Gemini 3.5 Flash Lite extraction → JSON parse → Pydantic validation. A missing DOT produces submission=None.",
     latency: "2 ms recorded (disk path)",
   },
   {
@@ -107,7 +107,7 @@ const NODES: GraphNode[] = [
   {
     id: "draft_memo",
     label: "Draft memo",
-    eyebrow: "GEMINI 2.5 PRO",
+    eyebrow: "GEMINI 3.8 FLASH",
     kind: "llm",
     x: 670,
     y: 80,

@@ -25,3 +25,4 @@ frontend/
 backend/data/raw/ntsb/
 backend/data/raw/sec/
 backend/data/checkpoints.sqlite*
+backend/data/eval_runs/

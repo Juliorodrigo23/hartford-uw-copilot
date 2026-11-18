@@ -2,13 +2,16 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from app.graph.state import AgentState
+from app.llm.evidence import evidence_hash, evidence_json
 from app.llm.prompts.memo import MEMO_SYSTEM, MEMO_TEMPLATE
+from app.llm.text import response_text
 from app.llm.vertex_client import gemini
 
 log = logging.getLogger(__name__)
@@ -84,7 +87,7 @@ async def draft_memo(state: AgentState) -> AgentState:
     sub = state.get("submission")
     draft_iters = state.get("draft_iters", 0) + 1
     if not sub:
-        return {"memo_md": "Cannot draft memo: submission missing.", "draft_iters": draft_iters}
+        raise RuntimeError("Cannot draft memo: submission missing.")
     pred, pi, shap = _format_xgb(state)
     user = MEMO_TEMPLATE.format(
         sub_id=sub.id,
@@ -96,6 +99,7 @@ async def draft_memo(state: AgentState) -> AgentState:
         states=", ".join(sub.states_of_operation) or "—",
         commodity=sub.commodity,
         effective_date=sub.effective_date.isoformat(),
+        full_package=evidence_json(state),
         safer=_format_safer(state),
         loss_stats=_format_loss(state),
         xgb_pred=pred,
@@ -112,18 +116,24 @@ async def draft_memo(state: AgentState) -> AgentState:
             else "(first draft)"
         ),
     )
-    llm = gemini(temperature=0.2)
     chunks: list[str] = []
     try:
-        async for piece in llm.astream([
-            SystemMessage(content=MEMO_SYSTEM),
-            HumanMessage(content=user),
-        ]):
-            text = piece.content if isinstance(piece.content, str) else str(piece.content)
-            if text:
-                chunks.append(text)
+        llm = gemini(temperature=0.2, max_output_tokens=8192)
+        async with asyncio.timeout(120):
+            async for piece in llm.astream([
+                SystemMessage(content=MEMO_SYSTEM),
+                HumanMessage(content=user),
+            ]):
+                text = response_text(piece.content)
+                if text:
+                    chunks.append(text)
         memo = "".join(chunks)
-    except Exception as e:
+        if not memo.strip():
+            raise ValueError("generator returned an empty memo")
+    except Exception:
         log.exception("draft_memo failed")
-        memo = f"## Underwriting memo\n\nError generating memo: {e}"
-    return {"memo_md": memo, "draft_iters": draft_iters}
+        raise RuntimeError(
+            "Memo generation failed. No underwriting recommendation was produced. "
+            "Please retry; if this persists, check the configured Gemini model and endpoint."
+        ) from None
+    return {"memo_md": memo, "draft_iters": draft_iters, "draft_packet_hash": evidence_hash(state)}

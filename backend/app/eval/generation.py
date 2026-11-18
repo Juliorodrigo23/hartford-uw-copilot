@@ -17,6 +17,7 @@ from pathlib import Path
 from app.config import settings
 from app.graph.builder import get_graph
 from app.llm.judge_client import JudgeUnavailable, judge_memo, pairwise_compare
+from app.llm.text import response_text
 from app.tools.submissions import load_submission
 
 log = logging.getLogger(__name__)
@@ -61,16 +62,16 @@ async def _baseline_memo(submission_id: str) -> str:
         f"Fleet: {sub.fleet_size} PUs · commodity {sub.commodity}\n"
         f"States: {', '.join(sub.states_of_operation)}\n"
         f"Effective: {sub.effective_date}\n"
-        f"Loss run: {[(l.year, l.claims, str(l.incurred_usd)) for l in sub.loss_run]}\n"
+        f"Loss run: {[(loss_row.year, loss_row.claims, str(loss_row.incurred_usd)) for loss_row in sub.loss_run]}\n"
         f"Broker: {sub.broker_email[:1200]}"
     )
     llm = gemini(temperature=0.2, streaming=False)
     resp = await llm.ainvoke(prompt)
-    return resp.content if isinstance(resp.content, str) else str(resp.content)
+    return response_text(resp.content)
 
 
 async def evaluate_generation(n_runs_per_judge: int = 3) -> dict:
-    cases_path = GOLDEN_DIR / "ground_truth_memos.json"
+    cases_path = GOLDEN_DIR / "ground_truth_memos.v1.json"
     if not cases_path.exists():
         return {"status": "skipped", "reason": f"golden set missing at {cases_path}"}
     if not settings.openai_api_key:

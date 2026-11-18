@@ -25,6 +25,7 @@ MEMO_TEXT = (
     "## Producer summary\nShort summary.\n\n"
     '```json\n{"disposition": "quote_with_surcharge", "confidence": 0.7, "drivers": ["x"]}\n```\n'
 )
+SCORES = {k: 5 for k in ("factual_accuracy", "completeness", "calibration", "citations", "format")}
 
 
 class _FakeStreamingLLM:
@@ -96,7 +97,7 @@ def fake_llms(monkeypatch):
     monkeypatch.setattr(retrieve_mod, "hybrid_search", fake_retrieval)
 
     async def fake_critique(_memo, _evidence):
-        return {"pass": True, "rubric_scores": {"format": 5}, "gaps": []}
+        return {"pass": True, "rubric_scores": SCORES, "gaps": []}
 
     monkeypatch.setattr(critique_mod, "_gemini_critique", fake_critique)
     monkeypatch.setattr(critique_mod, "openai_runtime_critique", fake_critique)
@@ -171,7 +172,9 @@ async def test_critique_failure_fails_open_but_flagged(fake_llms, monkeypatch):
     assert state["memo"] is not None
     # … but the failure is recorded, never hidden
     assert state["critique_judge"].startswith("error:")
-    assert "judge down" in (state["critique_error"] or "")
+    assert "human review" in state["critique_error"]
+    assert state["critique_pass"] is False
+    assert state["draft_iters"] == 1
 
 
 async def test_critique_loop_redrafts_and_increments(fake_llms, monkeypatch):
@@ -180,8 +183,8 @@ async def test_critique_loop_redrafts_and_increments(fake_llms, monkeypatch):
     async def fail_once(_memo, _evidence):
         calls["n"] += 1
         if calls["n"] == 1:
-            return {"pass": False, "rubric_scores": {}, "gaps": ["missing driver OOS"]}
-        return {"pass": True, "rubric_scores": {}, "gaps": []}
+            return {"pass": False, "rubric_scores": SCORES, "gaps": ["missing driver OOS"]}
+        return {"pass": True, "rubric_scores": SCORES, "gaps": []}
 
     monkeypatch.setattr(critique_mod, "_gemini_critique", fail_once)
     monkeypatch.setattr(critique_mod, "openai_runtime_critique", lambda *a: _none())

@@ -15,17 +15,17 @@ def _extract_disposition(memo_md: str) -> Disposition:
     if m:
         try:
             data = json.loads(m.group(1))
-            label = data.get("disposition", "quote_with_surcharge")
+            label = data.get("disposition")
             if label not in {"decline", "quote_with_surcharge", "quote", "data_insufficient"}:
-                label = "quote_with_surcharge"
+                raise ValueError("missing or invalid disposition")
             return Disposition(
                 label=label,  # type: ignore[arg-type]
                 confidence=float(data.get("confidence", 0.6)),
                 drivers=list(data.get("drivers") or []),
             )
-        except (json.JSONDecodeError, ValueError):
+        except (json.JSONDecodeError, ValueError, TypeError):
             pass
-    return Disposition(label="quote_with_surcharge", confidence=0.5, drivers=[])
+    return Disposition(label="data_insufficient", confidence=0.0, drivers=["No valid structured recommendation; human review required."])
 
 
 def _producer_summary(memo_md: str) -> str:

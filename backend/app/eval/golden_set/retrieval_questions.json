@@ -1,114 +1,342 @@
 {
+  "version": "uw-evidence-v2.0",
+  "created_at": "2026-11-18",
+  "review_status": "agent_source_checked; underwriter_validation_pending",
+  "reviewer": "Codex: checked assertion values against frozen packet and retrieval quotations against source text",
+  "limitations": [
+    "Synthetic submissions and loss aggregates; no verified claim files or earned premium.",
+    "Reference assertions evaluate evidence handling, not actuarial correctness or quote/decline accuracy.",
+    "Retrieval labels are specified supporting passages, not exhaustive relevance judgments.",
+    "Scores are not directly comparable with the July keyword/draft-label benchmark."
+  ],
   "questions": [
     {
-      "id": "RQ-001",
-      "query": "long-haul fatigue claims for fleets > 200 power units, particularly overnight runs",
-      "corpus": "ntsb",
+      "id": "RQ2-001",
+      "query": "FMCSA property-carrying driver daily driving time and on-duty window after a ten-hour rest",
+      "corpus": "industry",
+      "split": "development",
       "relevant_doc_ids": [
-        "10k-odfl-2023#chunk-1",
-        "10k-sndr-2024#chunk-26",
-        "10k-sndr-2026#chunk-45"
+        "fmcsa-hos-driving#chunk-0"
       ],
-      "_note": "DRAFT \u2014 top-3 reranked pre-filled; CONFIRM OR EDIT before use"
+      "references": [
+        {
+          "doc_id": "fmcsa-hos-driving#chunk-0",
+          "quote": "May drive a maximum of 11 hours after 10 consecutive hours off duty.",
+          "content_sha256": "39480a0bdd1f0966ffbfd5648f667511f8ff364de2bbbb1e8e2fa3b60d4d0ea3"
+        }
+      ],
+      "review_status": "agent_source_checked; underwriter_validation_pending"
     },
     {
-      "id": "RQ-002",
-      "query": "brake adjustment failure on grade, jackknife of tractor-trailer",
-      "corpus": "ntsb",
+      "id": "RQ2-002",
+      "query": "When does a property-carrying driver need a break under FMCSA hours-of-service rules?",
+      "corpus": "industry",
+      "split": "holdout",
       "relevant_doc_ids": [
-        "ntsb-har-2101#chunk-113",
-        "10k-htld-2026#chunk-32",
-        "ntsb-har-2101#chunk-70"
+        "fmcsa-hos-break#chunk-0"
       ],
-      "_note": "DRAFT \u2014 top-3 reranked pre-filled; CONFIRM OR EDIT before use"
+      "references": [
+        {
+          "doc_id": "fmcsa-hos-break#chunk-0",
+          "quote": "Drivers must take a 30-minute break",
+          "content_sha256": "930cac056f7a15a15f5774415b81e20820c3bb9f4b562b343017b3205c0c403a"
+        }
+      ],
+      "review_status": "agent_source_checked; underwriter_validation_pending"
     },
     {
-      "id": "RQ-003",
-      "query": "Knight-Swift risk-factor disclosures driver shortage and accident frequency",
+      "id": "RQ2-003",
+      "query": "FMCSA weekly on-duty hours limit and restart period for property-carrying drivers",
+      "corpus": "industry",
+      "split": "development",
+      "relevant_doc_ids": [
+        "fmcsa-hos-weekly#chunk-0"
+      ],
+      "references": [
+        {
+          "doc_id": "fmcsa-hos-weekly#chunk-0",
+          "quote": "May not drive after 60/70 hours on duty in 7/8 consecutive days.",
+          "content_sha256": "c90a84d0c2a1bf641b83881254205c1461409f7c953aae3e08db7cd78e14d2e8"
+        }
+      ],
+      "review_status": "agent_source_checked; underwriter_validation_pending"
+    },
+    {
+      "id": "RQ2-004",
+      "query": "Does an FMCSA public crash record tell us whether the motor carrier caused the crash?",
+      "corpus": "industry",
+      "split": "holdout",
+      "relevant_doc_ids": [
+        "fmcsa-crash-fault#chunk-0"
+      ],
+      "references": [
+        {
+          "doc_id": "fmcsa-crash-fault#chunk-0",
+          "quote": "State-reported crash data do not have information regarding fault.",
+          "content_sha256": "d2650213182bfb92a001d76d8aab29c08fedc108f6a5b5fac084f7aaa637dd4b"
+        }
+      ],
+      "review_status": "agent_source_checked; underwriter_validation_pending"
+    },
+    {
+      "id": "RQ2-005",
+      "query": "Which extra BASIC percentile data become visible when a carrier signs into FMCSA SMS?",
+      "corpus": "industry",
+      "split": "development",
+      "relevant_doc_ids": [
+        "fmcsa-csa-privacy#chunk-0"
+      ],
+      "references": [
+        {
+          "doc_id": "fmcsa-csa-privacy#chunk-0",
+          "quote": "Hazardous Materials (HM) Compliance BASIC percentile rank; Crash Indicator BASIC percentile rank",
+          "content_sha256": "12ce44f0cdbc8a68a77560eddc1de37b34f49cae7a5f4d818305d31c34ca53de"
+        }
+      ],
+      "review_status": "agent_source_checked; underwriter_validation_pending"
+    },
+    {
+      "id": "RQ2-006",
+      "query": "Are FMCSA SMS percentile rankings the same as a federal safety fitness rating?",
+      "corpus": "industry",
+      "split": "holdout",
+      "relevant_doc_ids": [
+        "fmcsa-csa-ratings#chunk-0"
+      ],
+      "references": [
+        {
+          "doc_id": "fmcsa-csa-ratings#chunk-0",
+          "quote": "are not a federal safety fitness rating.",
+          "content_sha256": "7df3c827a3b3e081d764ddf93768f21ffc0a144fcaa04a62ab07a50493258f3b"
+        }
+      ],
+      "review_status": "agent_source_checked; underwriter_validation_pending"
+    },
+    {
+      "id": "RQ2-007",
+      "query": "What determines FMCSA insurance requirements and when must insurance be on file for authority?",
+      "corpus": "industry",
+      "split": "development",
+      "relevant_doc_ids": [
+        "fmcsa-insurance-overview#chunk-0"
+      ],
+      "references": [
+        {
+          "doc_id": "fmcsa-insurance-overview#chunk-0",
+          "quote": "type of operating authority(s), type of cargo, and vehicle type(s).",
+          "content_sha256": "62b84fee9c3d75e28d0e37c61eef2c062db054bf98b747e585e488226cfa9c51"
+        }
+      ],
+      "review_status": "agent_source_checked; underwriter_validation_pending"
+    },
+    {
+      "id": "RQ2-008",
+      "query": "Why can inconsistent business names delay FMCSA operating-authority filings?",
+      "corpus": "industry",
+      "split": "holdout",
+      "relevant_doc_ids": [
+        "fmcsa-insurance-identity#chunk-0"
+      ],
+      "references": [
+        {
+          "doc_id": "fmcsa-insurance-identity#chunk-0",
+          "quote": "Any deviation results in the delay of granting of the authority.",
+          "content_sha256": "39a53b2e157576b5c641dfaa7e7883aa495a82e09d91a829eab5b4f0d3ec4497"
+        }
+      ],
+      "review_status": "agent_source_checked; underwriter_validation_pending"
+    },
+    {
+      "id": "RQ2-009",
+      "query": "NTSB inspection of the America Shengjia bus: were its brakes out of adjustment?",
+      "corpus": "ntsb",
+      "split": "development",
+      "relevant_doc_ids": [
+        "ntsb-har-2101#chunk-25"
+      ],
+      "references": [
+        {
+          "doc_id": "ntsb-har-2101#chunk-25",
+          "quote": "none of the brakes were found to be out of adjustment.",
+          "content_sha256": "0aac77c1b17698eeaeeae5d5359f23f8394097d5b4f48ee28d34f7fa58fbf97a"
+        }
+      ],
+      "review_status": "agent_source_checked; underwriter_validation_pending"
+    },
+    {
+      "id": "RQ2-010",
+      "query": "NTSB Tesla crash attenuator investigation: why did forward collision warning and emergency braking not activate?",
+      "corpus": "ntsb",
+      "split": "holdout",
+      "relevant_doc_ids": [
+        "ntsb-har-2001#chunk-94"
+      ],
+      "references": [
+        {
+          "doc_id": "ntsb-har-2001#chunk-94",
+          "quote": "were not designed to, and did not, detect the crash attenuator",
+          "content_sha256": "2a2c69a4458837da1d062136b8d6a099fd0a78adb3f703f83f5cd44aadef1274"
+        }
+      ],
+      "review_status": "agent_source_checked; underwriter_validation_pending"
+    },
+    {
+      "id": "RQ2-011",
+      "query": "NTSB report on the driver’s precrash sleep: what sleep opportunity did his wife describe on the two previous nights?",
+      "corpus": "ntsb",
+      "split": "development",
+      "relevant_doc_ids": [
+        "ntsb-har-1901#chunk-27"
+      ],
+      "references": [
+        {
+          "doc_id": "ntsb-har-1901#chunk-27",
+          "quote": "7.5-hour opportunity for sleep.",
+          "content_sha256": "ca9f0651aaae7b66de08d6161ad4091d76e3921f1a082557d590756f457c89eb"
+        }
+      ],
+      "review_status": "agent_source_checked; underwriter_validation_pending"
+    },
+    {
+      "id": "RQ2-012",
+      "query": "NTSB HAR-21/02: which driver-assistance technologies were unavailable on the passenger vehicle trim?",
+      "corpus": "ntsb",
+      "split": "holdout",
+      "relevant_doc_ids": [
+        "ntsb-har-2102#chunk-19"
+      ],
+      "references": [
+        {
+          "doc_id": "ntsb-har-2102#chunk-19",
+          "quote": "Forward collision warning, lane departure warning, or rear park assist were not available",
+          "content_sha256": "8ead0c46dba1f19a219cc39dc7dd9ed001fe315300979a4e02f3b52096427487"
+        }
+      ],
+      "review_status": "agent_source_checked; underwriter_validation_pending"
+    },
+    {
+      "id": "RQ2-013",
+      "query": "Werner annual report 2026: how do driver recruiting, turnover and shortages affect operations?",
       "corpus": "10k",
+      "split": "development",
       "relevant_doc_ids": [
-        "10k-wern-2026#chunk-2",
-        "10k-knx-2025#chunk-49",
-        "10k-knx-2025#chunk-22"
+        "10k-wern-2026#chunk-2"
       ],
-      "_note": "DRAFT \u2014 top-3 reranked pre-filled; CONFIRM OR EDIT before use"
+      "references": [
+        {
+          "doc_id": "10k-wern-2026#chunk-2",
+          "quote": "the trucking industry has experienced driver shortages.",
+          "content_sha256": "2ca461be679f7ee2fd38fa43f33311a65a162bbbf22677ab9044e58f3bf677ab"
+        }
+      ],
+      "review_status": "agent_source_checked; underwriter_validation_pending"
     },
     {
-      "id": "RQ-004",
-      "query": "ISO commercial auto coverage form business auto exclusions",
+      "id": "RQ2-014",
+      "query": "Werner annual report 2026: insurance claims, large verdicts and self-insurance exposure",
+      "corpus": "10k",
+      "split": "holdout",
+      "relevant_doc_ids": [
+        "10k-wern-2026#chunk-19"
+      ],
+      "references": [
+        {
+          "doc_id": "10k-wern-2026#chunk-19",
+          "quote": "We are self-insured for a significant portion of liability",
+          "content_sha256": "2c07c2b9227c11cb494c94aa92155794b70edd0556a8ca829cce16343b7796b7"
+        }
+      ],
+      "review_status": "agent_source_checked; underwriter_validation_pending"
+    },
+    {
+      "id": "RQ2-015",
+      "query": "Werner annual report 2026: how quickly do fuel surcharges adjust and do they recover every fuel increase?",
+      "corpus": "10k",
+      "split": "development",
+      "relevant_doc_ids": [
+        "10k-wern-2026#chunk-4"
+      ],
+      "references": [
+        {
+          "doc_id": "10k-wern-2026#chunk-4",
+          "quote": "recover a majority, but not all, of the fuel price increases.",
+          "content_sha256": "ec59186585e01d496bbdbeae8cd12a5cc1725daab74ab67242495a13826dea0c"
+        }
+      ],
+      "review_status": "agent_source_checked; underwriter_validation_pending"
+    },
+    {
+      "id": "RQ2-016",
+      "query": "Heartland annual report 2024: premium and collateral pressure in trucking insurance renewals",
+      "corpus": "10k",
+      "split": "holdout",
+      "relevant_doc_ids": [
+        "10k-htld-2024#chunk-30"
+      ],
+      "references": [
+        {
+          "doc_id": "10k-htld-2024#chunk-30",
+          "quote": "Insurance carriers have raised premiums and collateral requirements",
+          "content_sha256": "c4a2c4f7e46dce95521c8591a0db57fdbab652502be5e1229c9fe17d022fc809"
+        }
+      ],
+      "review_status": "agent_source_checked; underwriter_validation_pending"
+    },
+    {
+      "id": "RQ2-017",
+      "query": "J B Hunt annual report 2023: regulation effects on productivity, maintenance and independent contractors",
+      "corpus": "10k",
+      "split": "development",
+      "relevant_doc_ids": [
+        "10k-jbht-2023#chunk-6"
+      ],
+      "references": [
+        {
+          "doc_id": "10k-jbht-2023#chunk-6",
+          "quote": "reducing productivity, increasing maintenance expenses and capital expenditures",
+          "content_sha256": "db8e7aef7ee83c1a777b3d8f943047b027080eea5cc0cbbc49f26adf891ddd9e"
+        }
+      ],
+      "review_status": "agent_source_checked; underwriter_validation_pending"
+    },
+    {
+      "id": "RQ2-018",
+      "query": "Heartland annual report 2022: hazardous material handling, fuel spills and environmental exposure",
+      "corpus": "10k",
+      "split": "holdout",
+      "relevant_doc_ids": [
+        "10k-htld-2022#chunk-31"
+      ],
+      "references": [
+        {
+          "doc_id": "10k-htld-2022#chunk-31",
+          "quote": "the risks of fuel spillage or seepage, environmental damage, and hazardous waste disposal",
+          "content_sha256": "5bba1ffb4c13ffe2535763252f2646e2e7fce6ce755cc356c8b2b1937968df84"
+        }
+      ],
+      "review_status": "agent_source_checked; underwriter_validation_pending"
+    },
+    {
+      "id": "RQ2-019",
+      "query": "ISO commercial auto coverage form contractual liability exclusions",
       "corpus": "forms",
-      "relevant_doc_ids": [
-        "10k-htld-2024#chunk-30",
-        "10k-knx-2022#chunk-30",
-        "10k-htld-2026#chunk-31"
-      ],
-      "_note": "DRAFT \u2014 top-3 reranked pre-filled; CONFIRM OR EDIT before use"
+      "split": "development",
+      "relevant_doc_ids": [],
+      "references": [],
+      "expected_abstention": true,
+      "reason": "No licensed policy/coverage forms are present; unrelated annual reports cannot answer this query.",
+      "review_status": "agent_source_checked; underwriter_validation_pending"
     },
     {
-      "id": "RQ-005",
-      "query": "hazmat carrier bridge strike, hazmat release",
-      "corpus": "ntsb",
-      "relevant_doc_ids": [
-        "ntsb-har-1901#chunk-140",
-        "ntsb-har-1902#chunk-211",
-        "ntsb-har-2001#chunk-40"
-      ],
-      "_note": "DRAFT \u2014 top-3 reranked pre-filled; CONFIRM OR EDIT before use"
-    },
-    {
-      "id": "RQ-006",
-      "query": "Werner accident frequency reserve adequacy disclosures",
-      "corpus": "10k",
-      "relevant_doc_ids": [
-        "ntsb-har-2001#chunk-119",
-        "10k-wern-2022#chunk-6",
-        "ntsb-har-2001#chunk-162"
-      ],
-      "_note": "DRAFT \u2014 top-3 reranked pre-filled; CONFIRM OR EDIT before use"
-    },
-    {
-      "id": "RQ-007",
-      "query": "fog pileup visibility commercial truck multiple vehicle",
-      "corpus": "ntsb",
-      "relevant_doc_ids": [
-        "10k-usx-2023#chunk-40",
-        "ntsb-har-2101#chunk-61",
-        "ntsb-har-2101#chunk-66"
-      ],
-      "_note": "DRAFT \u2014 top-3 reranked pre-filled; CONFIRM OR EDIT before use"
-    },
-    {
-      "id": "RQ-008",
-      "query": "OOS rate vehicle maintenance impact on loss frequency",
-      "corpus": "10k",
-      "relevant_doc_ids": [
-        "10k-odfl-2026#chunk-34",
-        "10k-sndr-2023#chunk-7",
-        "10k-sndr-2024#chunk-4"
-      ],
-      "_note": "DRAFT \u2014 top-3 reranked pre-filled; CONFIRM OR EDIT before use"
-    },
-    {
-      "id": "RQ-009",
-      "query": "BASIC Hours-of-Service compliance threshold federal intervention",
-      "corpus": "ntsb",
-      "relevant_doc_ids": [
-        "10k-usx-2022#chunk-29",
-        "10k-usx-2021#chunk-24",
-        "ntsb-har-1902#chunk-264"
-      ],
-      "_note": "DRAFT \u2014 top-3 reranked pre-filled; CONFIRM OR EDIT before use"
-    },
-    {
-      "id": "RQ-010",
-      "query": "tank carrier hazmat endorsement requirements liability limits",
+      "id": "RQ2-020",
+      "query": "ACORD coverage form attached to this account and signed policy conditions",
       "corpus": "forms",
-      "relevant_doc_ids": [
-        "10k-htld-2025#chunk-29",
-        "10k-usx-2019#chunk-18",
-        "ntsb-har-2001#chunk-40"
-      ],
-      "_note": "DRAFT \u2014 top-3 reranked pre-filled; CONFIRM OR EDIT before use"
+      "split": "holdout",
+      "relevant_doc_ids": [],
+      "references": [],
+      "expected_abstention": true,
+      "reason": "No licensed policy/coverage forms are present; unrelated annual reports cannot answer this query.",
+      "review_status": "agent_source_checked; underwriter_validation_pending"
     }
   ]
 }
