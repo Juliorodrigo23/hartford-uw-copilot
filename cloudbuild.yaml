@@ -59,10 +59,11 @@ steps:
       - --min=1
       - --max-instances=3
       - --service-account=uw-copilot-runner@$PROJECT_ID.iam.gserviceaccount.com
-      - --set-env-vars=GCP_PROJECT_ID=$PROJECT_ID,GCP_LOCATION=${_VERTEX_LOCATION},VERTEX_MODEL=${_VERTEX_MODEL},VERTEX_FAST_MODEL=${_VERTEX_FAST_MODEL},GEMINI_AUTH_MODE=${_GEMINI_AUTH_MODE},GEMINI_API_BACKEND=${_GEMINI_API_BACKEND},ALLOW_UNSIGNED_DEV=false,CRITIQUE_PROVIDER=auto,WARM_RAG_MODELS=true
+      # Preserve independently configured optional monitoring on later deploys.
+      - --update-env-vars=GCP_PROJECT_ID=$PROJECT_ID,GCP_LOCATION=${_VERTEX_LOCATION},VERTEX_MODEL=${_VERTEX_MODEL},VERTEX_FAST_MODEL=${_VERTEX_FAST_MODEL},GEMINI_AUTH_MODE=${_GEMINI_AUTH_MODE},GEMINI_API_BACKEND=${_GEMINI_API_BACKEND},ALLOW_UNSIGNED_DEV=false,CRITIQUE_PROVIDER=auto,WARM_RAG_MODELS=true
       # HMAC for proxy auth, OpenAI key for cross-family runtime critique (CRITIQUE_PROVIDER=auto
       # uses GPT-4o when present, otherwise falls back to Gemini Flash).
-      - --set-secrets=HMAC_SECRET=hmac-secret:latest,OPENAI_API_KEY=openai-api-key:latest,GEMINI_API_KEY=gemini-api-key:latest
+      - --update-secrets=HMAC_SECRET=hmac-secret:latest,OPENAI_API_KEY=openai-api-key:latest,GEMINI_API_KEY=gemini-api-key:latest
 
 images:
   - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/backend:$BUILD_ID

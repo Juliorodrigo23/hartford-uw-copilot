@@ -27,6 +27,7 @@ from pathlib import Path
 
 import httpx
 from bs4 import BeautifulSoup
+from langsmith import traceable
 from tenacity import retry, stop_after_attempt, wait_exponential_jitter
 
 from app.config import settings
@@ -314,6 +315,7 @@ async def _fetch_snapshot(dot: str) -> str | None:
 # Public entrypoint
 # ---------------------------------------------------------------------------
 
+@traceable(name="safer_lookup", run_type="tool")
 async def safer_lookup(dot: str) -> SAFERProfile | None:
     """Resolve a DOT number to a VALIDATED carrier profile, or None.
 

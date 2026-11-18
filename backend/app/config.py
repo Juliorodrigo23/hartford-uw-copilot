@@ -51,6 +51,14 @@ class Settings(BaseSettings):
     # default). "auto" → openai when a key is present, otherwise gemini.
     critique_provider: Literal["auto", "openai", "gemini"] = Field(default="auto", alias="CRITIQUE_PROVIDER")
 
+    # Agent-based workspaces use the environment's returned tracer_session_name.
+    langsmith_tracing: bool = Field(default=False, alias="LANGSMITH_TRACING")
+    langsmith_api_key: SecretStr = Field(default="", alias="LANGSMITH_API_KEY")
+    langsmith_endpoint: str = Field(default="https://api.smith.langchain.com", alias="LANGSMITH_ENDPOINT")
+    langsmith_workspace_id: str = Field(default="", alias="LANGSMITH_WORKSPACE_ID")
+    langsmith_project: str = Field(default="underwriting-copilot", alias="LANGSMITH_PROJECT")
+    app_environment: str = Field(default="local", alias="APP_ENVIRONMENT")
+
     # Auth
     hmac_secret: str = Field(default="dev-only-replace-in-prod", alias="HMAC_SECRET")
     allow_unsigned_dev: bool = Field(default=True, alias="ALLOW_UNSIGNED_DEV")

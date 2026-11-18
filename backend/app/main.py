@@ -17,7 +17,7 @@ apply_platform_workarounds()  # before torch/onnx load lazily at first request
 
 from app.config import settings  # noqa: E402
 from app.graph.builder import build_graph  # noqa: E402
-from app.observability.tracing import maybe_enable_langfuse  # noqa: E402
+from app.observability.tracing import flush_traces, tracing_client  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)-7s %(name)s: %(message)s")
 log = logging.getLogger("uw-copilot")
@@ -92,7 +92,7 @@ async def lifespan(app: FastAPI):
     settings.data_dir.mkdir(parents=True, exist_ok=True)
     async with AsyncSqliteSaver.from_conn_string(str(settings.checkpoint_db)) as saver:
         app.state.graph = build_graph(saver)
-        maybe_enable_langfuse()
+        log.info("LangSmith tracing configured=%s", tracing_client() is not None)
         warmup = (
             _asyncio.get_running_loop().run_in_executor(None, _warm_models_blocking)
             if settings.warm_rag_models
@@ -112,6 +112,7 @@ async def lifespan(app: FastAPI):
             # dangling Future. The warmup function catches/logs its own errors.
             if warmup is not None and not warmup.done():
                 warmup.cancel()
+            await flush_traces()
 
 
 def create_app() -> FastAPI:
@@ -202,6 +203,8 @@ def create_app() -> FastAPI:
             "critique_provider": settings.critique_provider,
             "openai_judge_model": settings.openai_judge_model,
             "openai_configured": bool(settings.openai_api_key),
+            "langsmith_configured": tracing_client() is not None,
+            "langsmith_project": settings.langsmith_project if settings.langsmith_tracing else None,
             "vertex_transport": settings.vertex_api_transport,
             "checkpoint_db_exists": settings.checkpoint_db.exists(),
         }

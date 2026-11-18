@@ -10,6 +10,7 @@ from typing import Protocol
 from langchain_core.messages import AIMessage, AIMessageChunk, BaseMessage
 
 from app.llm.text import response_text
+from app.observability.tracing import trace_gemini
 
 
 class GeminiChat(Protocol):
@@ -30,14 +31,14 @@ class ApiKeyGemini:
         from google import genai
         from google.genai import types
 
-        return genai.Client(
+        return trace_gemini(genai.Client(
             vertexai=self.backend == "vertex",
             api_key=self._api_key,
             http_options=types.HttpOptions(
                 timeout=120000,
                 retry_options=types.HttpRetryOptions(attempts=2),
             ),
-        )
+        ))
 
     def _request(self, messages: str | Sequence[BaseMessage]) -> dict:
         from google.genai import types

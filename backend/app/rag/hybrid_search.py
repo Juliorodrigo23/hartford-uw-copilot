@@ -14,6 +14,7 @@ import math
 from functools import lru_cache
 
 import numpy as np
+from langsmith import traceable
 
 from app.config import settings
 from app.rag.embeddings import embed_query
@@ -171,6 +172,7 @@ def _rerank(query: str, hits: list[Hit], k_final: int) -> list[Hit]:
     ]
 
 
+@traceable(name="hybrid_search", run_type="retriever")
 async def hybrid_search(
     query: str,
     k_final: int = DEFAULT_K_FINAL,

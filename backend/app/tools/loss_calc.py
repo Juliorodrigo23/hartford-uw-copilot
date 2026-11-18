@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from decimal import Decimal
 
+from langsmith import traceable
+
 from app.schemas import LossStats, Submission
 
 # Rough industry median premium for mid-fleet commercial auto liability.
@@ -12,6 +14,7 @@ from app.schemas import LossStats, Submission
 ASSUMED_PREMIUM_PER_PU_USD = 5500
 
 
+@traceable(name="loss_calc", run_type="tool")
 def loss_stats(sub: Submission) -> LossStats | None:
     """Frequency / severity / trend / loss ratio from the loss run.
 

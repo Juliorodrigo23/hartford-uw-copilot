@@ -29,6 +29,7 @@ from sse_starlette.sse import EventSourceResponse
 from app.api.auth import verify_hmac
 from app.config import settings
 from app.graph.nodes.self_critique import _resolve_provider
+from app.observability.tracing import stream_graph
 from app.schemas import ChatRequest, ToolCall
 
 router = APIRouter()
@@ -78,7 +79,8 @@ async def chat(request: Request):
                 log.info("chat run %s waiting for retrieval model warmup", run_id)
                 await asyncio.shield(warmup)
 
-            async for mode, event in graph.astream(
+            async for mode, event in stream_graph(
+                graph,
                 {
                     "submission_id": req.submission_id,
                     "user_message": req.message,
@@ -91,8 +93,7 @@ async def chat(request: Request):
                     "draft_iters": 0,
                     "critique_provider_override": req.critique_provider,
                 },
-                config={"configurable": {"thread_id": run_id}},
-                stream_mode=["updates", "debug"],
+                run_id=run_id,
             ):
                 if mode == "debug":
                     kind = event.get("type")

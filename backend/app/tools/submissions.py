@@ -8,6 +8,8 @@ from datetime import date
 from decimal import Decimal
 from functools import lru_cache
 
+from langsmith import traceable
+
 from app.config import settings
 from app.schemas import LossYear, Submission, VehicleMix
 
@@ -37,8 +39,8 @@ def _all() -> dict[str, Submission]:
                 states_of_operation=list(d.get("states_of_operation", [])),
                 effective_date=date.fromisoformat(d["effective_date"]),
                 loss_run=[
-                    LossYear(year=l["year"], claims=int(l["claims"]), incurred_usd=Decimal(str(l["incurred_usd"])))
-                    for l in d.get("loss_run", [])
+                    LossYear(year=loss["year"], claims=int(loss["claims"]), incurred_usd=Decimal(str(loss["incurred_usd"])))
+                    for loss in d.get("loss_run", [])
                 ],
                 broker_email=d.get("broker_email", ""),
                 commodity=d.get("commodity", "general_freight"),
@@ -51,6 +53,7 @@ def _all() -> dict[str, Submission]:
     return out
 
 
+@traceable(name="load_submission", run_type="tool")
 def load_submission(sub_id: str) -> Submission | None:
     return _all().get(sub_id)
 

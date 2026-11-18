@@ -22,6 +22,7 @@ dependencies = [
   "langchain>=0.3.7",
   "langchain-core>=0.3.20",
   "langchain-google-vertexai>=2.0.7",
+  "langsmith>=0.7.37,<1",
   # GCP
   "google-genai>=1.73.1,<2",
   "google-cloud-aiplatform>=1.71",

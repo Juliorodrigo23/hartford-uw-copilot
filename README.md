@@ -204,6 +204,9 @@ vercel --prod
 
 See [DEPLOY.md](./DEPLOY.md) for environment variables, secret setup, signed proxy requests, and health checks.
 
+See [docs/langsmith.md](./docs/langsmith.md) to connect graph, tool, Gemini and
+OpenAI traces to a LangSmith workspace and verify a production run.
+
 ## Provenance and responsible use
 
 - FMCSA SAFER profiles, NTSB accident narratives, NHTSA/FARS aggregates, and SEC filings are public-source evidence.
